@@ -1,3 +1,5 @@
+import { generateAdvancedCode } from './generateAdvanced';
+import { generateSeriesCode } from './generateSeries';
 import type { ChartType, Config, Row } from './model';
 const js = (value: unknown) => JSON.stringify(value);
 const field = (key: string) => `d[${js(key)}]`;
@@ -6,6 +8,8 @@ const importLine = 'import * as d3 from "d3";';
 export interface CodeParts { logic: string; data: string; source: string; }
 
 export function generateCodeParts(type: ChartType, data: Row[], c: Config): CodeParts {
+  if (type === 'violin' || type === 'manhattan') return generateAdvancedCode(type, data, c);
+  if (type === 'bar' || type === 'line') return generateSeriesCode(type, data, c);
   const x = field(c.xField), y = field(c.yField);
   const group = type==='volcano'?'d.status':c.groupField?`String(${field(c.groupField)})`:'"All samples"';
   const point = type!=='box';

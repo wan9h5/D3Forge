@@ -28,11 +28,11 @@ function navigate(hash: string) {
 describe('chart library navigation', () => {
   it('opens the library with chart cards and filters by sidebar category', () => {
     render();
-    expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
+    expect(document.querySelectorAll('.chart-card')).toHaveLength(7);
     expect(document.querySelector('.builder')).toBeNull();
     const category = [...document.querySelectorAll<HTMLButtonElement>('.category-menu button')].find(button => button.textContent?.includes('统计分布'))!;
     act(() => category.click());
-    expect(document.querySelectorAll('.chart-card')).toHaveLength(1);
+    expect(document.querySelectorAll('.chart-card')).toHaveLength(2);
     expect(document.querySelector('.chart-card')?.getAttribute('href')).toBe('#/charts/box');
     expect(category.getAttribute('aria-current')).toBe('page');
   });
@@ -48,7 +48,7 @@ describe('chart library navigation', () => {
     expect(useBuilder.getState().data[0]).toHaveProperty('pvalue');
     expect(document.querySelector('.breadcrumbs a')?.getAttribute('href')).toBe('#/gallery');
     navigate('#/gallery');
-    expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
+    expect(document.querySelectorAll('.chart-card')).toHaveLength(7);
     expect(document.querySelector('.builder')).toBeNull();
   });
   it('supports direct chart links and keeps configuration when reopening the same chart', () => {
@@ -66,7 +66,7 @@ describe('chart library navigation', () => {
   it('falls back to the library for an unknown chart link', () => {
     window.history.replaceState(null, '', '#/charts/unknown');
     render();
-    expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
+    expect(document.querySelectorAll('.chart-card')).toHaveLength(7);
   });
 });
 
@@ -81,7 +81,7 @@ describe('product home and guide', () => {
     expect(document.querySelector('.site-footer svg')).not.toBeNull();
     expect(document.querySelector('.builder')).toBeNull();
     navigate('#/gallery');
-    expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
+    expect(document.querySelectorAll('.chart-card')).toHaveLength(7);
     expect(document.querySelector('.header-nav [aria-current="page"]')?.textContent).toBe('图形库');
   });
   it('opens the guide with privacy, data and export information', () => {

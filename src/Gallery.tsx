@@ -12,7 +12,7 @@ const categories = [
 ] as const;
 type Category = typeof categories[number]['id'];
 const chartCategories: Record<ChartType, Exclude<Category, 'all'>> = {
-  scatter: 'basic', box: 'statistics', volcano: 'biology',
+  scatter: 'basic', bar: 'basic', line: 'basic', box: 'statistics', volcano: 'biology', violin: 'statistics', manhattan: 'biology',
 };
 
 export function Gallery() {
