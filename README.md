@@ -1,98 +1,149 @@
-# D3Forge
+<div align="center">
+  <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge Logo" />
+  <h1>D3Forge</h1>
+  <p><strong>调好图表，带走原生 D3 源码</strong></p>
+  <p>通过可视化配置构建图表，实时预览并导出可独立运行的 D3.js 代码</p>
+  <p>
+    <a href="#快速开始">快速开始</a> ·
+    <a href="#功能概览">功能概览</a> ·
+    <a href="docs/architecture.md">架构设计</a> ·
+    <a href="https://github.com/wan9h5/D3Forge/issues">反馈问题</a>
+  </p>
+  <p>D3 v7 · React · TypeScript · MIT</p>
+</div>
 
-**Visual D3.js Code Builder** — Build D3.js visually. Preview instantly. Copy clean, native D3 code.
+---
 
-D3Forge 是一个通过可视化操作生成原生 D3.js 源码的纯前端工作台。选择图表后立即加载 Mock 数据；先调整效果，再复制代码并替换数据。
+## 关于 D3Forge
 
-## 启动
+D3Forge 是一个纯前端的可视化 D3.js 代码构建工具。选择图形，使用示例数据或本地 CSV 调整效果，然后把完整源码带回自己的项目。
 
-需要 Node.js 22.12+ 或 24。
+详情页采用三栏工作台：**配置 → 实时预览 → 只读源码**。预览执行的就是生成的源码；导出的代码仅依赖 D3 和 DOM API，可直接用于其他 Web 项目。
+
+## 功能概览
+
+- **图形库** — 按类别浏览图表，每种图形自带确定性示例数据
+- **可视化配置** — 调节点大小、透明度、颜色、坐标轴、网格、图例和悬浮提示
+- **即时源码反馈** — 配置变化同步更新图表，定位并高亮对应代码行
+- **源码阅读** — D3 绘图逻辑与数据分 Tab 展示，支持语法着色、自动换行和 `Ctrl+F` 搜索
+- **完整导出** — 一键复制或下载 `.js`，包含绘图逻辑和当前数据
+- **本地 CSV** — 浏览器内解析、字段映射与数据预览，无需上传文件
+- **产品首页** — 交互式演示、快速入门与使用说明
+
+### 已支持的图形
+
+| 图形 | 用途 | 特性 |
+| --- | --- | --- |
+| Scatter Plot · 散点图 | 比较两个数值变量 | 分组配色、数值 / 对数坐标、标签、缩放和平移 |
+| Volcano Plot · 火山图 | 展示差异幅度与显著性 | `−log10(p)` 转换、显著性分类、阈值线 |
+| Box Plot · 箱线图 | 比较各组数据分布 | 四分位数、中位数、1.5 × IQR 须线与离群值 |
+
+## 快速开始
+
+本地开发建议使用 **Node.js 22.12+ 或 24**，以及 npm。
 
 ```bash
+git clone https://github.com/wan9h5/D3Forge.git
+cd D3Forge
 npm ci
 npm run dev
 ```
 
-打开命令显示的本地地址。发布静态网站时运行 `npm run build`，部署 `dist/` 即可。
+打开终端显示的地址，默认是 `http://localhost:4173`。
+
+1. 进入「图形库」，选择一种图形
+2. 在左侧调整配置，或导入 CSV 并映射字段
+3. 在中间查看图表，在右侧阅读对应的 D3 源码
+4. 复制完整代码，或下载 `.js` 文件
+
+### 在自己的项目中使用源码
+
+安装 D3：
+
+```bash
+npm install d3
+```
+
+将导出的代码放入支持 JavaScript 模块的项目，在 DOM 就绪后执行。代码优先使用页面中的 `#chart` 容器，没有该容器时会自动创建。
+
+```html
+<div id="chart"></div>
+```
+
+导出包含当前示例或 CSV 数据。也可以替换 `const data` 数组，保持映射字段名一致：
+
+```js
+const data = [
+  { sample: 'S01', expressionA: 12, expressionB: 18, group: 'Control' },
+  { sample: 'S02', expressionA: 24, expressionB: 31, group: 'Treatment' },
+];
+```
+
+### 构建与部署
+
+```bash
+npm run build
+npm run preview
+```
+
+构建产物位于 `dist/`，可部署到静态网站托管服务。页面使用 Hash 路由。
+
+## 开发
+
+技术栈：React 19、TypeScript、Vite、D3 v7、Zustand、CodeMirror 6、Papa Parse。
+
+```text
+src/
+  App.tsx          页面导航与三栏工作台
+  Home.tsx         产品首页与快速入门
+  HeroDemo.tsx     配置、图形与源码的交互演示
+  Gallery.tsx      图形分类与预览卡片
+  model.ts         图表类型、示例数据、默认配置与有效性检查
+  store.ts         配置与数据状态
+  generate.ts      原生 D3 逻辑、数据与完整源码生成
+  Preview.tsx      隔离执行生成源码
+  CodePanel.tsx    只读编辑器、搜索、高亮与导出
+  SiteFooter.tsx   项目与许可证链接
+docs/
+  architecture.md  产品决策与架构说明
+  assets/          README 视觉资源
+tests/             生成逻辑、统计计算与组件行为测试
+```
+
+项目测试与构建命令：
 
 ```bash
 npm test
 npm run build
 ```
 
-## v0.1 已实现
+产品约定见 [AGENTS.md](AGENTS.md)，设计演进见 [架构说明](docs/architecture.md)。
 
-- 三种图表：Scatter Plot、Volcano Plot、Box Plot。
-- 独立图形库主页：左侧分类菜单，内容区图形卡片；点击后进入详情页。
-- 详情页全宽三栏：左侧数据处理 / 视觉配置，中间实时预览，右侧只读代码；各区域独立滚动。
-- 代码区默认展示 D3.js 源码，数据独立为 Mock 数据 / CSV 数据 Tab；各页保留阅读位置，复制与下载合并完整代码。
-- 生成的 D3 链式调用分行排版，编辑器自动折行。
-- 每种图自带确定性 Mock 数据，复制源码也包含完整数据。
-- 本地 CSV 导入、字段映射、数据前 10 行预览。
-- 点半径、透明度、主色、坐标轴、网格、图例、Tooltip 和提示字段选择。
-- 散点 / 火山图支持标签、缩放和平移。普通数值轴可切换对数比例尺。
-- 火山图生成 `−log10(p)`、显著性分类和阈值线。
-- 箱线图计算 Q1 / Median / Q3、1.5 × IQR 须线和离群值。
-- 配置变更对应的最近一次新增 / 修改代码行持续高亮，在代码栏内部定位对应修改行，保留当前焦点、页面位置和当前 Tab，不重置到顶部。
-- 代码语法着色；代码区 Ctrl+F 搜索，支持匹配计数、前后导航、大小写 / 全字 / 正则，Esc 关闭。
-- 一键复制源码，或下载独立 `.js` 文件。
+## 数据与当前限制
 
-## 复制到 Web 项目
+- CSV 在本地处理，最多 **10 MB / 10,000 行**；较大的 SVG 数据集可能影响交互速度
+- 空白与无效数值会被跳过；对数坐标仅接受正值，火山图要求 `0 < p ≤ 1`
+- 配置暂不跨刷新保存；切换图形会恢复该图形的默认数据和配置
+- 修改配置会重新生成预览，缩放位置随之重置
+- 图例为单行，建议使用少量分组
+- 源码为只读，暂不提供反向编辑同步、图片导出或组件代码生成
 
-```bash
-npm install d3
-```
+预览使用应用内打包的 D3，通过受限 iframe 执行，无需外部 CDN。导入字符串使用文本节点展示，嵌入预览的源码会转义 script 结束标签。分享导出文件前，请确认其中的数据适合公开。
 
-点击“复制完整代码”后粘贴到项目模块，确保在 DOM 就绪后执行。源码会使用页面的 `#chart` 容器；若没有则自动创建。没有 D3Forge 的运行时依赖。
+## 路线图
 
-将 `const data = [...]` 替换成自己的数组，并保持映射的字段名。例如散点图默认：
+- [x] Scatter / Volcano / Box 图形构建与原生源码导出
+- [x] 图形库、三栏工作台与代码搜索
+- [x] 产品首页、交互演示与快速入门
+- [ ] 完善真实浏览器交互覆盖与大数据量性能
+- [ ] 按顺序扩展 Bar / Line / Violin / Manhattan
 
-```js
-const data = [
-  { sample: 'S01', expressionA: 12, expressionB: 18, group: 'Control' },
-];
-```
+## 参与贡献
 
-CSV 可以在平台里导入后映射字段，也可以在复制出的代码中用 `const data = await d3.csv('./data.csv')` 替换。生成逻辑会将数值字段转为 Number；空白和无效数据会被跳过。
+欢迎通过 [Issues](https://github.com/wan9h5/D3Forge/issues) 报告问题、讨论图表需求，或提交 Pull Request。
 
-## 技术与结构
+报告问题时，请尽量提供复现步骤、预期与实际行为、浏览器版本，以及可公开的最小数据示例。新增图形应复用配置与源码生成流程，确保预览和导出使用同一份原生 D3 代码。
 
-React 19 + TypeScript + Vite + D3 v7 + Zustand + CodeMirror 6 + Papa Parse。UI 使用可访问的原生表单控件和定制 CSS，当前不需要额外 UI 框架。
+## 许可证
 
-项目先采用单仓库、单应用。后续扩展图表时，在内部逐步分离 `charts`、`core` 和 `builder`；暂不创建多个仓库或发布独立 npm 包。详见 [架构决策](docs/architecture.md)。导出的源码始终只依赖 D3。
-
-```text
-src/model.ts       图表类型、Mock 数据、默认配置、有效性检查
-src/store.ts       Zustand 配置与数据状态
-src/generate.ts    原生 D3 逻辑、数据片段与完整源码生成器
-src/Preview.tsx    sandbox iframe 执行同一份生成源码
-src/CodePanel.tsx  逻辑 / 数据 Tab、只读编辑器、变更高亮、完整复制与下载
-src/Gallery.tsx    分类菜单与图形预览卡片
-src/App.tsx        页面导航与全宽三栏工作台
-tests/            独立执行生成代码与统计正确性测试
-```
-
-预览使用打包在应用中的 D3，不请求外部 CDN。iframe 开启 `allow-scripts`，不允许同源权限；CSP 限制外部请求。导入字符串用 JSON 序列化嵌入源码，Tooltip 使用文本节点；插入 iframe 前转义 script 结束标签。
-
-## 数据边界与当前限制
-
-- CSV 最多 10 MB / 10,000 行，在浏览器本地解析；SVG 点数过多时可能变慢。
-- 火山图要求 `0 < p ≤ 1`；p = 0 不擅自替换为任意小值。
-- 对数坐标只接受正值；常数数据自动扩展坐标域。
-- 修改数据 / 配置会重新生成预览，因此缩放位置随配置变更重置。
-- 只读源码，尚无源码反向同步、图片导出、React / Vue 组件生成或后端。
-- 源码高亮提示新增 / 修改行；删除功能块后，该块被移除，不保留删除行。
-- 图例当前为单行，类别过多时可能超出画布；推荐少量分组。
-- 当前不保存跨刷新配置，刷新后恢复默认 Mock 数据。
-
-## 后续顺序
-
-1. 真实浏览器交互回归与性能优化。
-2. 扩展 Bar、Line、Violin、Manhattan，并复用现有控件和源码片段。
-3. 根据实际使用反馈完善字段提示、数据过滤和代码片段组合。
-
-继续坚持：用户是在用 UI 帮自己写 D3.js，不需要学习平台自创的图表 API。
-
-## License
-
-MIT
+本项目采用 [MIT License](LICENSE)。

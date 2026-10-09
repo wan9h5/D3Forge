@@ -11,7 +11,7 @@ let root: Root;
 beforeEach(() => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
-  window.history.replaceState(null, '', '/');
+  window.history.replaceState(null, '', '/#/gallery');
   useBuilder.getState().selectChart('scatter');
   document.body.innerHTML = '<div id="root"></div>';
   root = createRoot(document.getElementById('root')!);
@@ -46,8 +46,8 @@ describe('chart library navigation', () => {
     expect(document.querySelector('[aria-label="D3 源码"]')).not.toBeNull();
     expect(document.querySelector('.chart-picker')).toBeNull();
     expect(useBuilder.getState().data[0]).toHaveProperty('pvalue');
-    expect(document.querySelector('.breadcrumbs a')?.getAttribute('href')).toBe('#/');
-    navigate('#/');
+    expect(document.querySelector('.breadcrumbs a')?.getAttribute('href')).toBe('#/gallery');
+    navigate('#/gallery');
     expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
     expect(document.querySelector('.builder')).toBeNull();
   });
@@ -56,7 +56,7 @@ describe('chart library navigation', () => {
     render();
     expect(document.querySelector('.workspace-title h1')?.textContent).toContain('箱线图');
     act(() => useBuilder.getState().setConfig({ radius: 9 }));
-    navigate('#/');
+    navigate('#/gallery');
     navigate('#/charts/box');
     expect(useBuilder.getState().config.radius).toBe(9);
     navigate('#/charts/scatter');
@@ -67,5 +67,35 @@ describe('chart library navigation', () => {
     window.history.replaceState(null, '', '#/charts/unknown');
     render();
     expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
+  });
+});
+
+describe('product home and guide', () => {
+  it('opens a product home at the root with working entry points and repository links', () => {
+    window.history.replaceState(null, '', '#/');
+    render();
+    expect(document.getElementById('home-title')?.textContent).toContain('带走 D3 源码');
+    expect(document.querySelector('.hero-actions a')?.getAttribute('href')).toBe('#/gallery');
+    expect(document.querySelector('.hero-actions a:nth-child(2)')?.getAttribute('href')).toBe('#/guide');
+    expect(document.querySelector('.site-footer .github-link')?.getAttribute('href')).toBe('https://github.com/wan9h5/D3Forge');
+    expect(document.querySelector('.site-footer svg')).not.toBeNull();
+    expect(document.querySelector('.builder')).toBeNull();
+    navigate('#/gallery');
+    expect(document.querySelectorAll('.chart-card')).toHaveLength(3);
+    expect(document.querySelector('.header-nav [aria-current="page"]')?.textContent).toBe('图形库');
+  });
+  it('opens the guide with privacy, data and export information', () => {
+    window.history.replaceState(null, '', '#/guide');
+    render();
+    expect(document.querySelector('.guide-main')).not.toBeNull();
+    expect(document.getElementById('usage-notes')?.textContent).toBe('数据与使用须知');
+    expect(document.querySelector('.guide-notes')?.textContent).toContain('不上传文件');
+    expect(document.querySelector('.guide-notes')?.textContent).toContain('不会跨刷新保存');
+    expect(document.querySelector('.guide-steps')?.textContent).toContain('复制完整代码');
+    navigate('#/charts/scatter');
+    expect(document.querySelector('.builder')).not.toBeNull();
+    expect(useBuilder.getState().config.color).toBe('#197f8a');
+    navigate('#/');
+    expect(document.getElementById('home-title')).not.toBeNull();
   });
 });

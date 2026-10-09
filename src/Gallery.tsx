@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { charts, defaults, mockData, type ChartType } from './model';
 import { generateCode } from './generate';
 import { Preview } from './Preview';
+import { SiteFooter } from './SiteFooter';
 
 const categories = [
   { id: 'all', label: '全部图形', icon: '▦', description: '浏览所有可用图形，选择一个开始绘制。' },
@@ -45,7 +46,7 @@ export function Gallery() {
           </a>)}
         </div>
       </section>
-      <footer className="footer">D3Forge<span>可视化配置 · 实时预览 · 原生源码</span></footer>
+      <SiteFooter/>
     </main>
   </div>;
 }

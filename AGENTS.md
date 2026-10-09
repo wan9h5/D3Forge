@@ -1,7 +1,8 @@
 # D3Forge development rules
 
 - Preserve the confirmed product: visual controls generate clean native D3 v7 code.
-- Use a separate chart-library home with a category sidebar and chart cards.
+- Keep separate product-home, chart-library and quick-start pages; the library has a category sidebar and chart cards.
+- Use a light gray/white interface with blue accents; keep chart colors independent of the interface theme.
 - Keep detail pages full-width with three desktop columns: configuration, preview, read-only source; scroll each independently.
 - Default the source panel to D3 logic; show mock/imported data in a separate tab. Copy and download always include both.
 - Format generated D3 chains across lines and enable editor line wrapping.

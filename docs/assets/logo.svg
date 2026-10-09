@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">D3Forge logo</title>
+  <defs>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#172a44" flood-opacity=".1"/>
+    </filter>
+  </defs>
+  <rect x="6" y="5" width="52" height="52" rx="13" fill="white" stroke="#e2e7ef" filter="url(#shadow)"/>
+  <g transform="translate(10 9)">
+    <path d="M10 10a12 12 0 0 1 0 24V10Z" fill="#356ae6"/>
+    <path d="m34 14-8 8 8 8" stroke="#17202d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
