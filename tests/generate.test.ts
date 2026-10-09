@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest';
 import * as d3 from 'd3';
-import { generateCode, executableSource } from '../src/generate';
+import { generateCode, generateCodeParts, executableSource } from '../src/generate';
 import { defaults, mockData, validateRows, type ChartType, type Config, type Row } from '../src/model';
 import { useBuilder } from '../src/store';
 beforeEach(()=>{
@@ -64,5 +64,32 @@ describe('exported native D3 code',()=>{
     useBuilder.getState().selectChart('scatter');useBuilder.getState().setConfig({radius:8});
     useBuilder.getState().loadData([{id:'S1',foo:1,bar:2}],'custom.csv');
     const state=useBuilder.getState();expect(state.config).toMatchObject({radius:8,xField:'foo',yField:'bar'});expect(state.dataName).toBe('custom.csv');
+  });
+});
+
+describe('logic/data composition and readable source', () => {
+  for (const type of ['scatter', 'volcano', 'box'] as const) {
+    it(`${type}: separate tabs compose to exactly the preview/export source`, () => {
+      const parts = generateCodeParts(type, mockData(type), defaults(type));
+      expect(parts.logic).toContain('function renderChart');
+      expect(parts.logic).not.toContain('const data =');
+      expect(parts.data).not.toContain('function renderChart');
+      const rows = new Function(parts.data + '\nreturn data;')();
+      expect(rows).toEqual(mockData(type));
+      expect(parts.source).toBe(generateCode(type, mockData(type), defaults(type)));
+      expect(parts.source).toBe(parts.logic.replace(
+        'import * as d3 from "d3";',
+        'import * as d3 from "d3";\n\n' + parts.data
+      ));
+      expect(parts.logic).not.toMatch(/\)\.(?:attr|style|data|join|nice|range|padding)\(/);
+    });
+  }
+  it('does not format or split imported strings as source code', () => {
+    const value = 'x).attr("r", 99)\n// Call renderChart(container, data)\n</script>';
+    const rows = [{ expressionA: 1, expressionB: 2, sample: value, group: value }];
+    const parts = generateCodeParts('scatter', rows, defaults('scatter'));
+    expect(new Function(parts.data + '\nreturn data;')()).toEqual(rows);
+    new Function('d3', 'document', executableSource(parts.source))(d3, document);
+    expect(document.querySelector('svg')).not.toBeNull();
   });
 });
