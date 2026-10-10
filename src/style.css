@@ -203,3 +203,22 @@
 .demo-source .demo-token-function{color:#967019}
 .demo-source .demo-token-name{color:#3976a5}
 .demo-source .demo-token-operator{color:#7d8ba1}
+
+/* Every page scrolls inside its content area below the fixed header. */
+.app:not(.builder-app){height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.app:not(.builder-app)>.header{flex-shrink:0}
+.app:not(.builder-app)>:not(.header){flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+
+/* Chrome 默认观感的滚动条，仅去掉两端的三角方向按钮。 */
+::-webkit-scrollbar{width:15px;height:15px}
+::-webkit-scrollbar-track{background:#f1f1f1}
+::-webkit-scrollbar-thumb{background:#c1c1c1}
+::-webkit-scrollbar-thumb:hover{background:#a8a8a8}
+::-webkit-scrollbar-button{display:none;width:0;height:0}
+::-webkit-scrollbar-corner{background:#f1f1f1}
+
+/* Center page content with padding so the scrollbar hugs the window edge. */
+.gallery-layout{margin:0}
+.home-main{max-width:none;margin:0;padding:0 max(40px,calc((100% - 1360px)/2))}
+.guide-main{max-width:none;margin:0;padding:36px max(40px,calc((100% - 900px)/2)) 0}
+@media(max-width:760px){.home-main{padding:0 22px}.guide-main{padding:28px 20px 0}}

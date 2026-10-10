@@ -26,7 +26,6 @@ export function Gallery() {
 
   return <div className="gallery-layout">
     <aside className="gallery-sidebar">
-      <div className="gallery-sidebar-title"><span className="eyebrow">CHART LIBRARY</span><h2>图形库</h2></div>
       <nav className="category-menu" aria-label="图形分类">
         {categories.map(item => <button key={item.id} aria-current={category === item.id ? 'page' : undefined} onClick={() => setCategory(item.id)}>
           <span className="category-icon" aria-hidden="true">{item.icon}</span><span>{item.label}</span>
@@ -36,13 +35,11 @@ export function Gallery() {
       <p className="gallery-sidebar-note">选择图形<br/>调整配置<br/>带走 D3.js 源码</p>
     </aside>
     <main className="gallery-main">
-      <div className="gallery-intro"><span className="eyebrow">EXPLORE & CREATE</span><h1>从一个图形开始。</h1><p>选择适合数据的图形，在可视化配置中完成绘制。</p></div>
-      <section aria-labelledby="gallery-category-title">
-        <div className="gallery-section-heading"><div><h2 id="gallery-category-title">{current.label}<span>{visible.length} 个图形</span></h2><p>{current.description}</p></div><span className="gallery-ready"><span aria-hidden="true"/>示例数据已就绪</span></div>
+      <section aria-label={current.label}>
         <div className="chart-grid">
           {visible.map(chart => <a className="chart-card" key={chart.id} href={`#/charts/${chart.id}`} aria-label={`开始绘制${chart.zh}`}>
             <div className="chart-thumbnail" aria-hidden="true" inert><Preview source={thumbnails[chart.id]} width={800} height={440}/></div>
-            <div className="chart-card-content"><span className="chart-category-label">{categories.find(item => item.id === chartCategories[chart.id])!.label}</span><h3>{chart.zh}<span aria-hidden="true">↗</span></h3><span className="chart-english-name">{chart.name}</span><p>{chart.description}</p><div className="chart-card-footer"><span>原生 D3 v7</span><span>开始绘制 <span aria-hidden="true">→</span></span></div></div>
+            <div className="chart-card-content"><span className="chart-category-label">{categories.find(item => item.id === chartCategories[chart.id])!.label}</span><h3>{chart.zh}<span aria-hidden="true">↗</span></h3><span className="chart-english-name">{chart.name}</span><p>{chart.description}</p></div>
           </a>)}
         </div>
       </section>
