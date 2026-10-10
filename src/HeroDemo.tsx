@@ -1,3 +1,4 @@
+import { t, useLocale } from './i18n';
 import { useEffect, useMemo, useState } from 'react';
 import { defaults } from './model';
 import { generateCodeParts } from './generate';
@@ -38,6 +39,7 @@ const demoData = [
 ];
 
 export function HeroDemo() {
+  const locale = useLocale();
   const [config, setConfig] = useState(() => ({ ...defaults('scatter'), xField: 'x', yField: 'y', groupField: '', radius: 12, color: '#356ae6', width: 480, height: 360, xAxis: false, yAxis: false, legend: false, tooltip: false }));
   const [active, setActive] = useState<DemoView>('visual');
 
@@ -46,7 +48,7 @@ export function HeroDemo() {
   const [hidden, setHidden] = useState(document.hidden);
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
   const code = useMemo(() => {
-    const generated = generateCodeParts('scatter', demoData, config);
+    const generated = generateCodeParts('scatter', demoData, config, locale);
     // Keep the illustration and its displayed native D3 snippet in sync.
     // Fix the original scale bounds so moving colored marks cannot shift blue marks.
     const logic = generated.logic
@@ -54,8 +56,8 @@ export function HeroDemo() {
       .replace('.domain(safeDomain(processedData.map(d => d._y), false))', '.domain([2.5, 8])')
       .replace(`.attr("r", ${config.radius})`, `.attr("r", d => d.size * ${config.radius})`)
       .replace(`.attr("fill", "${config.color}")`, '.attr("fill", d => d.color)');
-    return { ...generated, logic, source: generated.source.replace(generated.logic.slice(generated.logic.indexOf('// Call')), logic.slice(logic.indexOf('// Call'))) };
-  }, [config]);
+    return { ...generated, logic, source: generated.source.replace(generated.logic.slice(generated.logic.indexOf('\n')), logic.slice(logic.indexOf('\n'))) };
+  }, [config, locale]);
   const excerpt = code.logic.slice(code.logic.indexOf('  const points =')).split('\n').slice(0, 8).filter(line => !line.includes('opacity')).map(line => line.replace(/^  /, '')).join('\n');
   useEffect(() => {
     const visibility = () => setHidden(document.hidden);
@@ -71,16 +73,16 @@ export function HeroDemo() {
     return () => clearInterval(timer);
   }, [hovered, focused, hidden, reducedMotion]);
 
-  return <div className="hero-demo" aria-label="配置与原生代码演示" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false); }}>
+  return <div className="hero-demo" aria-label={t("配置与原生代码演示")} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false); }}>
     <div className="demo-stage">
-      <div id="demo-visual" className={`demo-card ${active === 'visual' ? 'is-front' : 'is-back'}`} role="group" tabIndex={active === 'visual' ? 0 : -1} onClick={event => { if (!(event.target as Element).closest('input, label, button')) setActive('code'); }} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setActive('code'); } }} aria-label="配置与图形" aria-hidden={active !== 'visual'} inert={active !== 'visual' ? true : undefined}>
-        <div className="hero-workbench-heading"><span className="window-dots" aria-hidden="true"><i/><i/><i/></span><button className="demo-heading-switch" aria-label="查看 D3 源码" onClick={()=>setActive('code')}>图形</button><span className="hero-live">配置 → 图形</span></div>
-        <div className="demo-visual-content"><div className="demo-config"><span className="demo-section-label">配置</span><label>大小<output>{config.radius}</output><input aria-label="演示点半径" type="range" min="8" max="20" value={config.radius} onChange={event => setConfig(current => ({ ...current, radius: +event.target.value }))}/></label><label>透明度<output>{config.opacity}</output><input aria-label="演示透明度" type="range" min="0.2" max="1" step="0.1" value={config.opacity} onChange={event => setConfig(current => ({ ...current, opacity: +event.target.value }))}/></label><label className="demo-grid-label">网格<input aria-label="演示网格" type="checkbox" checked={config.grid} onChange={event => setConfig(current => ({ ...current, grid: event.target.checked }))}/></label><div className="demo-color"><span style={{ background: config.color }}/><span>颜色</span></div></div><div className="demo-chart"><Preview source={code.source} width={config.width} height={config.height}/></div></div>
+      <div id="demo-visual" className={`demo-card ${active === 'visual' ? 'is-front' : 'is-back'}`} role="group" tabIndex={active === 'visual' ? 0 : -1} onClick={event => { if (!(event.target as Element).closest('input, label, button')) setActive('code'); }} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setActive('code'); } }} aria-label={t("配置与图形")} aria-hidden={active !== 'visual'} inert={active !== 'visual' ? true : undefined}>
+        <div className="hero-workbench-heading"><span className="window-dots" aria-hidden="true"><i/><i/><i/></span><button className="demo-heading-switch" aria-label={t("查看 D3 源码")} onClick={()=>setActive('code')}>{t("图形")}</button><span className="hero-live">{t("配置 → 图形")}</span></div>
+        <div className="demo-visual-content"><div className="demo-config"><span className="demo-section-label">{t("配置")}</span><label>{t("大小")}<output>{config.radius}</output><input aria-label={t("演示点半径")} type="range" min="8" max="20" value={config.radius} onChange={event => setConfig(current => ({ ...current, radius: +event.target.value }))}/></label><label>{t("透明度")}<output>{config.opacity}</output><input aria-label={t("演示透明度")} type="range" min="0.2" max="1" step="0.1" value={config.opacity} onChange={event => setConfig(current => ({ ...current, opacity: +event.target.value }))}/></label><label className="demo-grid-label">{t("网格")}<input aria-label={t("演示网格")} type="checkbox" checked={config.grid} onChange={event => setConfig(current => ({ ...current, grid: event.target.checked }))}/></label><div className="demo-color"><span style={{ background: config.color }}/><span>{t("颜色")}</span></div></div><div className="demo-chart"><Preview source={code.source} width={config.width} height={config.height}/></div></div>
 
       </div>
-      <div id="demo-code" className={`demo-card ${active === 'code' ? 'is-front' : 'is-back'}`} role="group" tabIndex={active === 'code' ? 0 : -1} onClick={event => { if (!(event.target as Element).closest('button')) setActive('visual'); }} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setActive('visual'); } }} aria-label="D3 源码" aria-hidden={active !== 'code'} inert={active !== 'code' ? true : undefined}>
-        <div className="hero-workbench-heading"><span className="window-dots" aria-hidden="true"><i/><i/><i/></span><button className="demo-heading-switch" aria-label="查看配置与图形" onClick={()=>setActive('visual')}>源码</button><span className="hero-live">图形 → 代码</span></div>
-        <div className="demo-source"><pre><code>{excerpt.split('\n').map((line, index) => <span key={index} className={`demo-code-line${line.includes('.attr("r",') ? ' is-highlighted' : ''}`} title={line.includes('.attr("r",') ? '点大小配置对应的源码' : undefined}>{highlightedDemoLine(line)}</span>)}</code></pre></div>
+      <div id="demo-code" className={`demo-card ${active === 'code' ? 'is-front' : 'is-back'}`} role="group" tabIndex={active === 'code' ? 0 : -1} onClick={event => { if (!(event.target as Element).closest('button')) setActive('visual'); }} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setActive('visual'); } }} aria-label={t("D3 源码")} aria-hidden={active !== 'code'} inert={active !== 'code' ? true : undefined}>
+        <div className="hero-workbench-heading"><span className="window-dots" aria-hidden="true"><i/><i/><i/></span><button className="demo-heading-switch" aria-label={t("查看配置与图形")} onClick={()=>setActive('visual')}>{t("源码")}</button><span className="hero-live">{t("图形 → 代码")}</span></div>
+        <div className="demo-source"><pre><code>{excerpt.split('\n').map((line, index) => <span key={index} className={`demo-code-line${line.includes('.attr("r",') ? ' is-highlighted' : ''}`} title={line.includes('.attr("r",') ? t("点大小配置对应的源码") : undefined}>{highlightedDemoLine(line)}</span>)}</code></pre></div>
 
       </div>
     </div>

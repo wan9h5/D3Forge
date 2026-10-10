@@ -1,3 +1,4 @@
+import { t, useLocale } from './i18n';
 export const repositoryUrl = 'https://github.com/wan9h5/D3Forge';
 
 export function GitHubIcon() {
@@ -5,8 +6,9 @@ export function GitHubIcon() {
 }
 
 export function SiteFooter({ compact = false }: { compact?: boolean }) {
+  useLocale();
   return <footer className={compact ? 'site-footer compact-footer' : 'site-footer'}>
-    <div><a className="footer-brand" href="#/">D3Forge</a><span className="footer-caption">可视化配置，带走原生 D3.js 代码。</span></div>
-    <nav aria-label="页脚导航"><a href="#/guide">使用说明与须知</a><a href={`${repositoryUrl}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">MIT License</a><a className="github-link" href={repositoryUrl} target="_blank" rel="noopener noreferrer" aria-label="D3Forge GitHub 仓库"><GitHubIcon/><span>GitHub</span></a></nav>
+    <div><a className="footer-brand" href="#/">D3Forge</a><span className="footer-caption">{t("可视化配置，带走原生 D3.js 代码。")}</span></div>
+    <nav aria-label={t("页脚导航")}><a href="#/guide">{t("使用说明与须知")}</a><a href={`${repositoryUrl}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">MIT License</a><a className="github-link" href={repositoryUrl} target="_blank" rel="noopener noreferrer" aria-label={t("D3Forge GitHub 仓库")}><GitHubIcon/><span>GitHub</span></a></nav>
   </footer>;
 }

@@ -82,7 +82,7 @@ async function chartFrame() {
   return evaluate(`(() => {const button=[...document.querySelectorAll(${JSON.stringify(selector)})].find(n=>n.textContent.trim()===${JSON.stringify(text)}); if(!button)throw Error('Missing control');button.click();return true})()`);
 }
 async function setInput(selector, value) {
-  await evaluate(`(() => {const input=document.querySelector(${JSON.stringify(selector)});if(!input)throw Error('Missing input');const proto=input.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(input,${JSON.stringify(value)});input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+  await evaluate(`(() => {let input=document.querySelector(${JSON.stringify(selector)});if(input?.classList.contains('select-trigger'))input=input.closest('.custom-select').querySelector('select');if(!input)throw Error('Missing input');const proto=input.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(input,${JSON.stringify(value)});input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));})()`);
 }
 async function screenshot(name) {
   const { data } = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
@@ -115,15 +115,15 @@ await check('home: compact demo, syntax colors and whole-card switching', async 
   assert(geometry.scroll <= geometry.client + 1, 'No code scrollbar in homepage demo');
   await screenshot('home-desktop');
 });
-const names = { scatter: '散点图', volcano: '火山图', box: '箱线图', bar: '柱状图', line: '折线图', violin: '小提琴图', manhattan: '曼哈顿图' };
+const names = { scatter: '散点图', volcano: '火山图', box: '箱线图', bar: '柱状图', line: '折线图', violin: '小提琴图', manhattan: '曼哈顿图', heatmap: '热力图', histogram: '直方图' };
 for (const [type, name] of Object.entries(names)) await check(`gallery click → ${type}: correct route, SVG, three zones and real preview`, async () => {
   await navigate('#/gallery');
-  await until('document.querySelectorAll(".chart-card").length === 7');
+  await until('document.querySelectorAll(".chart-card").length === 9');
   await evaluate(`document.querySelector('.chart-card[href="#/charts/${type}"]').click()`);
   await until(`document.querySelector('.workspace-title h1')?.textContent.includes(${JSON.stringify(name)})`);
   const context = await chartFrame();
   assert.equal(await evaluate('document.querySelectorAll(".controls,.preview-panel,.source-panel").length'), 3);
-  assert(await evaluate(`(()=>{const labels=[...document.querySelector('svg').lastElementChild.querySelectorAll('g text')].map(n=>n.getBoundingClientRect());return labels.every((r,i)=>i===0||labels[i-1].right+8<=r.left)})()`,context),'Legend entries do not overlap');
+  if(type !== 'heatmap' && type !== 'histogram') assert(await evaluate(`(()=>{const labels=[...document.querySelector('svg').lastElementChild.querySelectorAll('g text')].map(n=>n.getBoundingClientRect());return labels.every((r,i)=>i===0||labels[i-1].right+8<=r.left)})()`,context),'Legend entries do not overlap');
   await evaluate(`(()=>{const node=document.querySelector('.marks rect,.marks circle,.marks path.violin, g[clip-path] circle,g.box');if(node)node.dispatchEvent(new MouseEvent('pointermove',{bubbles:true,clientX:innerWidth-2,clientY:innerHeight-2}));})()`,context);
   assert(await evaluate(`(()=>{const tip=document.querySelector('#chart > div');if(!tip||getComputedStyle(tip).display==='none')return true;const r=tip.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight+1})()`,context),'Tooltip stays inside preview');
   assert.equal(await evaluate('document.querySelector("#source-panel-data").hidden'), true);
@@ -131,7 +131,7 @@ for (const [type, name] of Object.entries(names)) await check(`gallery click →
   assert.equal(await evaluate('document.querySelectorAll(".notice[role=alert]").length'), 0);
   const layout = await evaluate('(()=>{const c=document.querySelector(".controls").getBoundingClientRect(),p=document.querySelector(".preview-panel").getBoundingClientRect(),s=document.querySelector(".source-panel").getBoundingClientRect();return {columns:c.right<=p.left&&p.right<=s.left,overflow:document.documentElement.scrollWidth>innerWidth}})()');
   assert(layout.columns && !layout.overflow, 'Three desktop columns fit the viewport');
-  if (type === 'violin' || type === 'manhattan') await screenshot(type + '-desktop');
+  if (type === 'violin' || type === 'manhattan' || type === 'heatmap' || type === 'histogram') await screenshot(type + '-desktop');
 });
 await check('scatter: radius/source highlight, local scrolling, data tab and Ctrl+F', async () => {
   await navigate('#/charts/scatter');
@@ -188,7 +188,7 @@ await check('CSV: local import, hostile strings, error state, clipboard and comp
   await until('document.querySelector(".controls .notice")?.textContent.includes("CSV 格式错误")');
   assert.equal(await evaluate('document.querySelector(".data-source strong").textContent'),'samples.csv');
   await clickText('.controls button','恢复默认');
-  await until('document.querySelector(".data-source strong").textContent === "Mock data"');
+  await until('document.querySelector(".data-source strong").textContent === "确定性示例数据"');
 });
 await check('CSV limits: empty, over 10 MB, over 10000 rows and exactly 10000 accepted',async()=>{
   await navigate('#/charts/scatter');await chartFrame();
@@ -199,7 +199,7 @@ await check('CSV limits: empty, over 10 MB, over 10000 rows and exactly 10000 ac
   await until('document.querySelector(".controls .notice")?.textContent.includes("10 MB")');
   await upload('x,y\n'+Array.from({length:10001},(_,i)=>`${i+1},${i+2}`).join('\n'),'over-rows.csv');
   await until('document.querySelector(".controls .notice")?.textContent.includes("10,000")');
-  assert.equal(await evaluate('document.querySelector(".data-source strong").textContent'),'Mock data');
+  assert.equal(await evaluate('document.querySelector(".data-source strong").textContent'),'确定性示例数据');
   await upload('x,y\n'+Array.from({length:10000},(_,i)=>`${i+1},${i+2}`).join('\n'),'limit-10000.csv');
   await until('document.querySelector(".data-source strong").textContent==="limit-10000.csv"');
   const context=await chartFrame();
@@ -211,6 +211,25 @@ await check('1440px desktop: all three columns fit',async()=>{
   await navigate('#/charts/manhattan');await chartFrame();
   assert(await evaluate('(()=>{const n=[...document.querySelectorAll(".controls,.preview-panel,.source-panel")].map(n=>n.getBoundingClientRect());return n[0].right<=n[1].left&&n[1].right<=n[2].left&&document.documentElement.scrollWidth<=innerWidth})()'));
   await screenshot('manhattan-1440');
+});
+await check('advanced options: controls update source and preview, preserve page and support three languages',async()=>{
+  await navigate('#/charts/scatter');await chartFrame();
+  assert.equal(await evaluate('document.querySelectorAll(".advanced-group[open]").length'),0);
+  const top=await evaluate('window.scrollY');
+  await evaluate(`(()=>{const g=[...document.querySelectorAll('.advanced-group')].find(n=>n.querySelector('summary').textContent.includes('图形专属样式'));g.querySelector('summary').click();const input=g.querySelector('input[type=checkbox]');input.focus();input.click()})()`);
+  await setInput('#advanced-pointShape','diamond');
+  await until('!!document.querySelector(".code-changed")');
+  const context=await chartFrame();
+  assert(await evaluate('document.querySelectorAll("path.point").length>0',context));
+  assert.equal(await evaluate('window.scrollY'),top);
+  assert(await evaluate('document.activeElement.type==="checkbox"'));
+  for(const [name,title] of [['English','Advanced settings'],['日本語','詳細設定'],['中文','高级配置']]) {
+    await evaluate('document.querySelector(".language-trigger").click()');
+    await clickText('.language-menu button',name);
+    await until('document.querySelector(".advanced-settings h3").textContent==='+JSON.stringify(title));
+    assert.equal(await evaluate('document.querySelector("#advanced-pointShape").value'),'diamond');
+  }
+  await screenshot('advanced-scatter');
 });
 await check('mobile: home/gallery/detail readable with no document overflow', async () => {
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});

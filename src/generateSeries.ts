@@ -1,17 +1,20 @@
+import { marginSource, axisOptions, scaleOverrides, appearanceSource } from './generatePresentation';
+import { codeComment } from './codeComments';
+import type { Locale } from './i18n';
 import type { Config, Row } from './model';
 import type { CodeParts } from './generate';
 
 const js = (value: unknown) => JSON.stringify(value);
 
-export function generateSeriesCode(type: 'bar' | 'line', data: Row[], c: Config): CodeParts {
+export function generateSeriesCode(type: 'bar' | 'line', data: Row[], c: Config, locale: Locale = 'en'): CodeParts {
   const bar = type === 'bar';
   const horizontal = bar && c.horizontal;
   const stacked = bar && c.barLayout === 'stacked';
   const importLine = 'import * as d3 from "d3";';
-  const dataSource = `// Replace this array with your own data. Keep the mapped field names.\nconst data = ${JSON.stringify(data, null, 2)};\n`;
+  const dataSource = `// ${codeComment("Replace this array with your own data. Keep the mapped field names.", locale)}\nconst data = ${JSON.stringify(data, null, 2)};\n`;
   const logic = `${importLine}
 
-// Call renderChart(container, data) in any Web project with D3 v7 installed.
+// ${codeComment("Call renderChart(container, data) in any Web project with D3 v7 installed.", locale)}
 function renderChart(container, data) {
   d3.select(container)
     .selectAll("*")
@@ -19,7 +22,7 @@ function renderChart(container, data) {
 
   const width = ${c.width};
   const height = ${c.height};
-  const margin = { top: ${c.legend && c.groupField ? 56 : 28}, right: 32, bottom: 64, left: 80 };
+  const margin = ${marginSource(type,data,c,{top:c.legend&&c.groupField?56:28,right:32,bottom:64,left:80})};
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
   const root = d3.select(container)
@@ -30,7 +33,7 @@ function renderChart(container, data) {
     .attr("aria-label", ${js(bar ? 'Bar chart' : 'Line chart')})
     .style("display", "block")
     .style("width", "100%")
-    .style("background", "white")
+    .style("background", ${js(c.canvasStyle?c.background:'white')})
     .style("font", "12px system-ui");
   const g = svg.append("g")
     .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
@@ -61,7 +64,7 @@ function renderChart(container, data) {
     .domain(seriesNames)
     .range([${js(c.color)}, "#e6ad43", "#48a58a", "#8b79bd", "#d87867"]);
 ${bar ? `
-  // Sum repeated category/series pairs. Missing pairs contribute zero.
+  // ${codeComment("Sum repeated category/series pairs. Missing pairs contribute zero.", locale)}
   const categories = Array.from(new Set(processedData.map(d => d._x)));
   const totals = d3.rollup(processedData,
     rows => d3.sum(rows, d => d._y),
@@ -72,7 +75,7 @@ ${bar ? `
     category,
     values: totals.get(category)
   }));
-${stacked ? `  // Diverging stacks support positive and negative values independently.
+${stacked ? `  // ${codeComment("Diverging stacks support positive and negative values independently.", locale)}
   const stacks = d3.stack()
     .keys(seriesNames)
     .value((row, series) => row.values.get(series) ?? 0)
@@ -103,7 +106,7 @@ ${stacked ? `  // Diverging stacks support positive and negative values independ
   const seriesScale = d3.scaleBand()
     .domain(seriesNames)
     .range([0, categoryScale.bandwidth()])
-    .padding(0.08);
+    .padding(${c.chartStyle?c.seriesPadding:.08});
   const valueScale = d3.scaleLinear()
     .domain(low === high ? [-1, 1] : [low, high])
     .nice()
@@ -130,18 +133,18 @@ ${c.area && c.yScale !== 'log' ? `  yDomain[0] = Math.min(0, yDomain[0]);
     .domain(yDomain)
     .nice()
     .range([innerH, 0]);
-  // Stable numeric sorting keeps each series in X order.
+  // ${codeComment("Stable numeric sorting keeps each series in X order.", locale)}
   const series = d3.groups(processedData, d => d._series)
     .map(([name, rows]) => ({
       name,
       rows: rows.slice().sort((a, b) => d3.ascending(a._x, b._x))
     }));
 `}
-${c.grid ? `  g.append("g")
+${scaleOverrides(type,c,locale)}${c.grid ? `  g.append("g")
     .attr("class", "grid")
     .attr("transform", ${horizontal ? '"translate(0, " + innerH + ")"' : '"translate(0, 0)"'})
     .call(d3.${horizontal ? 'axisBottom(x)' : 'axisLeft(y)'}
-      .ticks(6)
+      .ticks(${c.axisStyle?c.yTickCount:6})
       .tickSize(-${horizontal ? 'innerH' : 'innerW'})
       .tickFormat(() => "")
     )
@@ -153,16 +156,18 @@ ${c.grid ? `  g.append("g")
     );
 ` : ''}${c.xAxis ? `  const xAxis = g.append("g")
     .attr("transform", "translate(0, " + innerH + ")")
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(x)${axisOptions(type,c,'x')});
   svg.append("text")
+    .attr("class", "axis-title axis-title-x")
     .attr("x", margin.left + innerW / 2)
     .attr("y", height - 14)
     .attr("text-anchor", "middle")
     .attr("fill", "#465568")
     .text(${js(horizontal ? c.yField : c.xField)});
 ` : ''}${c.yAxis ? `  const yAxis = g.append("g")
-    .call(d3.axisLeft(y));
+    .call(d3.axisLeft(y)${axisOptions(type,c,'y')});
   svg.append("text")
+    .attr("class", "axis-title axis-title-y")
     .attr("transform", "rotate(-90)")
     .attr("x", -(margin.top + innerH / 2))
     .attr("y", 18)
@@ -183,7 +188,8 @@ ${bar ? `  const categoryPosition = d => categoryScale(d.category)${stacked ? ''
     .attr("width", ${horizontal ? 'd => Math.abs(valueScale(d.high) - valueScale(d.low))' : 'barSize'})
     .attr("height", ${horizontal ? 'barSize' : 'd => Math.abs(valueScale(d.high) - valueScale(d.low))'})
     .attr("opacity", ${c.opacity})
-    .attr("fill", d => color(d.series));
+    .attr("fill", d => color(d.series))${c.chartStyle?`
+    .attr("rx", ${c.cornerRadius})`:''};
 ${c.labels ? `  marks.selectAll("text")
     .data(bars)
     .join("text")
@@ -193,28 +199,29 @@ ${c.labels ? `  marks.selectAll("text")
     .attr("dominant-baseline", "middle")
     .attr("fill", "#172b3b")
     .attr("pointer-events", "none")
-    .text(d => d3.format("~g")(d.value));
+    .text(d => d3.format(${js(c.labelStyle?c.valueFormat:'~g')})(d.value));
 ` : ''}` : `  const line = d3.line()
     .x(d => x(d._x))
     .y(d => y(d._y))
-    .curve(d3.${c.smooth ? 'curveMonotoneX' : 'curveLinear'});
+    .curve(d3.${c.chartStyle?({linear:'curveLinear',monotone:'curveMonotoneX',step:'curveStep',basis:'curveBasis'})[c.curveType]:c.smooth ? 'curveMonotoneX' : 'curveLinear'});
 ${c.area ? `  const area = d3.area()
     .x(d => x(d._x))
     .y0(y(${c.yScale === 'log' ? 'y.domain()[0]' : '0'}))
     .y1(d => y(d._y))
-    .curve(d3.${c.smooth ? 'curveMonotoneX' : 'curveLinear'});
+    .curve(d3.${c.chartStyle?({linear:'curveLinear',monotone:'curveMonotoneX',step:'curveStep',basis:'curveBasis'})[c.curveType]:c.smooth ? 'curveMonotoneX' : 'curveLinear'});
   marks.selectAll("path.area")
     .data(series)
     .join("path")
     .attr("class", "area")
     .attr("d", d => area(d.rows))
     .attr("fill", d => color(d.name))
-    .attr("opacity", ${+(c.opacity * .2).toFixed(3)})
+    .attr("opacity", ${+(c.opacity * (c.chartStyle?c.areaOpacity:.2)).toFixed(3)})
     .attr("pointer-events", "none");
 ` : ''}  const paths = marks.selectAll("path.line")
     .data(series)
     .join("path")
-    .attr("class", "line")
+    .attr("class", "line")${c.chartStyle?`
+    .attr("stroke-dasharray", ${js(c.lineDash)})`:''}
     .attr("d", d => line(d.rows))
     .attr("fill", "none")
     .attr("stroke", d => color(d.name))
@@ -240,7 +247,7 @@ ${c.showPoints ? `  const points = marks.selectAll("circle")
     .attr("pointer-events", "none")
     .text(d => String(d[${js(c.labelField)}] ?? ""));
 ` : ''}`}
-${c.tooltip ? `  // Use textContent through D3 .text() for imported strings.
+${c.tooltip ? `  // ${codeComment("Use textContent through D3 .text() for imported strings.", locale)}
   const tooltip = root.append("div")
     .style("position", "absolute")
     .style("display", "none")
@@ -298,7 +305,7 @@ ${c.legend && c.groupField ? `  const legend = svg.append("g")
     );
     legendX += Math.max(text.node().getComputedTextLength(), estimatedWidth) + 32;
   }
-` : ''}  return svg.node();
+` : ''}${appearanceSource(type,c,locale)}  return svg.node();
 }
 
 const container = document.querySelector("#chart")

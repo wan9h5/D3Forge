@@ -194,6 +194,13 @@ for (const {id:type} of charts) describe(`${type}: first-render legend and sourc
   it('spaces labels even when SVG text is not yet measurable', () => {
     Object.defineProperty(SVGElement.prototype,'getComputedTextLength',{configurable:true,value:()=>0});
     const {svg}=run(type);
+    if(type==='histogram') { expect(svg.querySelector('.legend')).toBeNull(); return; }
+    if(type==='heatmap') {
+      const rectangles=[...svg.querySelectorAll('.legend > rect')];
+      expect(rectangles).toHaveLength(60);
+      expect(rectangles.every((node,index)=>index===0 || +node.getAttribute('x')! > +rectangles[index-1].getAttribute('x')!)).toBe(true);
+      return;
+    }
     const items=[...svg.lastElementChild!.querySelectorAll(':scope > g')];
     let previousRight=-Infinity;
     for(const item of items){
@@ -212,4 +219,149 @@ it('Manhattan places all numeric chromosomes before X/Y/MT and contigs', () => {
   const {svg}=run('manhattan',['contig2','X','30','2','MT','Y','contig1'].map(chromosome=>({chromosome,position:1,pvalue:.01})),{chromosomeGap:0});
   const points=values<{_chromosome:string;_x:number}>(svg,'.marks circle').sort((a,b)=>a._x-b._x);
   expect(points.map(d=>d._chromosome)).toEqual(['2','30','X','Y','MT','CONTIG1','CONTIG2']);
+});
+
+// Independent expected values for the new statistical transformations.
+describe('heatmap aggregation and color expectations', () => {
+  const rows = [
+    {sample:'A',gene:'g1',value:2},{sample:'A',gene:'g1',value:6},
+    {sample:'B',gene:'g1',value:-3},{sample:'A',gene:'g2',value:0},
+  ];
+  for(const heatmapAggregate of ['mean','sum'] as const) it(`aggregates repeated coordinates by ${heatmapAggregate} and leaves missing cells blank`,()=>{
+    const {svg}=run('heatmap',rows,{heatmapAggregate});
+    const cells=values<{column:string;row:string;value:number;count:number}>(svg,'.cell');
+    expect(cells).toHaveLength(3);
+    expect(cells.find(d=>d.column==='A'&&d.row==='g1')).toMatchObject({value:heatmapAggregate==='mean'?4:8,count:2});
+    expect(cells.find(d=>d.column==='B'&&d.row==='g2')).toBeUndefined();
+    expect(cells.find(d=>d.row==='g2')?.value).toBe(0);
+  });
+  it('filters missing categories and invalid values consistently with the UI count',()=>{
+    const input=[...rows,{sample:'',gene:'g1',value:2},{sample:'A',gene:' ',value:2},{sample:'A',gene:'g1',value:null}];
+    const {svg,config}=run('heatmap',input);
+    expect(validateRows('heatmap',input,config)).toHaveLength(4);
+    expect(svg.querySelectorAll('.cell')).toHaveLength(3);
+  });
+  for(const heatmapPalette of ['sequential','diverging'] as const) it(`handles all-zero matrices with ${heatmapPalette} colors`,()=>{
+    const {svg}=run('heatmap',[{sample:'A',gene:'g1',value:0}],{heatmapPalette,labels:true,cellGap:8,cellRadius:10});
+    expect(svg.querySelector('.cell')?.getAttribute('fill')).toMatch(/^rgb/);
+    expect(svg.querySelector('.cell-label')?.textContent).toBe('0');
+  });
+  it('uses zero as the neutral color and retains aggregated tooltip values',()=>{
+    const {svg}=run('heatmap',rows,{heatmapPalette:'diverging',tooltip:true});
+    const cell=[...svg.querySelectorAll('.cell')].find(node=>(d3.select(node).datum() as {value:number}).value===0)!;
+    expect(cell.getAttribute('fill')).toBe('rgb(247, 249, 252)');
+    svg.querySelector('.cell')!.dispatchEvent(new MouseEvent('pointermove',{bubbles:true,clientX:1,clientY:1}));
+    expect(document.querySelector('#chart > div')?.textContent).toContain('value: 4\nObservations: 2');
+  });
+  it('maps local long-format CSV fields without losing controls',()=>{
+    useBuilder.getState().selectChart('heatmap');
+    useBuilder.getState().setConfig({cellGap:5,heatmapAggregate:'sum'});
+    useBuilder.getState().loadData([{column:'A',row:'g1',score:4}],'matrix.csv');
+    expect(useBuilder.getState().config).toMatchObject({xField:'column',yField:'row',valueField:'score',cellGap:5,heatmapAggregate:'sum'});
+  });
+});
+
+describe('histogram independent bin and density expectations',()=>{
+  const rows=[0,1,2,3,4].map(value=>({value}));
+  for(const histogramMode of ['count','density'] as const) it(`matches known equal-width bins in ${histogramMode} mode`,()=>{
+    const {svg}=run('histogram',rows,{binCount:2,histogramMode});
+    const bins=values<{x0:number;x1:number;count:number;density:number;value:number}>(svg,'.bin');
+    expect(bins).toMatchObject([{x0:0,x1:2,count:2,density:.2},{x0:2,x1:4,count:3,density:.3}]);
+    expect(bins.map(bin=>bin.value)).toEqual(histogramMode==='count'?[2,3]:[.2,.3]);
+    expect(bins.reduce((sum,bin)=>sum+bin.density*(bin.x1-bin.x0),0)).toBeCloseTo(1,12);
+  });
+  it('places negative values, internal boundaries and the maximum correctly',()=>{
+    const {svg}=run('histogram',[-4,-2,0,2,4].map(value=>({value})),{binCount:4});
+    expect(values<{count:number}>(svg,'.bin').map(bin=>bin.count)).toEqual([1,1,1,2]);
+  });
+  for(const input of [[0],[5,5,5],[-3,-3]]) it(`renders finite nonzero-width bins for constant data ${input}`,()=>{
+    const {svg}=run('histogram',input.map(value=>({value})),{binCount:4,histogramMode:'density',labels:true});
+    const bins=values<{x0:number;x1:number;count:number;density:number}>(svg,'.bin');
+    expect(bins.reduce((sum,bin)=>sum+bin.count,0)).toBe(input.length);
+    expect(bins.every(bin=>bin.x1>bin.x0)).toBe(true);
+    expect(bins.reduce((sum,bin)=>sum+bin.density*(bin.x1-bin.x0),0)).toBeCloseTo(1,12);
+  });
+  it('skips blank and nonfinite values without requiring a second numeric field',()=>{
+    const input=[...rows,{value:null},{value:''},{value:'invalid'},{value:Infinity}];
+    const {svg,config}=run('histogram',input,{yField:'missing'});
+    expect(validateRows('histogram',input,config)).toHaveLength(5);
+    expect(values<{count:number}>(svg,'.bin').reduce((sum,bin)=>sum+bin.count,0)).toBe(5);
+  });
+  it('maps one-column CSV and preserves bin settings',()=>{
+    useBuilder.getState().selectChart('histogram');
+    useBuilder.getState().setConfig({binCount:6,histogramMode:'density'});
+    useBuilder.getState().loadData([{measurement:1},{measurement:2}],'values.csv');
+    expect(useBuilder.getState().config).toMatchObject({xField:'measurement',binCount:6,histogramMode:'density'});
+  });
+});
+
+describe('advanced options execute the exported source', () => {
+  const advanced: Partial<Config> = {
+    axisStyle:true,xTitle:'Custom X',yTitle:'Custom Y',tickFontSize:17,titleFontSize:19,xTickAngle:-35,xTickFormat:'.2f',yTickFormat:'.2f',
+    canvasStyle:true,background:'#f8f9ff',marginTop:80,marginBottom:90,
+    gridStyle:true,grid:true,gridColor:'#123456',gridWidth:2,gridDash:'2,3',
+    labelStyle:true,labels:true,labelFontSize:18,labelColor:'#234567',valueFormat:'.2f',
+    legendStyle:true,legend:true,legendPosition:'bottom',legendDirection:'column',legendMaxItems:2,
+    markBorder:true,borderColor:'#345678',borderWidth:3,chartStyle:true,
+    pointShape:'diamond',scatterSizeEnabled:true,sizeField:'expressionA',
+    cornerRadius:6,curveType:'step',lineDash:'6,4',area:true,showPoints:true,
+    violinSamples:41,violinWidth:.3,jitterWidth:.2,
+    rowOrder:'descending',columnOrder:'ascending',colorDomainEnabled:true,colorMin:-2,colorMax:4,missingColorEnabled:true,
+    referenceXEnabled:true,referenceX:10,referenceYEnabled:true,referenceY:2,
+  };
+  for(const {id:type} of charts) {
+    it(`${type}: enabled settings are standalone and keep all exported data`,()=>{
+      const {svg,parts}=run(type,undefined,advanced);
+      expect(svg.style.background).toBe('rgb(248, 249, 255)');
+      expect(new Function(parts.data+'\nreturn data;')()).toEqual(mockData(type));
+      expect(svg.querySelector('.axis-title-x')?.textContent).toBe('Custom X');
+      expect(svg.querySelector('.axis-title-y')?.textContent).toBe('Custom Y');
+      expect(parts.source).not.toMatch(/\)\.(attr|style|data|join|nice|range|padding|remove)\(/);
+    });
+    it(`${type}: advanced settings tolerate disabled axes, grid, labels and legend`,()=>{
+      run(type,undefined,{...advanced,xAxis:false,yAxis:false,grid:false,labels:false,legend:false});
+    });
+  }
+  for(const pointShape of ['circle','square','triangle','diamond','star','cross'] as const) {
+    it(`scatter supports ${pointShape} with size mapping`,()=>{
+      const rows=[{x:1,y:3,size:0},{x:2,y:2,size:4},{x:3,y:1,size:16}];
+      const {svg}=run('scatter',rows,{chartStyle:true,pointShape,scatterSizeEnabled:true,xField:'x',yField:'y',sizeField:'size',sizeMin:2,sizeMax:10,groupField:''});
+      if(pointShape==='circle')expect([...svg.querySelectorAll('circle')].map(n=>+n.getAttribute('r')!)).toEqual([2,6,10]);
+      else expect(svg.querySelectorAll('path.point')).toHaveLength(3);
+    });
+  }
+  it('explicit display limits clip marks without filtering exported rows',()=>{
+    const rows=[{x:1,y:1},{x:10,y:10},{x:100,y:100}];
+    const {svg,parts}=run('scatter',rows,{xField:'x',yField:'y',groupField:'',xDomainEnabled:true,xMin:5,xMax:20,yDomainEnabled:true,yMin:5,yMax:20});
+    expect(svg.querySelectorAll('circle')).toHaveLength(3);
+    expect(parts.logic).toContain('x.domain([5, 20])');
+    expect(svg.querySelector('clipPath rect')?.getAttribute('width')).not.toBeNull();
+  });
+  it('range-filtered histogram has independently expected counts and unit density area',()=>{
+    const rows=[-10,0,1,2,3,4,20].map(value=>({value}));
+    const {svg,config}=run('histogram',rows,{histogramRangeEnabled:true,histogramMin:0,histogramMax:4,binCount:2,histogramMode:'density',chartStyle:true,binGap:4});
+    const bins=values<{x0:number;x1:number;count:number;density:number}>(svg,'.bin');
+    expect(bins).toMatchObject([{x0:0,x1:2,count:2,density:.2},{x0:2,x1:4,count:3,density:.3}]);
+    expect(bins.reduce((sum,b)=>sum+b.density*(b.x1-b.x0),0)).toBeCloseTo(1,12);
+    expect(validateRows('histogram',rows,config)).toHaveLength(5);
+  });
+  it('violin resolution changes density samples but preserves expected quartiles',()=>{
+    const {svg}=run('violin',[1,2,3,4,5,100].map(value=>({group:'A',value})),{chartStyle:true,violinSamples:41});
+    const summary=values<{density:number[][];q1:number;median:number;q3:number}>(svg,'path.violin')[0];
+    expect(summary.density).toHaveLength(41);
+    expect(summary).toMatchObject({q1:2.25,median:3.5,q3:4.75});
+  });
+  it('log scale changes keep enabled domains valid',()=>{
+    useBuilder.getState().selectChart('scatter');
+    useBuilder.getState().setConfig({xDomainEnabled:true,xMin:0,xMax:10,xScale:'log'});
+    expect(useBuilder.getState().config.xMin).toBeGreaterThan(0);
+    useBuilder.getState().setConfig({xMin:-5,xMax:-1});
+    expect(useBuilder.getState().config.xDomainEnabled).toBe(false);
+  });
+  it('CSV imports remap a stale size field while preserving styling',()=>{
+    useBuilder.getState().selectChart('scatter');
+    useBuilder.getState().setConfig({scatterSizeEnabled:true,sizeField:'old',chartStyle:true});
+    useBuilder.getState().loadData([{x:1,y:2,size:3}],'data.csv');
+    expect(useBuilder.getState().config).toMatchObject({scatterSizeEnabled:true,sizeField:'x',chartStyle:true});
+  });
 });

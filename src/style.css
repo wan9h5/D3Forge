@@ -225,3 +225,89 @@
 .home-main{max-width:none;margin:0;padding:0 max(40px,calc((100% - 1360px)/2))}
 .guide-main{max-width:none;margin:0;padding:36px max(40px,calc((100% - 900px)/2)) 0}
 @media(max-width:760px){.home-main{padding:0 22px}.guide-main{padding:28px 20px 0}}
+
+/* Compact language control, shared by home, gallery and chart workbench. */
+.language-switch{position:relative;display:inline-flex;flex-shrink:0}
+
+html[lang=en] .hero-copy h1{font-size:clamp(36px,4.3vw,62px);letter-spacing:-1.5px}
+html[lang=ja] .hero-copy h1{font-size:clamp(32px,4vw,58px)}
+.header-nav{flex-wrap:wrap}
+@media(max-width:760px){.header{height:auto;min-height:76px;flex-wrap:wrap;row-gap:12px;padding-top:12px;padding-bottom:12px}.header-nav{gap:12px;justify-content:flex-end}.language-trigger{min-height:34px;padding:6px 9px;font-size:12px}.header-nav a{white-space:nowrap}}
+html[lang=en] .detail-chart-name,html[lang=en] .chart-english-name{display:none}
+.source-status{flex-wrap:wrap}
+.builder-main .source-panel .panel-heading{flex-wrap:wrap}
+.builder-main .preview-panel .panel-heading h2{flex-wrap:wrap}
+
+/* Language menu follows the same light, blue-accented navigation style. */
+.header{position:relative;z-index:30}
+.language-trigger{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:38px;min-width:108px;padding:8px 12px;border:1px solid #e0e6f0;border-radius:10px;background:#fff;color:#52627b;font-size:13px;font-weight:500;line-height:1.4;transition:background .15s,border-color .15s,box-shadow .15s}
+.language-trigger:hover,.language-trigger[aria-expanded=true]{background:#f5f8ff;border-color:#c8d7f6;color:#356ae6}
+.language-trigger:focus-visible{outline:2px solid #9fbaff;outline-offset:3px}
+.language-trigger svg,.language-menu svg{stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.language-globe{width:17px;height:17px}
+.language-chevron{width:14px;height:14px;margin-left:3px;transition:transform .18s}
+.language-trigger[aria-expanded=true] .language-chevron{transform:rotate(180deg)}
+.language-menu{position:absolute;top:calc(100% + 9px);right:0;z-index:100;min-width:156px;padding:6px;border:1px solid #e5eaf2;border-radius:12px;background:#fff;box-shadow:0 12px 32px #2039651a,0 3px 8px #20396508;animation:language-menu-in .15s ease-out;transform-origin:top right}
+.language-menu button{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;min-height:39px;padding:9px 11px;border:0;border-radius:7px;background:transparent;color:#4e5e76;font-size:13px;font-weight:400;text-align:left;line-height:1.5}
+.language-menu button:hover,.language-menu button:focus-visible{background:#f3f6fc;outline:none}
+.language-menu button:focus-visible{box-shadow:inset 0 0 0 2px #a8bfff}
+.language-menu button[aria-checked=true]{background:#edf3ff;color:#356ae6;font-weight:600}
+.language-check{width:16px;height:16px}
+@keyframes language-menu-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.language-menu{animation:none}.language-chevron{transition:none}}
+@media(max-width:760px){.language-trigger{min-width:94px;min-height:34px;padding:6px 9px;font-size:12px;gap:7px}}
+
+/* Advanced options are progressive disclosure, with independently enabled effects. */
+.advanced-settings{padding-bottom:24px}
+.advanced-intro{font-size:12px;line-height:1.7;color:#7c8b9e;margin:0 0 16px}
+.advanced-group{border:1px solid #e5eaf2;border-radius:8px;margin:10px 0;background:#fff;overflow:hidden}
+.advanced-group>summary{display:flex;align-items:center;gap:8px;padding:13px 11px;cursor:pointer;font-size:13px;list-style:none;color:#40516c;user-select:none}
+.advanced-group>summary::-webkit-details-marker{display:none}
+.advanced-group>summary:before{content:'›';font-size:18px;color:#8493aa;line-height:1;transition:transform .15s}
+.advanced-group[open]>summary:before{transform:rotate(90deg)}
+.advanced-group>summary:hover{background:#f6f8fd}
+.advanced-group summary small{margin-left:auto;flex-shrink:0;font-size:10px;color:#94a0b2;font-weight:400}
+.advanced-group summary .is-enabled{color:#356ae6}
+.advanced-group[open]>summary{border-bottom:1px solid #edf1f6;background:#f8faff}
+.advanced-group-body{padding:13px 11px 4px}
+.advanced-group-body .help{margin:6px 0 14px}
+.advanced-group-body .field>label{display:block;color:#6a7b91;font-size:13px;margin-bottom:9px}
+.advanced-group-body input[type=text]{width:100%;border:1px solid #d7e0ed;border-radius:5px;padding:8px;color:#42536a;background:#fff;font-size:13px}
+.advanced-group-body input:disabled{cursor:not-allowed;opacity:.45}
+.advanced-group-body>.toggle:first-child{margin-top:0}
+.advanced-group summary:focus-visible{outline:2px solid #9fbaff;outline-offset:-2px}
+
+/* Soft blue focus treatment for configuration text and numeric fields. */
+.control-content .field input:is([type=text],[type=number]){
+  transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.control-content .field input:is([type=text],[type=number]):focus{
+  outline:none;
+  background-color:#edf4ff;
+  border-color:#7fa7f4;
+  box-shadow:0 0 0 3px #356ae61a;
+  caret-color:#356ae6;
+}
+@media(prefers-reduced-motion:reduce){
+  .control-content .field input:is([type=text],[type=number]){transition:none}
+}
+
+/* Shared dropdowns follow the language menu, including portaled chart controls. */
+.custom-select{width:100%;min-width:0}
+.select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:38px;padding:8px 10px;border:1px solid #d7e0ed;border-radius:8px;background:#fff;color:#42536a;font-size:13px;font-weight:400;text-align:left;transition:background-color .2s,border-color .2s,box-shadow .2s}
+.select-trigger>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.select-trigger svg,.select-menu svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.select-trigger>svg{transition:transform .18s}
+.select-trigger:hover{background:#f5f8ff;border-color:#c8d7f6}
+.select-trigger:focus-visible,.select-trigger[aria-expanded=true]{outline:none;background:#edf4ff;border-color:#7fa7f4;box-shadow:0 0 0 3px #356ae61a}
+.select-trigger[aria-expanded=true]>svg{transform:rotate(180deg)}
+.select-trigger:disabled{opacity:.5;cursor:not-allowed}
+.select-menu{position:fixed;z-index:150;overflow-y:auto;overscroll-behavior:contain;padding:6px;border:1px solid #e5eaf2;border-radius:12px;background:#fff;box-shadow:0 12px 32px #2039651a,0 3px 8px #20396508;scrollbar-width:thin;animation:language-menu-in .15s ease-out}
+.select-menu [role=option]{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:39px;padding:9px 11px;border-radius:7px;color:#4e5e76;font-size:13px;line-height:1.5;cursor:pointer;transition:background-color .15s,color .15s}
+.select-menu [role=option]>span{min-width:0;overflow-wrap:anywhere}
+.select-menu [role=option][data-active=true]{background:#f3f6fc}
+.select-menu [role=option][aria-selected=true]{background:#edf3ff;color:#356ae6;font-weight:600}
+.select-menu [role=option][aria-disabled=true]{opacity:.45;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.select-trigger,.select-trigger>svg,.select-menu [role=option]{transition:none}.select-menu{animation:none}}
+
+.hero-copy .hero-principle{margin-top:12px;font-size:14px;line-height:1.8;color:#6e7e99}

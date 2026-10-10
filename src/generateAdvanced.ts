@@ -1,21 +1,24 @@
+import { marginSource, axisOptions, scaleOverrides, appearanceSource } from './generatePresentation';
+import { codeComment } from './codeComments';
+import type { Locale } from './i18n';
 import type { Config, Row } from './model';
 import type { CodeParts } from './generate';
 const js = (value: unknown) => JSON.stringify(value);
 
-export function generateAdvancedCode(type: 'violin' | 'manhattan', data: Row[], c: Config): CodeParts {
+export function generateAdvancedCode(type: 'violin' | 'manhattan', data: Row[], c: Config, locale: Locale = 'en'): CodeParts {
   const violin = type === 'violin';
   const importLine = 'import * as d3 from "d3";';
-  const dataSource = `// Replace this array with your own data. Keep the mapped field names.\nconst data = ${JSON.stringify(data, null, 2)};\n`;
+  const dataSource = `// ${codeComment("Replace this array with your own data. Keep the mapped field names.", locale)}\nconst data = ${JSON.stringify(data, null, 2)};\n`;
   const logic = `${importLine}
 
-// Call renderChart(container, data) in any Web project with D3 v7 installed.
+// ${codeComment("Call renderChart(container, data) in any Web project with D3 v7 installed.", locale)}
 function renderChart(container, data) {
   d3.select(container)
     .selectAll("*")
     .remove();
   const width = ${c.width};
   const height = ${c.height};
-  const margin = { top: ${c.legend ? 54 : 30}, right: 30, bottom: 64, left: 76 };
+  const margin = ${marginSource(type,data,c,{top:c.legend?54:30,right:30,bottom:64,left:76})};
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
   const root = d3.select(container)
@@ -26,7 +29,7 @@ function renderChart(container, data) {
     .attr("aria-label", ${js(violin ? 'Violin plot' : 'Manhattan plot')})
     .style("display", "block")
     .style("width", "100%")
-    .style("background", "white")
+    .style("background", ${js(c.canvasStyle?c.background:'white')})
     .style("font", "12px system-ui");
   const g = svg.append("g")
     .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
@@ -74,7 +77,7 @@ ${violin ? `  const processedData = data
     return svg.node();
   }
 
-${violin ? `  // Robust normal-reference bandwidth; fall back for singleton/constant groups.
+${violin ? `  // ${codeComment("Robust normal-reference bandwidth; fall back for singleton/constant groups.", locale)}
   const summaries = d3.groups(processedData, d => d._group)
     .map(([group, rows]) => {
       const values = rows.map(d => d._y)
@@ -113,12 +116,12 @@ ${violin ? `  // Robust normal-reference bandwidth; fall back for singleton/cons
   const color = d3.scaleOrdinal()
     .domain(groups)
     .range([${js(c.color)}, "#48a58a", "#e6ad43", "#8b79bd", "#d87867"]);
-  // Epanechnikov KDE: mean(0.75 * (1 - u²) / bandwidth), for |u| <= 1.
+  // ${codeComment("Epanechnikov KDE: mean(0.75 * (1 - u\u00b2) / bandwidth), for |u| <= 1.", locale)}
   for (const summary of summaries) {
-    // Sample each group's own support so narrow groups cannot disappear.
+    // ${codeComment("Sample each group's own support so narrow groups cannot disappear.", locale)}
     const low = summary.values[0] - summary.bandwidth;
     const high = summary.values[summary.values.length - 1] + summary.bandwidth;
-    const samples = d3.range(81).map(index => low + (high - low) * index / 80);
+    const samples = d3.range(${c.chartStyle?c.violinSamples:81}).map(index => low + (high - low) * index / ${c.chartStyle?c.violinSamples-1:80});
     summary.density = samples.map(value => [value, d3.mean(summary.values, observation => {
       const u = (value - observation) / summary.bandwidth;
       return Math.abs(u) <= 1 ? 0.75 * (1 - u * u) / summary.bandwidth : 0;
@@ -126,10 +129,10 @@ ${violin ? `  // Robust normal-reference bandwidth; fall back for singleton/cons
     summary.peak = d3.max(summary.density, d => d[1]);
   }
   const maximumDensity = d3.max(summaries, d => d.peak) || 1;
-  const halfWidth = x.bandwidth() * 0.45;
+  const halfWidth = x.bandwidth() * ${c.chartStyle?c.violinWidth:.45};
   const violinWidth = (summary, density) => density / (${c.violinScale === 'width' ? 'summary.peak || 1' : 'maximumDensity'}) * halfWidth;
   const legendItems = groups.map(name => ({ name, color: color(name) }));
-` : `  // Sort autosomes numerically, then X/Y/MT, then other contigs naturally.
+` : `  // ${codeComment("Sort autosomes numerically, then X/Y/MT, then other contigs naturally.", locale)}
   const rank = name => /^\\d+$/.test(name)
     ? [0, Number(name)] : [1, ({ X: 0, Y: 1, MT: 2 }[name] ?? 3)];
   const names = Array.from(new Set(processedData.map(d => d._chromosome)))
@@ -139,7 +142,7 @@ ${violin ? `  // Robust normal-reference bandwidth; fall back for singleton/cons
         || a.localeCompare(b, undefined, { numeric: true });
     });
   const byChromosome = d3.group(processedData, d => d._chromosome);
-  // Observed maximum positions define lengths; no reference genome is assumed.
+  // ${codeComment("Observed maximum positions define lengths; no reference genome is assumed.", locale)}
   const lengths = names.map(name => Math.max(1, d3.max(byChromosome.get(name), d => d._position)));
   const gap = d3.mean(lengths) * ${c.chromosomeGap};
   let offset = 0;
@@ -171,10 +174,10 @@ ${violin ? `  // Robust normal-reference bandwidth; fall back for singleton/cons
     { name: "Significant", color: ${js(c.significantColor)} }
   ];
 `}
-${c.grid ? `  g.append("g")
+${scaleOverrides(type,c,locale)}${c.grid ? `  g.append("g")
     .attr("class", "grid")
-    .call(d3.axisLeft(y)
-      .ticks(6)
+    .call(d3.axisLeft(y)${axisOptions(type,c,'y')}
+      .ticks(${c.axisStyle?c.yTickCount:6})
       .tickSize(-innerW)
       .tickFormat(() => "")
     )
@@ -186,21 +189,23 @@ ${c.grid ? `  g.append("g")
     );
 ` : ''}${c.xAxis ? `  const xAxis = g.append("g")
     .attr("transform", "translate(0, " + innerH + ")")
-    .call(d3.axisBottom(x)${violin ? '' : `
+    .call(d3.axisBottom(x)${axisOptions(type,c,'x')}${violin ? '' : `
       .tickValues(chromosomes.map(d => d.midpoint))
       .tickFormat((value, index) => chromosomes[index].name)`}
     );
   svg.append("text")
+    .attr("class", "axis-title axis-title-x")
     .attr("x", margin.left + innerW / 2)
     .attr("y", height - 15)
     .attr("text-anchor", "middle")
     .attr("fill", "#465568")
     .text(${js(violin ? c.xField : c.chromosomeField)});
 ` : ''}${c.yAxis ? `  const yAxis = g.append("g")
-    .call(d3.axisLeft(y)
-      .ticks(6)
+    .call(d3.axisLeft(y)${axisOptions(type,c,'y')}
+      .ticks(${c.axisStyle?c.yTickCount:6})
     );
   svg.append("text")
+    .attr("class", "axis-title axis-title-y")
     .attr("transform", "rotate(-90)")
     .attr("x", -(margin.top + innerH / 2))
     .attr("y", 18)
@@ -247,15 +252,15 @@ ${c.violinInner === 'box' ? `  summariesSelection.append("line")
     .attr("x2", 7)
     .attr("y1", d => y(d.median))
     .attr("y2", d => y(d.median))
-    .attr("stroke", ${c.violinInner === 'box' ? '"white"' : '"#26394c"'})
-    .attr("stroke-width", 2.5);
-` : ''}${c.showPoints ? `  // Deterministic jitter keeps observations still when controls change.
+    .attr("stroke", ${c.chartStyle?js(c.medianColor):c.violinInner === 'box' ? '"white"' : '"#26394c"'})
+    .attr("stroke-width", ${c.chartStyle?c.medianWidth:2.5});
+` : ''}${c.showPoints ? `  // ${codeComment("Deterministic jitter keeps observations still when controls change.", locale)}
   const points = marks.selectAll("circle.observation")
     .data(processedData)
     .join("circle")
     .attr("class", "observation")
     .attr("cx", d => x(d._group) + x.bandwidth() / 2
-      + (((d._index + 1) * 0.61803398875 % 1) - 0.5) * x.bandwidth() * 0.55
+      + (((d._index + 1) * 0.61803398875 % 1) - 0.5) * x.bandwidth() * ${c.chartStyle?c.jitterWidth:.55}
     )
     .attr("cy", d => y(d._y))
     .attr("r", ${c.radius})
@@ -274,8 +279,9 @@ ${c.showThreshold ? `  g.append("line")
     .attr("x2", innerW)
     .attr("y1", y(thresholdY))
     .attr("y2", y(thresholdY))
-    .attr("stroke", ${js(c.significantColor)})
-    .attr("stroke-dasharray", "6,4")
+    .attr("stroke", ${js(c.chartStyle?c.thresholdColor:c.significantColor)})
+    .attr("stroke-width", ${c.chartStyle?c.thresholdWidth:1})
+    .attr("stroke-dasharray", ${js(c.chartStyle?c.thresholdDash:'6,4')})
     .attr("pointer-events", "none");
   g.append("text")
     .attr("x", innerW - 4)
@@ -289,10 +295,11 @@ ${c.showThreshold ? `  g.append("line")
     .attr("x2", innerW)
     .attr("y1", y(suggestiveY))
     .attr("y2", y(suggestiveY))
-    .attr("stroke", "#95a5bd")
-    .attr("stroke-dasharray", "3,4")
+    .attr("stroke", ${js(c.chartStyle?c.thresholdColor:'#95a5bd')})
+    .attr("stroke-width", ${c.chartStyle?c.thresholdWidth:1})
+    .attr("stroke-dasharray", ${js(c.chartStyle?c.thresholdDash:'3,4')})
     .attr("pointer-events", "none");
-` : ''}${c.labels ? `  // Label the strongest significant associations, with a configurable limit.
+` : ''}${c.labels ? `  // ${codeComment("Label the strongest significant associations, with a configurable limit.", locale)}
   const labelRows = processedData.filter(d => d._p <= significance)
     .slice()
     .sort((a, b) => d3.ascending(a._p, b._p))
@@ -362,7 +369,7 @@ ${c.legend ? `  const legend = svg.append("g")
     );
     legendX += Math.max(text.node().getComputedTextLength(), estimatedWidth) + 30;
   }
-` : ''}  return svg.node();
+` : ''}${appearanceSource(type,c,locale)}  return svg.node();
 }
 
 const container = document.querySelector("#chart")

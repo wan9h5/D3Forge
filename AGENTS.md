@@ -18,3 +18,5 @@
 - Do not add image exports, backend, AI chart generation or bidirectional code editing without an explicit request.
 - Keep the UI focused on chart construction. Group controls progressively; avoid dense dashboard decoration.
 - Stage expansion: Scatter / Volcano / Box first, then Bar / Line / Violin / Manhattan.
+
+- Style all dropdowns consistently with the language switcher: white rounded menus, soft shadows, blue selection, gentle transitions, outside-click dismissal, and keyboard navigation. Use the shared Select component for chart controls instead of native dropdown popups.

@@ -1,6 +1,8 @@
+import { t, useLocale } from './i18n';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-export function ColorPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
+export function ColorPicker({ value, onChange, label }: { value: string; onChange: (color: string) => void; label?: string }) {
+  useLocale();
   const input = useRef<HTMLInputElement>(null);
   const opened = useRef(false);
   const restoreFocus = useRef(false);
@@ -43,7 +45,7 @@ export function ColorPicker({ value, onChange }: { value: string; onChange: (col
     };
   }, [dismiss]);
   return <div className="color-row">
-    <input key={instance} ref={input} type="color" aria-label="主色" value={value}
+    <input key={instance} ref={input} type="color" aria-label={label ?? t("主色")} value={value}
       onClick={() => { opened.current = true; }}
       onBlur={() => dismiss()}
       onChange={event => onChange(event.target.value)}/>

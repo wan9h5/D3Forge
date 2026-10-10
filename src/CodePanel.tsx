@@ -1,3 +1,4 @@
+import { t, useLocale } from './i18n';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { EditorState, StateEffect, StateField, type Range } from '@codemirror/state';
 import { EditorView, Decoration, type DecorationSet } from '@codemirror/view';
@@ -88,6 +89,9 @@ function CodeEditor({ source, visible, label }: { source: string; visible: boole
   useEffect(() => {
     const view = editor.current;
     if (!view || source === previous.current) return;
+    // A language-only update keeps the editor's scroll and current tab in place.
+    const withoutComments = (text: string) => text.replace(/^\s*\/\/[^\n]*/gm, '');
+    const commentsOnly = withoutComments(previous.current) === withoutComments(source);
     const previousLines = previous.current.split('\n');
     const nextLines = source.split('\n');
     const firstDifference = nextLines.findIndex((line, index) => line !== previousLines[index]);
@@ -99,13 +103,13 @@ function CodeEditor({ source, visible, label }: { source: string; visible: boole
     view.dispatch({
       changes: { from: 0, to: view.state.doc.length, insert: source },
       selection: { anchor: Math.min(selection.anchor, source.length), head: Math.min(selection.head, source.length) },
-      effects: highlight.of(changed),
+      effects: commentsOnly ? [] : highlight.of(changed),
     });
     // Preserve scroll until the visible editor can locate the changed code.
     view.scrollDOM.scrollTop = scrollTop;
     view.scrollDOM.scrollLeft = scrollLeft;
 
-    pendingLocation.current = view.state.doc.line(targetLine).from;
+    pendingLocation.current = commentsOnly ? null : view.state.doc.line(targetLine).from;
     previous.current = source;
   }, [source]);
   useEffect(() => {
@@ -117,10 +121,14 @@ function CodeEditor({ source, visible, label }: { source: string; visible: boole
     }
     view.requestMeasure();
   }, [source, visible]);
+  useEffect(() => {
+    editor.current?.contentDOM.setAttribute('aria-label', label);
+  }, [label]);
   return <div className="code-editor" ref={ref}/>;
 }
 
 export function CodePanel({ code, dataName }: { code: CodeParts; dataName: string }) {
+  useLocale();
   const [tab, setTab] = useState<'logic' | 'data'>('logic');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
@@ -153,7 +161,7 @@ export function CodePanel({ code, dataName }: { code: CodeParts; dataName: strin
     setTab(next);
     document.getElementById(`source-tab-${next}`)?.focus();
   }
-  const dataLabel = dataName === 'Mock data' ? 'Mock 数据' : 'CSV 数据';
+  const dataLabel = dataName === 'Mock data' ? t("Mock 数据") : t("CSV 数据");
   function openSearch() {
     const element = panel.current?.querySelector<HTMLElement>('.source-tab-panel:not([hidden]) .cm-editor');
     const view = element ? EditorView.findFromDOM(element) : null;
@@ -166,16 +174,16 @@ export function CodePanel({ code, dataName }: { code: CodeParts; dataName: strin
       openSearch();
     }
   }
-  return <section ref={panel} className="source-panel" aria-label="D3 源码" onKeyDownCapture={handleSearchShortcut}>
-    <div className="panel-heading"><div><span className="eyebrow">03 / SOURCE</span><h2>代码<span className="small-tag">只读</span></h2></div><div className="actions"><button className="quiet" onClick={download}>下载 .js</button><button className="primary" onClick={copy}>{copied ? '已复制' : '复制完整代码'}</button></div></div>
-    <div className="tabs source-tabs" role="tablist" aria-label="代码内容">
-      <button id="source-tab-logic" role="tab" aria-selected={tab === 'logic'} aria-controls="source-panel-logic" tabIndex={tab === 'logic' ? 0 : -1} onClick={() => setTab('logic')} onKeyDown={switchTab}>D3.js 源码</button>
+  return <section ref={panel} className="source-panel" aria-label={t("D3 源码")} onKeyDownCapture={handleSearchShortcut}>
+    <div className="panel-heading"><div><span className="eyebrow">03 / SOURCE</span><h2>{t("代码")}<span className="small-tag">{t("只读")}</span></h2></div><div className="actions"><button className="quiet" onClick={download}>{t("下载 .js")}</button><button className="primary" onClick={copy}>{copied ? t("已复制") : t("复制完整代码")}</button></div></div>
+    <div className="tabs source-tabs" role="tablist" aria-label={t("代码内容")}>
+      <button id="source-tab-logic" role="tab" aria-selected={tab === 'logic'} aria-controls="source-panel-logic" tabIndex={tab === 'logic' ? 0 : -1} onClick={() => setTab('logic')} onKeyDown={switchTab}>{t("D3.js 源码")}</button>
       <button id="source-tab-data" role="tab" aria-selected={tab === 'data'} aria-controls="source-panel-data" tabIndex={tab === 'data' ? 0 : -1} onClick={() => setTab('data')} onKeyDown={switchTab}>{dataLabel}</button>
     </div>
-    <div className="source-note">{tab === 'logic' ? '绘图逻辑 · const data 见数据页' : `${dataName === 'Mock data' ? '确定性示例数据' : dataName} · const data 数组`}<br/>复制与下载始终包含数据和完整绘图逻辑。</div>
-    {error && <p role="alert" className="notice">{error}</p>}
-    <div id="source-panel-logic" className="source-tab-panel" role="tabpanel" aria-labelledby="source-tab-logic" hidden={tab !== 'logic'}><CodeEditor source={code.logic} visible={tab === 'logic'} label="D3.js 绘图逻辑"/></div>
+    <div className="source-note">{tab === 'logic' ? t("绘图逻辑 · const data 见数据页") : t('{dataName} · const data 数组', {dataName: dataName === 'Mock data' ? t('确定性示例数据') : dataName})}<br/>{t("复制与下载始终包含数据和完整绘图逻辑。")}</div>
+    {error && <p role="alert" className="notice">{t(error)}</p>}
+    <div id="source-panel-logic" className="source-tab-panel" role="tabpanel" aria-labelledby="source-tab-logic" hidden={tab !== 'logic'}><CodeEditor source={code.logic} visible={tab === 'logic'} label={t("D3.js 绘图逻辑")}/></div>
     <div id="source-panel-data" className="source-tab-panel" role="tabpanel" aria-labelledby="source-tab-data" hidden={tab !== 'data'}><CodeEditor source={code.data} visible={tab === 'data'} label={dataLabel}/></div>
-    <div className="source-status"><span>最近修改持续高亮 · 定位对应代码</span><button className="text-button" onClick={openSearch} title="搜索当前代码 (Ctrl+F)">查找 Ctrl+F</button></div>
+    <div className="source-status"><span>{t("最近修改持续高亮 · 定位对应代码")}</span><button className="text-button" onClick={openSearch} title={t("搜索当前代码 (Ctrl+F)")}>{t("查找 Ctrl+F")}</button></div>
   </section>;
 }

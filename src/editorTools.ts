@@ -1,3 +1,4 @@
+import { t, subscribeLocale } from './i18n';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 import { EditorView, type Panel } from '@codemirror/view';
@@ -33,11 +34,11 @@ export function createCodeSearchPanel(view: EditorView): Panel {
   const dom = document.createElement('div');
   dom.className = 'code-search';
   dom.setAttribute('role', 'search');
-  dom.setAttribute('aria-label', '代码搜索');
+  dom.setAttribute('aria-label', t("代码搜索"));
   const input = document.createElement('input');
   input.className = 'code-search-input';
-  input.placeholder = '查找代码';
-  input.setAttribute('aria-label', '查找代码');
+  input.placeholder = t("查找代码");
+  input.setAttribute('aria-label', t("查找代码"));
   input.setAttribute('main-field', 'true');
   input.type = 'text';
   const counter = document.createElement('span');
@@ -45,22 +46,24 @@ export function createCodeSearchPanel(view: EditorView): Panel {
   counter.setAttribute('role', 'status');
   const controls = document.createElement('div');
   controls.className = 'code-search-controls';
+  const buttonLabels: { element: HTMLButtonElement; label: string }[] = [];
   function button(label: string, text: string, action: () => void) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.title = label;
-    button.setAttribute('aria-label', label);
+    buttonLabels.push({element: button, label});
+    button.title = t(label);
+    button.setAttribute('aria-label', t(label));
     button.textContent = text;
     button.addEventListener('click', action);
     controls.append(button);
     return button;
   }
-  const matchCase = button('区分大小写', 'Aa', () => toggle(matchCase));
-  const wholeWord = button('全字匹配', 'ab', () => toggle(wholeWord));
-  const regexp = button('正则表达式', '.*', () => toggle(regexp));
-  button('上一个匹配 (Shift+Enter)', '↑', () => findPrevious(view));
-  button('下一个匹配 (Enter)', '↓', () => findNext(view));
-  button('关闭搜索 (Esc)', '×', () => closeSearchPanel(view));
+  const matchCase = button("区分大小写", 'Aa', () => toggle(matchCase));
+  const wholeWord = button("全字匹配", 'ab', () => toggle(wholeWord));
+  const regexp = button("正则表达式", '.*', () => toggle(regexp));
+  button("上一个匹配 (Shift+Enter)", '↑', () => findPrevious(view));
+  button("下一个匹配 (Enter)", '↓', () => findNext(view));
+  button("关闭搜索 (Esc)", '×', () => closeSearchPanel(view));
   function toggle(button: HTMLButtonElement) {
     button.setAttribute('aria-pressed', button.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
     commit();
@@ -77,14 +80,21 @@ export function createCodeSearchPanel(view: EditorView): Panel {
     if (query.valid && query.search) findNext(view);
   }
   function update() {
+    dom.setAttribute('aria-label', t('代码搜索'));
+    input.placeholder = t('查找代码');
+    input.setAttribute('aria-label', t('查找代码'));
+    for (const {element, label} of buttonLabels) {
+      element.title = t(label);
+      element.setAttribute('aria-label', t(label));
+    }
     const query = getSearchQuery(view.state);
     if (input.value !== query.search) input.value = query.search;
     matchCase.setAttribute('aria-pressed', String(query.caseSensitive));
     wholeWord.setAttribute('aria-pressed', String(query.wholeWord));
     regexp.setAttribute('aria-pressed', String(query.regexp));
     input.setAttribute('aria-invalid', String(!!query.search && !query.valid));
-    if (!query.search) { counter.textContent = '输入关键词'; return; }
-    if (!query.valid) { counter.textContent = '无效表达式'; return; }
+    if (!query.search) { counter.textContent = t("输入关键词"); return; }
+    if (!query.valid) { counter.textContent = t("无效表达式"); return; }
     const cursor = query.getCursor(view.state.doc);
     const selection = view.state.selection.main;
     let count = 0, current = 0;
@@ -92,7 +102,7 @@ export function createCodeSearchPanel(view: EditorView): Panel {
       count++;
       if (match.value.from === selection.from && match.value.to === selection.to) current = count;
     }
-    counter.textContent = count ? `${current} / ${count}` : '无匹配';
+    counter.textContent = count ? `${current} / ${count}` : t("无匹配");
   }
   input.addEventListener('input', commit);
   dom.addEventListener('keydown', event => {
@@ -101,5 +111,6 @@ export function createCodeSearchPanel(view: EditorView): Panel {
   });
   dom.append(input, counter, controls);
   update();
-  return { dom, update, mount: () => { input.focus({ preventScroll: true }); input.select(); } };
+  const unsubscribe = subscribeLocale(update);
+  return { dom, update, destroy: unsubscribe, mount: () => { input.focus({ preventScroll: true }); input.select(); } };
 }
