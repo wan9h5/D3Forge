@@ -261,6 +261,9 @@ ${c.labels?`  const labels = marks.selectAll("text.label")
     .style("background", "#162b3b")
     .style("color", "white")
     .style("padding", "10px 12px")
+    .style("max-width", "calc(100% - 16px)")
+    .style("box-sizing", "border-box")
+    .style("overflow-wrap", "anywhere")
     .style("border-radius", "6px")
     .style("font", "12px/1.6 system-ui");
   const showTooltip = (event, text) => {
@@ -307,7 +310,10 @@ ${point?'  attachTooltip(points);':`  attachTooltip(outliers);
       .attr("y", 4)
       .attr("fill", "#465568")
       .text(name);
-    legendX += text.node().getComputedTextLength() + 34;
+    const estimatedWidth = Array.from(String(name)).reduce((sum, character) =>
+      sum + (character.charCodeAt(0) > 255 ? 12 : 7), 0
+    );
+    legendX += Math.max(text.node().getComputedTextLength(), estimatedWidth) + 34;
   }
 `:''}${point&&c.zoom?`
   // Zoom changes scale domains; points keep a constant radius.

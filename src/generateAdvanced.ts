@@ -130,9 +130,14 @@ ${violin ? `  // Robust normal-reference bandwidth; fall back for singleton/cons
   const violinWidth = (summary, density) => density / (${c.violinScale === 'width' ? 'summary.peak || 1' : 'maximumDensity'}) * halfWidth;
   const legendItems = groups.map(name => ({ name, color: color(name) }));
 ` : `  // Sort autosomes numerically, then X/Y/MT, then other contigs naturally.
-  const rank = name => /^\\d+$/.test(name) ? +name : ({ X: 23, Y: 24, MT: 25 }[name] ?? Infinity);
+  const rank = name => /^\\d+$/.test(name)
+    ? [0, Number(name)] : [1, ({ X: 0, Y: 1, MT: 2 }[name] ?? 3)];
   const names = Array.from(new Set(processedData.map(d => d._chromosome)))
-    .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, undefined, { numeric: true }));
+    .sort((a, b) => {
+      const ra = rank(a), rb = rank(b);
+      return ra[0] - rb[0] || ra[1] - rb[1]
+        || a.localeCompare(b, undefined, { numeric: true });
+    });
   const byChromosome = d3.group(processedData, d => d._chromosome);
   // Observed maximum positions define lengths; no reference genome is assumed.
   const lengths = names.map(name => Math.max(1, d3.max(byChromosome.get(name), d => d._position)));
@@ -310,14 +315,18 @@ ${c.tooltip ? `  const tooltip = root.append("div")
     .style("background", "#172b3b")
     .style("color", "white")
     .style("padding", "9px 12px")
+    .style("max-width", "calc(100% - 16px)")
+    .style("box-sizing", "border-box")
+    .style("overflow-wrap", "anywhere")
     .style("border-radius", "6px")
     .style("font", "12px/1.6 system-ui");
   const showTooltip = (event, text) => {
     const [px, py] = d3.pointer(event, root.node());
-    tooltip.style("display", "block")
-      .style("left", px + 12 + "px")
-      .style("top", py + 12 + "px")
-      .text(text);
+    tooltip.text(text)
+      .style("display", "block");
+    tooltip.style("left", Math.max(0, Math.min(px + 12,
+      root.node().clientWidth - tooltip.node().offsetWidth)) + "px")
+      .style("top", Math.max(0, py - tooltip.node().offsetHeight - 10) + "px");
   };
 ${violin ? `  violins.on("pointermove", (event, d) => showTooltip(event,
     String(d.group) + "\\nN: " + d.values.length
@@ -329,7 +338,8 @@ ${violin ? `  violins.on("pointermove", (event, d) => showTooltip(event,
     .on("pointerleave", () => tooltip.style("display", "none"));
 ` : ''}${!violin || c.showPoints ? `  const tooltipFields = ${js(c.tooltipFields)};
   points.on("pointermove", (event, d) => showTooltip(event,
-    tooltipFields.map(field => field + ": " + String(d[field] ?? "")).join("\\n")
+    tooltipFields.map(field => field + ": " + String(d[field] ?? ""))
+      .join("\\n")
   ))
     .on("pointerleave", () => tooltip.style("display", "none"));
 ` : ''}` : ''}
@@ -347,7 +357,10 @@ ${c.legend ? `  const legend = svg.append("g")
       .attr("y", 4)
       .attr("fill", "#465568")
       .text(entry.name);
-    legendX += text.node().getComputedTextLength() + 30;
+    const estimatedWidth = Array.from(String(entry.name)).reduce((sum, character) =>
+      sum + (character.charCodeAt(0) > 255 ? 12 : 7), 0
+    );
+    legendX += Math.max(text.node().getComputedTextLength(), estimatedWidth) + 30;
   }
 ` : ''}  return svg.node();
 }

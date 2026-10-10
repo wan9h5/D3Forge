@@ -99,3 +99,29 @@ describe('product home and guide', () => {
     expect(document.getElementById('home-title')).not.toBeNull();
   });
 });
+
+describe('seven-chart route/state synchronization',()=>{
+  for(const type of ['scatter','volcano','box','bar','line','violin','manhattan'] as const) it(`${type}: direct URL, switching and reopening preserve correct state`,()=>{
+    window.history.replaceState(null,'',`#/charts/${type}`);
+    render();
+    expect(useBuilder.getState().type).toBe(type);
+    act(()=>useBuilder.getState().setConfig({opacity:.45}));
+    navigate('#/gallery');
+    navigate(`#/charts/${type}`);
+    expect(useBuilder.getState().type).toBe(type);
+    expect(useBuilder.getState().config.opacity).toBe(.45);
+    navigate(`#/charts/${type==='scatter'?'box':'scatter'}`);
+    expect(useBuilder.getState().type).toBe(type==='scatter'?'box':'scatter');
+  });
+  it('handles unreadable CSV without losing the existing data',async()=>{
+    window.history.replaceState(null,'','#/charts/scatter');render();
+    act(()=>[...document.querySelectorAll<HTMLButtonElement>('.controls .tabs button')].find(button=>button.textContent==='数据处理')!.click());
+    const input=document.querySelector<HTMLInputElement>('input[type=file]')!;
+    const file=new File(['a,b'],'unreadable.csv',{type:'text/csv'});
+    Object.defineProperty(file,'text',{value:()=>Promise.reject(new Error('unreadable'))});
+    Object.defineProperty(input,'files',{configurable:true,value:[file]});
+    await act(async()=>input.dispatchEvent(new Event('change',{bubbles:true})));
+    expect(document.querySelector('.controls [role=alert]')?.textContent).toContain('无法读取文件');
+    expect(useBuilder.getState().dataName).toBe('Mock data');
+  });
+});

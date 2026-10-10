@@ -145,8 +145,12 @@ ${c.grid ? `  g.append("g")
       .tickSize(-${horizontal ? 'innerH' : 'innerW'})
       .tickFormat(() => "")
     )
-    .call(grid => grid.select(".domain").remove())
-    .call(grid => grid.selectAll("line").attr("stroke", "#e8edf2"));
+    .call(grid => grid.select(".domain")
+      .remove()
+    )
+    .call(grid => grid.selectAll("line")
+      .attr("stroke", "#e8edf2")
+    );
 ` : ''}${c.xAxis ? `  const xAxis = g.append("g")
     .attr("transform", "translate(0, " + innerH + ")")
     .call(d3.axisBottom(x));
@@ -245,15 +249,21 @@ ${c.tooltip ? `  // Use textContent through D3 .text() for imported strings.
     .style("background", "#172b3b")
     .style("color", "white")
     .style("padding", "9px 12px")
+    .style("max-width", "calc(100% - 16px)")
+    .style("box-sizing", "border-box")
+    .style("overflow-wrap", "anywhere")
     .style("border-radius", "6px")
     .style("font", "12px/1.6 system-ui");
   const tooltipFields = ${js(bar ? c.tooltipFields.filter(field => [c.xField, c.yField, c.groupField].includes(field)) : c.tooltipFields)};
   const showTooltip = (event, row) => {
     const [px, py] = d3.pointer(event, root.node());
-    tooltip.style("display", "block")
-      .style("left", px + 12 + "px")
-      .style("top", py + 12 + "px")
-      .text(tooltipFields.map(field => field + ": " + String(row[field] ?? "")).join("\\n"));
+    tooltip.text(tooltipFields.map(field => field + ": " + String(row[field] ?? ""))
+      .join("\\n")
+    )
+      .style("display", "block");
+    tooltip.style("left", Math.max(0, Math.min(px + 12,
+      root.node().clientWidth - tooltip.node().offsetWidth)) + "px")
+      .style("top", Math.max(0, py - tooltip.node().offsetHeight - 10) + "px");
   };
 ${bar ? `  barsSelection.on("pointermove", (event, d) => {
     const row = { [${js(c.xField)}]: d.category, [${js(c.yField)}]: d.value${c.groupField ? `, [${js(c.groupField)}]: d.series` : ''} };
@@ -283,7 +293,10 @@ ${c.legend && c.groupField ? `  const legend = svg.append("g")
       .attr("y", 4)
       .attr("fill", "#465568")
       .text(name);
-    legendX += text.node().getComputedTextLength() + 32;
+    const estimatedWidth = Array.from(String(name)).reduce((sum, character) =>
+      sum + (character.charCodeAt(0) > 255 ? 12 : 7), 0
+    );
+    legendX += Math.max(text.node().getComputedTextLength(), estimatedWidth) + 32;
   }
 ` : ''}  return svg.node();
 }

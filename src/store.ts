@@ -16,10 +16,12 @@ export const useBuilder = create<State>((set,get)=>({
     const chromosomeField = fields.includes(c.chromosomeField) ? c.chromosomeField
       : fields.find(field => /^(chr|chrom|chromosome)$/i.test(field))
         || categories.find(field => field !== c.labelField) || fields[0];
+    const pField = fields.find(field => /^(p|pvalue|p_value|pval|p\.value)$/i.test(field));
+    const positionField = fields.find(field => /^(bp|pos|position|base_?pair|base_?position)$/i.test(field));
     const xField = fields.includes(c.xField) ? c.xField
-      : categoricalX ? categories[0] || fields[0] : (manhattan ? numbers.find(field => field !== chromosomeField) : numbers[0]) || fields[0];
+      : categoricalX ? categories[0] || fields[0] : (manhattan ? positionField || numbers.find(field => field !== chromosomeField && field !== pField) : numbers[0]) || fields[0];
     const yField = fields.includes(c.yField) ? c.yField
-      : manhattan ? fields.find(field => /^(p|pvalue|p_value|pval|p\.value)$/i.test(field))
+      : manhattan ? pField
         || numbers.find(field => field !== xField && field !== chromosomeField) || numbers[0] || fields[0]
       : (current.type === 'scatter' || current.type === 'line')
         ? numbers.find(field => field !== xField) || numbers[0] || fields[0]
