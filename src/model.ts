@@ -96,10 +96,10 @@ export function thumbnailConfig(type: ChartType): Config {
   const base = defaults(type);
   return {
     ...base,
-    radius: Math.max(base.radius, 8),
-    lineWidth: Math.max(base.lineWidth, 4),
-    bandwidthFactor: Math.max(base.bandwidthFactor, 1.3),
-    barPadding: Math.min(base.barPadding, 0.12),
+    radius: Math.max(base.radius, 15),
+    lineWidth: Math.max(base.lineWidth, 6),
+    bandwidthFactor: Math.max(base.bandwidthFactor, 1.7),
+    barPadding: Math.min(base.barPadding, 0.08),
     legend: false,
   };
 }
