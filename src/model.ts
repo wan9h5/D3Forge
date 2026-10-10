@@ -49,6 +49,60 @@ export function mockData(type: ChartType): Row[] {
       : {sample:`S${String(i+1).padStart(2,'0')}`,group,expression: +(7 + (i%3)*3 + Math.sin(i*1.7)*2.6 + (i===40?12:0)).toFixed(2)};
   });
 }
+export function thumbnailData(type: ChartType): Row[] {
+  // Minimal deterministic rows for gallery cards: just enough marks to read the chart type at a glance.
+  if (type === 'scatter') return [
+    { sample: 'S1', expressionA: 10, expressionB: 14, group: 'Control' },
+    { sample: 'S2', expressionA: 20, expressionB: 24, group: 'Treatment' },
+    { sample: 'S3', expressionA: 30, expressionB: 38, group: 'Recovery' },
+    { sample: 'S4', expressionA: 40, expressionB: 34, group: 'Control' },
+    { sample: 'S5', expressionA: 52, expressionB: 56, group: 'Treatment' },
+    { sample: 'S6', expressionA: 62, expressionB: 66, group: 'Recovery' },
+  ];
+  if (type === 'volcano') return [
+    { gene: 'TP53', log2FC: -2.8, pvalue: 1e-6 },
+    { gene: 'BRCA1', log2FC: -3.4, pvalue: 1e-8 },
+    { gene: 'EGFR', log2FC: -2.1, pvalue: 1e-4 },
+    { gene: 'MYC', log2FC: 2.6, pvalue: 1e-5 },
+    { gene: 'KRAS', log2FC: 3.2, pvalue: 1e-9 },
+    { gene: 'IL6', log2FC: 2.1, pvalue: 1e-3 },
+    { gene: 'TNF', log2FC: .3, pvalue: .42 },
+    { gene: 'STAT3', log2FC: -.4, pvalue: .66 },
+    { gene: 'CDK4', log2FC: .6, pvalue: .21 },
+    { gene: 'MDM2', log2FC: -.1, pvalue: .55 },
+  ];
+  if (type === 'bar') return ['Q1', 'Q2', 'Q3'].flatMap((category, index) =>
+    ['Product A', 'Product B'].map((series, group) => ({ category, series, value: 14 + index * 8 + group * 10 + (index % 2) * 4 })));
+  if (type === 'line') return ([['Control', 18], ['Treatment', 30], ['Recovery', 44]] as [string, number][]).flatMap(([series, base], group) =>
+    [1, 2, 3, 4].map(time => ({ time, value: +(base + time * 3 + Math.sin(time * .9 + group) * 2).toFixed(2), series })));
+  if (type === 'violin') return ['Control', 'Treatment', 'Recovery'].flatMap((group, g) =>
+    Array.from({ length: 8 }, (_, i) => ({
+      sample: `S${g * 8 + i + 1}`,
+      group,
+      value: +(12 + g * 7 + Math.sin(i * 2.1 + g * 1.3) * 3 + (i % 4 - 1.5) * 1.1).toFixed(3),
+    })));
+  if (type === 'manhattan') return Array.from({ length: 12 }, (_, i) => ({
+    snp: `rs${100001 + i}`,
+    chromosome: String(Math.floor(i / 6) + 1),
+    position: (i % 6 + 1) * 2500000,
+    pvalue: +Math.pow(10, -(i % 6 === 2 ? 8.5 : 1 + Math.abs(Math.sin(i * 2.3)) * 1.6)).toPrecision(6),
+  }));
+  // box: three compact groups, one box each.
+  return ['Control', 'Treatment', 'Recovery'].flatMap((group, g) =>
+    [9, 11, 12, 13, 10].map(v => ({ sample: `S${g + 1}`, group, expression: +(v + g * 8).toFixed(2) })));
+}
+export function thumbnailConfig(type: ChartType): Config {
+  // Bigger, bolder marks so the chart type reads at a glance in a small card; legend off to keep it clean.
+  const base = defaults(type);
+  return {
+    ...base,
+    radius: Math.max(base.radius, 8),
+    lineWidth: Math.max(base.lineWidth, 4),
+    bandwidthFactor: Math.max(base.bandwidthFactor, 1.3),
+    barPadding: Math.min(base.barPadding, 0.12),
+    legend: false,
+  };
+}
 export function defaults(type: ChartType): Config {
   if (type === 'violin') return {
     ...defaults('scatter'), xField: 'group', yField: 'value', groupField: 'group',

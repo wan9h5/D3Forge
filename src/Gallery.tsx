@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { charts, defaults, mockData, type ChartType } from './model';
+import { charts, thumbnailConfig, thumbnailData, type ChartType } from './model';
 import { generateCode } from './generate';
 import { Preview } from './Preview';
 import { SiteFooter } from './SiteFooter';
@@ -20,8 +20,8 @@ export function Gallery() {
   const current = categories.find(item => item.id === category)!;
   const visible = charts.filter(chart => category === 'all' || chartCategories[chart.id] === category);
   const thumbnails = useMemo(() => Object.fromEntries(charts.map(chart => {
-    const config = defaults(chart.id);
-    return [chart.id, generateCode(chart.id, mockData(chart.id), config)];
+    const config = thumbnailConfig(chart.id);
+    return [chart.id, generateCode(chart.id, thumbnailData(chart.id), config)];
   })), []);
 
   return <div className="gallery-layout">
@@ -39,7 +39,7 @@ export function Gallery() {
         <div className="chart-grid">
           {visible.map(chart => <a className="chart-card" key={chart.id} href={`#/charts/${chart.id}`} aria-label={`开始绘制${chart.zh}`}>
             <div className="chart-thumbnail" aria-hidden="true" inert><Preview source={thumbnails[chart.id]} width={800} height={440}/></div>
-            <div className="chart-card-content"><span className="chart-category-label">{categories.find(item => item.id === chartCategories[chart.id])!.label}</span><h3>{chart.zh}<span aria-hidden="true">↗</span></h3><span className="chart-english-name">{chart.name}</span><p>{chart.description}</p></div>
+            <div className="chart-card-content"><span className="chart-category-label">{categories.find(item => item.id === chartCategories[chart.id])!.label}</span><h3><span>{chart.zh}<span className="chart-english-name">{chart.name}</span></span><span className="chart-card-arrow" aria-hidden="true">↗</span></h3><p>{chart.description}</p></div>
           </a>)}
         </div>
       </section>
