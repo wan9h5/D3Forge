@@ -5,6 +5,7 @@ import { t } from './i18n';
 import { codeComment } from './codeComments';
 import { marginSource, appearanceSource } from './generatePresentation';
 import type { CodeParts } from './generate';
+import { softCompositionPalette } from './compositionModel';
 const js=(value:unknown)=>JSON.stringify(value);
 export function generateCompositionCode(type:CompositionType,data:Row[],c:Config,locale:Locale='en'):CodeParts {
   const text=(key:string)=>js(t(key,{},locale));
@@ -16,7 +17,9 @@ export function generateCompositionCode(type:CompositionType,data:Row[],c:Config
   const sweep=c.arcStyle?c.sweepAngle:c.pieMode==='fan'?180:360;
   const labelSize=c.labelStyle?c.labelFontSize:12;
   const scheme=c.compositionPalette==='category10'?'schemeCategory10':c.compositionPalette==='paired'?'schemePaired':'schemeTableau10';
-  const colors=c.categoryColorsEnabled?`names.map((name, index) => customColors.has(name) ? customColors.get(name) : d3.${scheme}[index % ${c.compositionPalette==='paired'?12:10}])`:`d3.${scheme}`;
+  const paletteSource=c.compositionPalette==='soft'?js(softCompositionPalette):`d3.${scheme}`;
+  const paletteLength=c.compositionPalette==='paired'?12:10;
+  const colors=c.categoryColorsEnabled?`names.map((name, index) => customColors.has(name) ? customColors.get(name) : ${paletteSource}[index % ${paletteLength}])`:paletteSource;
   const logic=`${importLine}
 
 // ${codeComment('Call renderChart(container, data) in any Web project with D3 v7 installed.',locale)}

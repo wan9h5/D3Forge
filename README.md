@@ -197,6 +197,8 @@ npm run preview
 
 构建产物位于 `dist/`，可部署到静态网站托管服务。页面使用 Hash 路由。
 
+仓库已包含 GitHub Pages 的自动部署工作流。首次发布时，在仓库的 `Settings` → `Pages` → `Build and deployment` → `Source` 中选择 `GitHub Actions`，然后将 `main` 分支推送到 GitHub。之后每次推送 `main` 都会自动构建并更新页面，访问地址为：<https://wan9h5.github.io/D3Forge/>。
+
 ## 开发
 
 技术栈：React 19、TypeScript、Vite、D3 v7、Zustand、CodeMirror 6、Papa Parse。

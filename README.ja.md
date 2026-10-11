@@ -197,6 +197,8 @@ npm run preview
 
 `dist/` を静的ホスティングへ配置できます。ページ遷移にはハッシュルーティングを使います。
 
+このリポジトリには GitHub Pages の自動公開ワークフローが含まれています。初回はリポジトリの `Settings` → `Pages` → `Build and deployment` → `Source` で `GitHub Actions` を選び、`main` ブランチを GitHub にプッシュしてください。その後は `main` へのプッシュごとに自動でビルドと更新が行われます。公開先は <https://wan9h5.github.io/D3Forge/> です。
+
 ## 開発
 
 技術構成：React 19、TypeScript、Vite、D3 v7、Zustand、CodeMirror 6、Papa Parse。

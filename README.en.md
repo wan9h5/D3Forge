@@ -197,6 +197,8 @@ npm run preview
 
 Deploy `dist/` to a static host. Navigation uses hash routing.
 
+This repository includes an automatic GitHub Pages workflow. For the first release, open `Settings` → `Pages` → `Build and deployment` → `Source` and select `GitHub Actions`, then push the `main` branch to GitHub. Every later push to `main` rebuilds and updates the site automatically. The published site is <https://wan9h5.github.io/D3Forge/>.
+
 ## Development
 
 Stack: React 19, TypeScript, Vite, D3 v7, Zustand, CodeMirror 6, and Papa Parse.

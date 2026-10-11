@@ -438,7 +438,7 @@ describe('composition charts: independent arithmetic and optional configurations
   it('custom category colors safely support names inherited from Object prototypes',()=>{
     const {svg}=run('pie',[{category:'__proto__',value:1},{category:'constructor',value:1}],{categoryColorsEnabled:true,categoryColors:JSON.parse('{"__proto__":"#123456"}')});
     expect(svg.querySelector('.segment')?.getAttribute('fill')).toBe('#123456');
-    expect(svg.querySelectorAll('.segment')[1].getAttribute('fill')).toBe('#f28e2c');
+    expect(svg.querySelectorAll('.segment')[1].getAttribute('fill')).toBe('#f2a65a');
   });
 });
 
