@@ -1,3 +1,5 @@
+[简体中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
+
 <div align="center">
   <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge Logo" />
   <h1>D3Forge</h1>
@@ -165,6 +167,8 @@ src/
   store.ts         配置与数据状态
   generate.ts      原生 D3 逻辑、数据与完整源码生成
   generateSeries.ts 柱状图与折线图的原生 D3 生成
+  generateBars.ts  扩展柱状图布局的原生 D3 生成
+  generateBarExtensions.ts 双轴、分组堆叠与多组极坐标布局
   generateAdvanced.ts 曼哈顿图的原生 D3 生成
   generateViolin.ts 小提琴、雨云与分面分布图的原生 D3 生成
   chartEntries.ts  图形库示例入口和默认样式
@@ -192,7 +196,7 @@ npm run build
 - 空白与无效数值会被跳过；对数坐标仅接受正值，火山图要求 `0 < p ≤ 1`
 - 配置暂不跨刷新保存；切换图形会恢复该图形的默认数据和配置
 - 修改配置会重新生成预览，缩放位置随之重置
-- 柱状图对重复的分类 / 系列组合自动求和，数值轴采用线性比例尺并包含零
+- 柱状图对重复的分类 / 系列组合默认求和，支持按配置改为均值；数值轴采用线性比例尺并包含零
 - 折线图的 X 字段接受数值或时间序号；日期字符串请先转换为数值，数据按 X 值排序
 - 小提琴图使用线性数值轴与 Epanechnikov 核密度估计，支持带宽倍率调整；单点或常数分组使用回退带宽，密度形状应结合样本量阅读
 - 曼哈顿图的位置字段必须非负，P-value 要求 `0 < p ≤ 1`；染色体跨度依据当前数据的最大位置计算，不代表参考基因组的完整染色体长度
