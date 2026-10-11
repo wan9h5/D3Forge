@@ -58,6 +58,8 @@ export const useBuilder = create<State>((set,get)=>({
     }
     set({ data, dataName, config: {
       ...c, xField, yField, groupField, chromosomeField,
+      barSecondField:fields.includes(c.barSecondField)?c.barSecondField:numbers.find(k=>k!==yField)||yField,
+      barCohortField:fields.includes(c.barCohortField)?c.barCohortField:categories.find(k=>k!==xField&&k!==groupField)||categories[0]||'',
       errorLowField:fields.includes(c.errorLowField)?c.errorLowField:numbers.find(k=>/low|lower|下界/i.test(k))||numbers[0]||'',
       errorHighField:fields.includes(c.errorHighField)?c.errorHighField:numbers.find(k=>/high|upper|上界/i.test(k))||numbers[numbers.length-1]||'',
       barOverlayField:fields.includes(c.barOverlayField)?c.barOverlayField:numbers.find(k=>k!==yField)||yField,

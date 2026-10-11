@@ -1,4 +1,114 @@
 export const barText: Record<string, [string, string]> = {
+  "最小值": ["Minimum", "最小値"],
+  "最大值": ["Maximum", "最大値"],
+  "第二指标汇总": ["Secondary aggregation", "第二指標の集計"],
+  "两轴分别表示各自单位；第二指标独立汇总。−log10(P) 要求原始值与汇总值均满足 0 < P ≤ 1，汇总方式不代表合并检验。": ["Axes use separate units and the secondary measure has its own aggregation. −log10(P) requires both raw and aggregated values in (0, 1]. Aggregation is not a combined significance test.", "各軸は別の単位を使い、第二指標は個別に集計します。−log10(P)では元の値と集計値がともに(0, 1]内である必要があります。集計は有意性の統合検定ではありません。"],
+
+  "上方系列": [
+    "Upper series",
+    "上側の系列"
+  ],
+  "下方系列": [
+    "Lower series",
+    "下側の系列"
+  ],
+  "两轴分别表示各自单位；−log10(P) 仅接受 0 < P ≤ 1，汇总后再转换。": [
+    "Each axis has its own units. −log10(P) requires 0 < P ≤ 1 and is applied after aggregation.",
+    "各軸は独立した単位を使用します。−log10(P)は0 < P ≤ 1のみを受け付け、集計後に変換します。"
+  ],
+  "原始数值": [
+    "Original values",
+    "元の値"
+  ],
+  "参考背景颜色": [
+    "Reference background color",
+    "参照背景の色"
+  ],
+  "右轴刻度格式": [
+    "Right tick format",
+    "右軸の目盛形式"
+  ],
+  "右轴指标": [
+    "Right-axis measure",
+    "右軸の指標"
+  ],
+  "右轴标题与单位": [
+    "Right title and units",
+    "右軸のタイトルと単位"
+  ],
+  "右轴范围": [
+    "Right-axis range",
+    "右軸の範囲"
+  ],
+  "右轴转换": [
+    "Right-axis transform",
+    "右軸の変換"
+  ],
+  "堆叠成分字段": [
+    "Stack component field",
+    "積み上げ成分の項目"
+  ],
+  "平滑连接": [
+    "Smooth connections",
+    "滑らかな接続"
+  ],
+  "并排组字段": [
+    "Cohort field",
+    "並列する群の項目"
+  ],
+  "正值颜色": [
+    "Positive color",
+    "正の値の色"
+  ],
+  "笔尖比例": [
+    "Tip proportion",
+    "先端の割合"
+  ],
+  "第二指标字段": [
+    "Secondary measure field",
+    "第二指標の項目"
+  ],
+  "细柄长度比例": [
+    "Stick length ratio",
+    "柄の長さの比率"
+  ],
+  "背景参考": [
+    "Background reference",
+    "背景の参照"
+  ],
+  "背景参考值": [
+    "Background reference value",
+    "背景の参照値"
+  ],
+  "自定义右轴范围": [
+    "Custom right-axis range",
+    "右軸の範囲を指定"
+  ],
+  "负值颜色": [
+    "Negative color",
+    "負の値の色"
+  ],
+  "轮廓比例": [
+    "Shape proportions",
+    "輪郭の比率"
+  ],
+  "边界线": [
+    "Boundary lines",
+    "境界線"
+  ],
+  "连接同一成分的边界或范围，保留原始总量；连接不代表个体流转。": [
+    "Connect matching component boundaries or bands while retaining totals. Connections do not show individual flows.",
+    "合計を保ったまま同じ成分の境界や帯を接続します。個体の移動は示しません。"
+  ],
+  "连接带": [
+    "Bands",
+    "接続帯"
+  ],
+  "连接形式": [
+    "Connection style",
+    "接続の形式"
+  ]
+,
   "启用柱形边框": ["Enable bar borders", "棒の枠線を有効にする"],
   "内侧系列": ["Inner series", "内側の系列"],
   "外侧系列": ["Outer series", "外側の系列"],

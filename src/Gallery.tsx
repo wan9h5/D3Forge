@@ -28,7 +28,7 @@ const chartCategories: Record<ChartType, Exclude<Category,'all'>> = {
   'pie-matrix':'pie','nested-pie':'pie','pie-bar':'pie','bar-pie':'bar',
   waffle:'waffle',histogram:'histogram',heatmap:'heatmap',volcano:'volcano',manhattan:'manhattan',
 };
-const entryCategory = (chart:typeof chartEntries[number]) => chart.patch.violinGeometry==='box' ? 'box' : chartCategories[chart.type];
+const entryCategory = (chart:typeof chartEntries[number]) => chart.patch.scatterVariant==='gsea' ? 'bar' : chart.patch.violinGeometry==='box' ? 'box' : chartCategories[chart.type];
 
 const normalizeSearch = (value:string) => value.normalize('NFKC').toLocaleLowerCase().replace(/[\s\p{P}\p{S}]+/gu,'');
 function matchesSearch(chart:typeof chartEntries[number],query:string) {

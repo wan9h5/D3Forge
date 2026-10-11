@@ -1,5 +1,7 @@
+import { barExtensionEntries } from './barExtensionEntries';
 import type { ChartEntry } from './chartEntries';
 export const barEntries:ChartEntry[]=[
+ ...barExtensionEntries,
  {id:"bar-error",type:"bar",name:"Error Bar",zh:"误差线柱状图",description:"从重复观测计算均值与 SD、SEM 或 95% 均值置信区间，也可映射已汇总的上下界。适合展示实验组的中心趋势与不确定性；可叠加原始点，不自动生成显著性检验结果。",patch:{barVariant:"error",radius:3,barAggregate:'mean',errorPoints:true}},
  {id:"bar-circos",type:"bar",name:"Two-track Circular Bar",zh:"双轨道环形柱状图",description:"把两个系列沿同一分类角度放入内外两条环形轨道，适合展示多条件指标、分类丰度和环形概览。轨道可使用独立或共用数值范围；此图展示分类数据，不自动解析基因组坐标。",patch:{barVariant:"circos",radius:3,height:600}},
  {id:"bar-percent",type:"bar",name:"Linked Percentage Bar",zh:"连接带百分比柱状图",description:"将每个分类的非负系列归一化为 100%，比较样本组成及其变化。可按需显示相邻柱之间的连接带，帮助追踪同一成分；连接带表示组成变化，不代表对象流转。",patch:{barVariant:"percent",radius:3,barLinks:true}},

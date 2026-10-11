@@ -1,3 +1,4 @@
+import { extendedBarSource } from './generateBarExtensions';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
 import type { CodeParts } from './generate';
@@ -6,7 +7,7 @@ import { barStatistics } from './barModel';
 const js=(value:unknown)=>JSON.stringify(value);
 const local=(locale:Locale,en:string,zh:string,ja:string)=>locale==='zh'?zh:locale==='ja'?ja:en;
 export function generateBarsCode(data:Row[],c:Config,locale:Locale):CodeParts{
- const mode=c.barVariant,hist=mode==='histfit',radial=mode==='polar'||mode==='circos',three=mode==='3d';
+ const mode=c.barVariant,hist=mode==='histfit',radial=['polar','circos','polar-group'].includes(mode),three=mode==='3d';
  const comment=(en:string,zh:string,ja:string)=>local(locale,en,zh,ja);
  const dataSource=`// ${codeComment('Replace this array with your own data. Keep the mapped field names.',locale)}
 const data = ${JSON.stringify(data,null,2)};
@@ -20,7 +21,7 @@ function renderChart(container, data) {
   root.selectAll("*")
     .remove();
   const width = ${c.width}, height = ${c.height};
-  const margin = {top: 56, right: 40, bottom: ${mode==='aggregate'?100:85}, left: ${c.horizontal?110:72}};
+  const margin = {top: 56, right: ${['dual-line','dual-bar','go'].includes(mode)?85:40}, bottom: ${['aggregate','ice','platform'].includes(mode)?110:85}, left: ${c.horizontal?110:72}};
   const innerW = Math.max(40, width - margin.left - margin.right);
   const innerH = Math.max(40, height - margin.top - margin.bottom);
   const svg = root.append("svg")
@@ -36,13 +37,14 @@ function renderChart(container, data) {
   // ${codeComment('CSV values may be strings. Skip blank, missing and non-finite values.',locale)}
   const numeric = v => v != null && String(v).trim() !== "" && Number.isFinite(Number(v));
   const processedData = data.filter(d => ${hist?`numeric(d[${js(c.xField)}])`:`d[${js(c.xField)}] != null && String(d[${js(c.xField)}]).trim() !== ""
-    && numeric(d[${js(c.yField)}])${['percent','butterfly','dot','polar','circos','3d','aggregate','extruded','triangle','broken'].includes(mode)?` && +d[${js(c.yField)}] >= 0`:''}${mode==='error'&&c.errorMode==='bounds'?`
+    && numeric(d[${js(c.yField)}])${['percent','butterfly','dot','polar','circos','3d','aggregate','extruded','triangle','broken','ice','pencil','stem','updown','polar-group','platform','group-stack'].includes(mode)?` && +d[${js(c.yField)}] >= 0`:''}${mode==='error'&&c.errorMode==='bounds'?`
     && numeric(d[${js(c.errorLowField)}]) && numeric(d[${js(c.errorHighField)}])
     && +d[${js(c.errorLowField)}] <= +d[${js(c.yField)}] && +d[${js(c.errorHighField)}] >= +d[${js(c.yField)}]`:''}`}
+${['dual-line','dual-bar','go'].includes(mode)?`    && numeric(d[${js(c.barSecondField)}])${c.barRightTransform==='neglog10'?` && +d[${js(c.barSecondField)}] > 0 && +d[${js(c.barSecondField)}] <= 1`:''}`:''}${mode==='group-stack'?`    && d[${js(c.barCohortField)}] != null && String(d[${js(c.barCohortField)}]).trim() !== ""`:''}
   ).map((d, index) => ({...d,
     category: ${hist?'"All"':`String(d[${js(c.xField)}])`},
     series: ${c.groupField?`String(d[${js(c.groupField)}] ?? "")`:'"All"'},
-    value: +d[${js(hist?c.xField:c.yField)}], index
+    value: +d[${js(hist?c.xField:c.yField)}], index, sourceRow:d
   }));
   const message = text => g.append("text")
     .attr("x", innerW / 2)
@@ -84,7 +86,7 @@ ${mode==='error'?barStatistics.replace('Invert the Student t CDF at 0.975 using 
   const cells = Array.from(d3.group(processedData, d => d.category), ([category, groups]) =>
     Array.from(d3.group(groups, d => d.series), ([series, rows]) => {
 ${mode==='error'?`      ${c.errorMode==='bounds'?`if (rows.length !== 1) return null;
-      const value = rows[0].value, low = +rows[0][${js(c.errorLowField)}], high = +rows[0][${js(c.errorHighField)}];`:`const summary = summarize(rows.map(d => d.value));
+      const value = rows[0].value, low = +rows[0].sourceRow[${js(c.errorLowField)}], high = +rows[0].sourceRow[${js(c.errorHighField)}];`:`const summary = summarize(rows.map(d => d.value));
       const value = summary.mean, error = summary.${c.errorMode};
       const low = error == null ? null : value - error, high = error == null ? null : value + error;`}
       return {category, series, value, low, high, rows, tip: [category, series, "n = " + rows.length, ${js(c.errorMode==='bounds'?'value = ':'mean = ')} + d3.format(".5~g")(value), low == null ? ${js(comment('Interval unavailable for n < 2','n < 2，无法估计误差','n < 2 のため誤差を推定できません'))} : "${c.errorMode.toUpperCase()} [" + d3.format(".5~g")(low) + ", " + d3.format(".5~g")(high) + "]"]};`:`      const value = d3.${c.barAggregate==='mean'?'mean':'sum'}(rows, d => d.value);
@@ -102,10 +104,10 @@ ${mode==='error'&&c.errorMode==='bounds'?`  if (cells.length < d3.group(processe
 `:''}  let categories = Array.from(new Set(cells.map(d => d.category)));
   const series = Array.from(new Set(cells.map(d => d.series)));
   color.domain(${c.groupField?'series':'categories'});
-  const fill = d => color(${c.groupField?'d.series':'d.category'});
+  const fill = d => ${mode==='gene'?`d.value >= 0 ? ${js(c.color)} : ${js(c.secondaryColor)}`:`color(${c.groupField?'d.series':'d.category'})`};
 ${c.barSort!=='input'?`  const sortTotals = d3.rollup(cells, rows => d3.sum(rows, d => d.value), d => d.category);
   categories.sort((a, b) => ${c.barSort==='descending'?'sortTotals.get(b) - sortTotals.get(a)':'sortTotals.get(a) - sortTotals.get(b)'});
-`:''}${radial?radialSource(c,locale):three?threeSource(c,locale):cartesianSource(c,locale)}
+`:''}${['dual-line','dual-bar','go','group-stack','polar-group'].includes(mode)?extendedBarSource(c,locale):radial?radialSource(c,locale):three?threeSource(c,locale):cartesianSource(c,locale)}
 ${c.legend&&c.groupField?`  const legend = svg.append("g")
     .attr("transform", "translate(" + margin.left + ",20)");
   legend.selectAll("g")
@@ -155,10 +157,10 @@ ${stacked?`  const lookup = new Map(cells.map(d => [JSON.stringify([d.category, 
   segments = stacks.flatMap(stack => stack.map((pair, i) => ({category: categories[i], series: stack.key,
     value: lookup.get(JSON.stringify([categories[i], stack.key]))?.value ?? 0, start: pair[0], end: pair[1]
   })));
-`:''}${mode==='butterfly'?`  const left = series.includes(${js(c.leftSeries)}) ? ${js(c.leftSeries)} : series[0];
+`:''}${['butterfly','updown'].includes(mode)?`  const left = series.includes(${js(c.leftSeries)}) ? ${js(c.leftSeries)} : series[0];
   const right = series.includes(${js(c.rightSeries)}) && ${js(c.rightSeries)} !== left ? ${js(c.rightSeries)} : series.find(value => value !== left);
   segments = cells.filter(d => d.series === left || d.series === right)
-    .map(d => ({...d, start: 0, end: d.series === left ? -d.value : d.value}));
+    .map(d => ({...d, start: 0, end: d.series === ${mode==='updown'?'right':'left'} ? -d.value : d.value}));
 `:''}
   const band = d3.scaleBand()
     .domain(categories)
@@ -168,19 +170,20 @@ ${stacked?`  const lookup = new Map(cells.map(d => [JSON.stringify([d.category, 
     .domain(series)
     .range([0, band.bandwidth()])
     .padding(.12);
-  const position = d => band(d.category) + ${stacked||mode==='butterfly'?'0':'subgroup(d.series)'};
-  const thickness = ${stacked||mode==='butterfly'?'band.bandwidth()':'subgroup.bandwidth()'};
+  const position = d => band(d.category) + ${stacked||['butterfly','updown'].includes(mode)?'0':'subgroup(d.series)'};
+  const thickness = ${stacked||['butterfly','updown'].includes(mode)?'band.bandwidth()':'subgroup.bandwidth()'};
   let minimum = Math.min(0, d3.min(segments, d => d.start), d3.min(segments, d => d.end));
   let maximum = Math.max(0, d3.max(segments, d => d.start), d3.max(segments, d => d.end));
 ${mode==='error'?`  minimum = Math.min(minimum, d3.min(cells, d => d.low ?? d.value));
   maximum = Math.max(maximum, d3.max(cells, d => d.high ?? d.value));
-`:''}${mode==='butterfly'?`  maximum = Math.max(Math.abs(minimum), maximum); minimum = -maximum;\n`:''}
+`:''}${['butterfly','updown'].includes(mode)?`  maximum = Math.max(Math.abs(minimum), maximum); minimum = -maximum;\n`:''}
 ${mode==='error'&&c.errorPoints&&c.errorMode!=='bounds'?`  minimum = Math.min(minimum, d3.min(processedData, d => d.value));
   maximum = Math.max(maximum, d3.max(processedData, d => d.value));
-`:''}${c.barOverlay?`  const overlayValues = processedData.filter(d => numeric(d[${js(c.barOverlayField)}])).map(d => +d[${js(c.barOverlayField)}]);
+`:''}${c.barOverlay?`  const overlayValues = processedData.filter(d => numeric(d.sourceRow[${js(c.barOverlayField)}])).map(d => +d.sourceRow[${js(c.barOverlayField)}]);
   minimum = Math.min(minimum, d3.min(overlayValues) ?? minimum);
   maximum = Math.max(maximum, d3.max(overlayValues) ?? maximum);
 `:''}${mode==='dot'?`  maximum = Math.ceil(maximum / (${c.dotUnit} * ${c.dotColumns})) * ${c.dotUnit} * ${c.dotColumns};
+`:''}${mode==='stem'?`  maximum = Math.max(maximum, ${c.barBackgroundValue});
 `:''}  if (minimum === maximum) maximum = minimum + 1;
   const value = d3.scaleLinear()
     .domain([minimum, maximum])
@@ -209,7 +212,7 @@ ${c.xAxis?`  xAxis.call(d3.axisBottom(${horizontal?'value':'band'})${mode==='per
   g.append("g")
       .call(d3.axisLeft(upper)
       .ticks(4));
-`:`  yAxis.call(d3.axisLeft(${horizontal?'band':'value'})${mode==='percent'?'.tickFormat(d3.format(".0%"))':''});
+`:`  yAxis.call(d3.axisLeft(${horizontal?'band':'value'})${mode==='updown'?'.tickFormat(v => d3.format("~g")(Math.abs(v)))':mode==='percent'?'.tickFormat(d3.format(".0%"))':''});
 `:''}${c.grid&&!broken?`  g.insert("g", ":first-child")
     .call(${horizontal?'d3.axisBottom(value)':'d3.axisLeft(value)'}.ticks(5)
       .tickSize(${horizontal?'innerH':'-innerW'})
@@ -235,19 +238,30 @@ ${c.xAxis?`  xAxis.call(d3.axisBottom(${horizontal?'value':'band'})${mode==='per
       .attr("y", ${horizontal?-85:-52})
       .attr("text-anchor", "middle")
     .text(${js(horizontal?c.yTitle||c.xField:c.yTitle||(mode==='percent'?'%':c.yField))});
-  const marks = g.append("g");
-${mode==='percent'&&c.barLinks?`  // ${ct('Bands connect compositions; they do not represent individual flows.','连接带表示组成变化，不代表个体流转。','帯は構成の変化を結び、個体の流れは表しません。')}
+${['updown','gene'].includes(mode)?`  g.append("line")
+    .attr("x2",innerW)
+    .attr("y1",value(0))
+    .attr("y2",value(0))
+    .attr("stroke","#687a90");
+`:''}  const marks = g.append("g");
+${stacked&&c.barLinks?`  // ${ct('Bands connect compositions; they do not represent individual flows.','连接带表示组成变化，不代表个体流转。','帯は構成の変化を結び、個体の流れは表しません。')}
   for (const name of series) {
     const rows = segments.filter(d => d.series === name);
     for (let i = 1; i < rows.length; i++) {
       const a = rows[i - 1], b = rows[i];
+      const x0=band(a.category)+band.bandwidth(), x1=band(b.category), mid=(x0+x1)/2;
+      const edge=(v0,v1)=>${c.barLinkCurve?'"C"+mid+","+value(v0)+" "+mid+","+value(v1)+" "+x1+","+value(v1)':'"L"+x1+","+value(v1)'};
+      const reverse=(v0,v1)=>${c.barLinkCurve?'"C"+mid+","+value(v0)+" "+mid+","+value(v1)+" "+x0+","+value(v1)':'"L"+x0+","+value(v1)'};
       marks.append("path")
-        .attr("d", "M" + (band(a.category) + band.bandwidth()) + "," + value(a.start) + "L" + band(b.category) + "," + value(b.start) + "L" + band(b.category) + "," + value(b.end) + "L" + (band(a.category) + band.bandwidth()) + "," + value(a.end) + "Z")
-        .attr("fill", color(name))
-      .attr("opacity", .2);
+        .attr("class","composition-link")
+        .attr("d", "M"+x0+","+value(a.end)+edge(a.end,b.end)${c.barLinkStyle==='band'?'+"L"+x1+","+value(b.start)+reverse(b.start,a.start)+"Z"':''})
+        .attr("fill",${c.barLinkStyle==='band'?'color(name)':'"none"'})
+        .attr("stroke",${c.barLinkStyle==='boundary'?'color(name)':'"none"'})
+        .attr("stroke-width",${c.lineWidth})
+        .attr("opacity",${c.barLinkStyle==='band'?'.2':'.7'});
     }
   }
-`:''}${mode==='dot'?dotSource(c,locale):mode==='triangle'?`  marks.selectAll("path.bar")
+`:''}${['ice','pencil','stem','platform'].includes(mode)?glyphSource(c,locale):mode==='dot'?dotSource(c,locale):mode==='triangle'?`  marks.selectAll("path.bar")
     .data(segments)
       .join("path")
       .attr("class", "bar")
@@ -259,7 +273,8 @@ ${mode==='percent'&&c.barLinks?`  // ${ct('Bands connect compositions; they do n
   for (const d of segments) {
     const parts = [{low:0, high:Math.min(d.value, cutLow), scale:lower}];
     if (d.value >= cutHigh) parts.push({low:cutHigh, high:d.value, scale:upper});
-    for (const part of parts) marks.append("rect").datum(d)
+    for (const part of parts) marks.append("rect")
+    .datum(d)
       .attr("class", "bar")
       .attr("x", position(d))
       .attr("width", thickness)
@@ -273,7 +288,8 @@ ${mode==='percent'&&c.barLinks?`  // ${ct('Bands connect compositions; they do n
       .attr("y", split + 4)
       .attr("text-anchor", "middle")
       .text("//");
-    if (d.value > cutLow && d.value < cutHigh) marks.append("circle").datum(d)
+    if (d.value > cutLow && d.value < cutHigh) marks.append("circle")
+    .datum(d)
       .attr("cx", position(d) + thickness / 2)
       .attr("cy", split)
       .attr("r", 4)
@@ -298,7 +314,7 @@ ${mode==='percent'&&c.barLinks?`  // ${ct('Bands connect compositions; they do n
     .attr("y", d => ${horizontal?'position(d)':'Math.min(value(d.start), value(d.end))'})
     .attr("width", d => ${horizontal?'Math.abs(value(d.end) - value(d.start))':'thickness'})
     .attr("height", d => ${horizontal?'thickness':'Math.abs(value(d.end) - value(d.start))'})
-    .attr("rx", ${c.cornerRadius})
+    .attr("rx", ${mode==='ice'?'thickness / 2':c.cornerRadius})
     .attr("fill", fill)
     .attr("opacity", ${c.opacity})
     .attr("stroke", ${js(c.markBorder?c.borderColor:'none')})
@@ -312,14 +328,14 @@ ${mode==='percent'&&c.barLinks?`  // ${ct('Bands connect compositions; they do n
     .attr("d", d => "M" + position(d) + "," + innerH + "L" + (position(d) + thickness) + "," + innerH + "L" + anchor.join(",") + "Z")
     .attr("fill", fill)
       .attr("opacity", .25);
-`:''}${c.barOverlay&&!horizontal&&!stacked&&!broken?`  const trend = cells.map(d => ({...d, trend:d3.mean(d.rows, row => numeric(row[${js(c.barOverlayField)}]) ? +row[${js(c.barOverlayField)}] : undefined)}));
+`:''}${c.barOverlay&&!horizontal&&!broken?`${stacked?`  const trend = Array.from(d3.group(processedData,d=>d.category),([category,rows])=>({category,series:"All",trend:d3.mean(rows,row=>numeric(row.sourceRow[${js(c.barOverlayField)}])?+row.sourceRow[${js(c.barOverlayField)}]:undefined)}));`:`  const trend = cells.map(d => ({...d, trend:d3.mean(d.rows, row => numeric(row.sourceRow[${js(c.barOverlayField)}]) ? +row.sourceRow[${js(c.barOverlayField)}] : undefined)}));`}
   marks.selectAll("path.trend")
     .data(Array.from(d3.group(trend, d => d.series).values(), rows => rows.sort((a,b) => categories.indexOf(a.category)-categories.indexOf(b.category))))
     .join("path")
     .attr("class", "trend")
     .attr("d", rows => d3.line()
       .defined(d => Number.isFinite(d.trend))
-      .x(d => position(d) + thickness / 2)
+      .x(d => ${stacked?'band(d.category)+band.bandwidth()/2':'position(d) + thickness / 2'})
       .y(d => value(d.trend))(rows))
     .attr("fill", "none")
       .attr("stroke", ${js(c.significantColor)})
@@ -621,4 +637,85 @@ ${c.histogramFit==='normal'?`  if (!(sd > 0)) svg.append("text")
       .attr("y",-50)
       .attr("text-anchor","middle")
       .text(${js(local(locale,c.histogramMode==='density'?'Density':'Count',c.histogramMode==='density'?'概率密度':'频数',c.histogramMode==='density'?'確率密度':'度数'))});
+`;}
+function glyphSource(c:Config,locale:Locale){const mode=c.barVariant;return `  // ${local(locale,'Decorative geometry does not change the height of the encoded value.','装饰形状不改变数值对应的顶点高度。','装飾の形状を変えても、値を表す頂点の高さは変わりません。')}
+${mode==='stem'?`  marks.selectAll("rect.background")
+    .data(segments)
+    .join("rect")
+    .attr("class","background")
+    .attr("x",position)
+    .attr("width",thickness)
+    .attr("y",value(${c.barBackgroundValue}))
+    .attr("height",Math.max(0,value(0)-value(${c.barBackgroundValue})))
+    .attr("fill",${js(c.barBackgroundColor)});
+  marks.selectAll("line.bar")
+    .data(segments)
+    .join("line")
+    .attr("class","bar")
+    .attr("x1",d=>position(d)+thickness/2)
+    .attr("x2",d=>position(d)+thickness/2)
+    .attr("y1",value(0))
+    .attr("y2",d=>value(d.value))
+    .attr("stroke",fill)
+    .attr("opacity",${c.opacity})
+    .attr("stroke-width",${c.lineWidth})
+    .call(tip);
+  marks.selectAll("circle.stem-tip")
+    .data(segments)
+    .join("circle")
+    .attr("class","stem-tip")
+    .attr("cx",d=>position(d)+thickness/2)
+    .attr("cy",d=>value(d.value))
+    .attr("r",${c.radius})
+    .attr("fill","white")
+    .attr("stroke",fill)
+    .attr("opacity",${c.opacity})
+    .attr("stroke-width",${c.lineWidth})
+    .call(tip);`
+:mode==='pencil'?`  marks.selectAll("path.bar")
+    .data(segments)
+    .join("path")
+    .attr("class","bar")
+    .attr("d",d=>{const x=position(d),top=value(d.value),bottom=value(0),cap=Math.min((bottom-top)*${c.barGlyphRatio},thickness*.8);
+      return "M"+x+","+bottom+"V"+(top+cap)+"L"+(x+thickness/2)+","+top+"L"+(x+thickness)+","+(top+cap)+"V"+bottom+"Z";})
+    .attr("fill",fill)
+    .attr("opacity",${c.opacity})
+    .call(tip);
+  marks.selectAll("path.pencil-tip")
+    .data(segments)
+    .join("path")
+    .attr("class","pencil-tip")
+    .attr("d",d=>{const x=position(d),top=value(d.value),cap=Math.min((value(0)-top)*${c.barGlyphRatio},thickness*.8);
+      return "M"+x+","+(top+cap)+"L"+(x+thickness/2)+","+top+"L"+(x+thickness)+","+(top+cap)+"Z";})
+    .attr("fill",d=>d3.color(fill(d)).darker(.5))
+    .attr("pointer-events","none");`
+:`${mode==='ice'?`  marks.selectAll("rect.stick")
+    .data(segments)
+    .join("rect")
+    .attr("class","stick")
+    .attr("x",d=>position(d)+thickness*.4)
+    .attr("width",thickness*.2)
+    .attr("y",value(0)-1)
+    .attr("height",${c.barGlyphRatio}*80)
+    .attr("rx",3)
+    .attr("fill","#d9b88c");`:''}
+  marks.selectAll("rect.bar")
+    .data(segments)
+    .join("rect")
+    .attr("class","bar")
+    .attr("x",position)
+    .attr("width",thickness)
+    .attr("y",d=>value(d.value))
+    .attr("height",d=>Math.max(0,value(0)-value(d.value)))
+    .attr("rx",${mode==='ice'?'thickness/2':c.cornerRadius})
+    .attr("fill",fill)
+    .attr("opacity",${c.opacity})
+    .call(tip);
+${mode==='platform'?`  marks.selectAll("path.platform")
+    .data(segments)
+    .join("path")
+    .attr("class","platform")
+    .attr("d",d=>{const x=position(d),y=value(0),depth=${c.barDepth};return "M"+x+","+y+"h"+thickness+"l"+depth+","+depth+"v16h-"+thickness+"v-16Z";})
+    .attr("fill",d=>d3.color(fill(d)).brighter(.7))
+    .attr("stroke","white");`:''}`}
 `;}
