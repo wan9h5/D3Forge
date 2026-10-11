@@ -115,10 +115,10 @@ await check('home: compact demo, syntax colors and whole-card switching', async 
   assert(geometry.scroll <= geometry.client + 1, 'No code scrollbar in homepage demo');
   await screenshot('home-desktop');
 });
-const names = { scatter: '散点图', volcano: '火山图', box: '箱线图', bar: '柱状图', line: '折线图', violin: '小提琴图', manhattan: '曼哈顿图', heatmap: '热力图', histogram: '直方图' };
+const names = { scatter: '散点图', volcano: '火山图', box: '箱线图', bar: '柱状图', line: '折线图', violin: '小提琴图', manhattan: '曼哈顿图', heatmap: '热力图', histogram: '直方图', pie:'饼图', 'pie-matrix':'矩阵饼图', 'nested-pie':'双层环图',waffle:'华夫饼图','pie-bar':'饼图与条形细分','bar-pie':'柱状图与饼图' };
 for (const [type, name] of Object.entries(names)) await check(`gallery click → ${type}: correct route, SVG, three zones and real preview`, async () => {
   await navigate('#/gallery');
-  await until('document.querySelectorAll(".chart-card").length === 9');
+  await until('document.querySelectorAll(".chart-card").length === 31');
   await evaluate(`document.querySelector('.chart-card[href="#/charts/${type}"]').click()`);
   await until(`document.querySelector('.workspace-title h1')?.textContent.includes(${JSON.stringify(name)})`);
   const context = await chartFrame();
@@ -131,7 +131,7 @@ for (const [type, name] of Object.entries(names)) await check(`gallery click →
   assert.equal(await evaluate('document.querySelectorAll(".notice[role=alert]").length'), 0);
   const layout = await evaluate('(()=>{const c=document.querySelector(".controls").getBoundingClientRect(),p=document.querySelector(".preview-panel").getBoundingClientRect(),s=document.querySelector(".source-panel").getBoundingClientRect();return {columns:c.right<=p.left&&p.right<=s.left,overflow:document.documentElement.scrollWidth>innerWidth}})()');
   assert(layout.columns && !layout.overflow, 'Three desktop columns fit the viewport');
-  if (type === 'violin' || type === 'manhattan' || type === 'heatmap' || type === 'histogram') await screenshot(type + '-desktop');
+  if (['violin','manhattan','heatmap','histogram','pie','pie-matrix','nested-pie','waffle','pie-bar','bar-pie'].includes(type)) await screenshot(type + '-desktop');
 });
 await check('scatter: radius/source highlight, local scrolling, data tab and Ctrl+F', async () => {
   await navigate('#/charts/scatter');
@@ -227,9 +227,29 @@ await check('advanced options: controls update source and preview, preserve page
     await evaluate('document.querySelector(".language-trigger").click()');
     await clickText('.language-menu button',name);
     await until('document.querySelector(".advanced-settings h3").textContent==='+JSON.stringify(title));
-    assert.equal(await evaluate('document.querySelector("#advanced-pointShape").value'),'diamond');
+    assert.equal(await evaluate('document.querySelector("#advanced-pointShape").closest(".custom-select").querySelector("select").value'),'diamond');
   }
   await screenshot('advanced-scatter');
+});
+await check('composition: real dropdown selection, donut preview, labels and custom colors',async()=>{
+  await navigate('#/charts/pie');let context=await chartFrame();
+  const before=await evaluate('document.querySelector(".segment").getAttribute("d")',context);
+  const top=await evaluate('window.scrollY');
+  await evaluate(`(()=>{const trigger=document.querySelector('.select-trigger[aria-label="图形形式"]');trigger.focus();trigger.click()})()`);
+  await until('!!document.querySelector(".select-menu")');
+  await clickText('.select-menu [role=option]','环图');
+  await until('!document.querySelector(".select-menu")');
+  context=await chartFrame();assert.notEqual(await evaluate('document.querySelector(".segment").getAttribute("d")',context),before);
+  assert.equal(await evaluate('window.scrollY'),top);
+  assert(await evaluate('document.activeElement.classList.contains("select-trigger")'));
+  await evaluate(`(()=>{const label=[...document.querySelectorAll('.controls .toggle')].find(n=>n.textContent==='扇区标签');label.querySelector('input').click()})()`);
+  context=await chartFrame();assert(await evaluate('document.querySelectorAll(".pie-label").length>0',context));
+  await screenshot('donut-configured');
+  await navigate('#/charts/waffle');await chartFrame();
+  await evaluate(`document.querySelector('.select-trigger[aria-label="单元形状"]').click()`);
+  await clickText('.select-menu [role=option]','人物图标');
+  context=await chartFrame();assert.equal(await evaluate('document.querySelectorAll(".unit path").length',context),100);
+  await screenshot('waffle-icons');
 });
 await check('mobile: home/gallery/detail readable with no document overflow', async () => {
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});

@@ -1,3 +1,4 @@
+import { isComposition } from './compositionModel';
 import type { ChartType, Config, Row } from './model';
 
 export interface AdvancedConfig {
@@ -39,6 +40,8 @@ export const advancedDefaults: AdvancedConfig = {
 };
 
 export function numericAxes(type: ChartType, c: Config) {
+  if(isComposition(type))return {x:false,y:false};
+  if(type==='violin' && c.horizontal)return {x:true,y:false};
   return {
     x: ['scatter','volcano','line'].includes(type) || type==='bar' && c.horizontal,
     y: type!=='heatmap' && !(type==='bar' && c.horizontal),
@@ -50,7 +53,8 @@ export function hasChartLegend(type: ChartType,c: Config) {
 export function legendNames(type: ChartType,data: Row[],c: Config): string[] {
   if(type==='volcano')return ['up','down','ns'];
   if(type==='manhattan')return ['Chromosome group A','Chromosome group B','Significant'];
-  const field=type==='box'||type==='violin'?c.xField:c.groupField;
+  if(isComposition(type))return [...new Set(data.map(row=>String(row[type==='nested-pie'||type==='pie-bar'?c.parentField:c.categoryField]??'')).filter(Boolean))];
+  const field=type==='violin'&&c.violinGroupField?c.violinGroupField:type==='box'||type==='violin'?c.xField:c.groupField;
   return [...new Set(data.map(row=>String(row[field]??'')).filter(Boolean))];
 }
 export const legendTextWidth = (text: string, size: number) => Array.from(text).reduce((sum,char)=>sum+(char.charCodeAt(0)>255?size:size*.6),0);

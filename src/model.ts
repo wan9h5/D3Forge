@@ -1,12 +1,17 @@
+import { barDefaults, barRows, type BarConfig } from './barModel';
+import { scatterDefaults, scatterRows, type ScatterConfig } from './scatterModel';
+import { compositionDefaults, compositionMock, compositionRows, isComposition, type CompositionConfig, type CompositionType } from './compositionModel';
 import { advancedDefaults, type AdvancedConfig } from './advancedModel';
-export type ChartType = 'scatter' | 'volcano' | 'box' | 'bar' | 'line' | 'violin' | 'manhattan' | 'heatmap' | 'histogram';
+export type ChartType = CompositionType | 'scatter' | 'volcano' | 'box' | 'bar' | 'line' | 'violin' | 'manhattan' | 'heatmap' | 'histogram';
 export type Row = Record<string, string | number | null>;
-export interface Config extends AdvancedConfig {
+export interface Config extends AdvancedConfig, CompositionConfig, ScatterConfig, BarConfig {
   xField: string; yField: string; groupField: string; labelField: string;
   radius: number; opacity: number; color: string; width: number; height: number;
   xAxis: boolean; yAxis: boolean; grid: boolean; tooltip: boolean; legend: boolean;
   zoom: boolean; labels: boolean; xScale: 'linear' | 'log'; yScale: 'linear' | 'log';
   barLayout: 'grouped' | 'stacked'; horizontal: boolean; barPadding: number; lineWidth: number; smooth: boolean; area: boolean; showPoints: boolean;
+  comparisonsEnabled: boolean; comparisons: {from:string;to:string;label:string}[];
+  violinLayout: 'full' | 'half' | 'split' | 'raincloud'; violinGroupField: string; facetField: string; facetScale: 'shared' | 'free'; violinGeometry: 'violin' | 'box'; annotationsEnabled: boolean; annotationField: string;
   bandwidthFactor: number; violinScale: 'width' | 'density'; violinInner: 'box' | 'median' | 'none';
   chromosomeField: string; chromosomeGap: number; secondaryColor: string; significantColor: string;
   showThreshold: boolean; showSuggestive: boolean; suggestiveThreshold: number; labelLimit: number;
@@ -24,8 +29,15 @@ export const charts: {id: ChartType; name: string; zh: string; description: stri
   {id:'heatmap',name:'Heatmap',zh:'热力图',description:'用颜色比较矩阵中的数值'},
   {id:'histogram',name:'Histogram',zh:'直方图',description:'查看单个数值变量的频数与密度'},
   {id:'manhattan',name:'Manhattan Plot',zh:'曼哈顿图',description:'展示染色体上的关联显著性'},
+  {id:'pie',name:'Pie / Donut',zh:'饼图与环图',description:'展示分类组成，支持环形与扇形'},
+  {id:'pie-matrix',name:'Pie Matrix',zh:'矩阵饼图',description:'比较行列分组中的分类占比'},
+  {id:'nested-pie',name:'Nested Pie',zh:'双层分类饼图',description:'展示父分类与子分类的组成关系'},
+  {id:'waffle',name:'Waffle Chart',zh:'华夫饼图',description:'用方格、圆点或图标表示分类比例'},
+  {id:'pie-bar',name:'Bar of Pie',zh:'饼图与条形细分',description:'展开一个父分类的内部组成'},
+  {id:'bar-pie',name:'Bar with Pies',zh:'柱状图与饼图',description:'同时比较样本总量与分类占比'},
 ];
 export function mockData(type: ChartType): Row[] {
+  if(isComposition(type))return compositionMock(type);
   if (type === 'heatmap') return ['TP53', 'BRCA1', 'EGFR', 'MYC', 'KRAS', 'STAT3'].flatMap((gene, row) =>
     ['Control 1', 'Control 2', 'Treatment 1', 'Treatment 2', 'Recovery 1'].map((sample, column) => ({
       gene, sample, value: +(Math.sin(row * 1.4 + column * .8) * 2.4 + (column > 1 && column < 4 ? row * .45 : 0)).toFixed(2),
@@ -36,6 +48,7 @@ export function mockData(type: ChartType): Row[] {
   }));
   if (type === 'violin') return Array.from({ length: 144 }, (_, i) => ({
     sample: `S${String(i + 1).padStart(3, '0')}`,
+    sex: i % 2 ? 'Female' : 'Male', tissue: Math.floor(i / 6) % 2 ? 'Liver' : 'Blood', letter: ['a', 'b', 'ab'][i % 3],
     group: ['Control', 'Treatment', 'Recovery'][i % 3],
     value: +(12 + (i % 3) * 4 + Math.sin(i * 1.73) * (2 + i % 3) + Math.cos(i * .49) * 1.8).toFixed(3),
   }));
@@ -46,7 +59,7 @@ export function mockData(type: ChartType): Row[] {
     pvalue: +Math.pow(10, -(1 + Math.abs(Math.sin(i * 1.93)) * 3.8 + (i % 47 === 0 ? 6 : i % 31 === 0 ? 3.6 : 0))).toPrecision(6),
   }));
   if (type === 'bar') return ['Q1', 'Q2', 'Q3', 'Q4'].flatMap((category, index) =>
-    ['Product A', 'Product B', 'Product C'].map((series, group) => ({ category, series, value: 18 + index * 7 + group * 9 + (index % 2) * (group + 2) })));
+    ['Product A', 'Product B', 'Product C'].map((series, group) => ({ category, series, letter: ['a','b','ab'][group], value: 18 + index * 7 + group * 9 + (index % 2) * (group + 2) })));
   if (type === 'line') return Array.from({ length: 12 }, (_, index) =>
     ['Control', 'Treatment', 'Recovery'].map((series, group) => ({ time: index + 1, value: +(20 + index * 2 + group * 8 + Math.sin(index * .75 + group) * 5).toFixed(2), series }))).flat();
   return Array.from({length: type === 'volcano' ? 72 : 48}, (_, i): Row => {
@@ -59,10 +72,11 @@ export function mockData(type: ChartType): Row[] {
     const expressionA = +(8 + i * .75 + Math.sin(i * 2.1) * 5).toFixed(2);
     const expressionB = +(expressionA * .65 + (i % 3) * 7 + Math.cos(i * 1.5) * 6 + 4).toFixed(2);
     return type === 'scatter' ? {sample:`S${String(i+1).padStart(2,'0')}`,expressionA,expressionB,group}
-      : {sample:`S${String(i+1).padStart(2,'0')}`,group,expression: +(7 + (i%3)*3 + Math.sin(i*1.7)*2.6 + (i===40?12:0)).toFixed(2)};
+      : {sample:`S${String(i+1).padStart(2,'0')}`,group,letter:['a','b','ab'][i%3],expression: +(7 + (i%3)*3 + Math.sin(i*1.7)*2.6 + (i===40?12:0)).toFixed(2)};
   });
 }
 export function thumbnailData(type: ChartType): Row[] {
+  if(isComposition(type))return mockData(type);
   if (type === 'heatmap') return mockData(type).filter(row => row.gene !== 'STAT3');
   if (type === 'histogram') return mockData(type);
   // Minimal deterministic rows for gallery cards: just enough marks to read the chart type at a glance.
@@ -120,6 +134,7 @@ export function thumbnailConfig(type: ChartType): Config {
   };
 }
 export function defaults(type: ChartType): Config {
+  if(isComposition(type))return {...defaults('scatter'),xField:'category',yField:'value',groupField:'category',valueField:'value',labelField:'category',xAxis:false,yAxis:false,grid:false,opacity:1,color:'#4e79a7',showPoints:false,pieMode:type==='nested-pie'?'donut':'pie',holeRatio:type==='nested-pie'?.25:.55,tooltipFields:['category','value']};
   if (type === 'heatmap') return {
     ...defaults('scatter'), xField: 'sample', yField: 'gene', valueField: 'value', groupField: '',
     color: '#356ae6', secondaryColor: '#e6ad43', opacity: 1, heatmapPalette: 'diverging',
@@ -144,12 +159,16 @@ export function defaults(type: ChartType): Config {
     groupField: 'series', labelField: type === 'bar' ? 'category' : 'time', color: '#356ae6',
     tooltipFields: [type === 'bar' ? 'category' : 'time', 'value', 'series'],
   };
-  return {...advancedDefaults,valueField:'value',heatmapAggregate:'mean',heatmapPalette:'sequential',cellGap:2,cellRadius:2,binCount:14,histogramMode:'count',bandwidthFactor:1,violinScale:'width',violinInner:'box',chromosomeField:'chromosome',chromosomeGap:.04,secondaryColor:'#95a5bd',significantColor:'#e2ad42',showThreshold:true,showSuggestive:false,suggestiveThreshold:1e-5,labelLimit:12,barLayout:'grouped',horizontal:false,barPadding:.22,lineWidth:2.5,smooth:false,area:false,showPoints:true,xField:type==='volcano'?'log2FC':type==='box'?'group':'expressionA', yField:type==='volcano'?'pvalue':type==='box'?'expression':'expressionB',groupField:type==='volcano'?'':'group',labelField:type==='volcano'?'gene':'sample',radius:4,opacity:.8,color:'#197f8a',width:800,height:440,xAxis:true,yAxis:true,grid:true,tooltip:true,legend:true,zoom:false,labels:false,xScale:'linear',yScale:'linear',pThreshold:.05,fcThreshold:1,tooltipFields:type==='volcano'?['gene','log2FC','pvalue']:type==='box'?['group','expression']:['sample','expressionA','expressionB','group']};
+  return {...advancedDefaults,...compositionDefaults,...scatterDefaults,...barDefaults,
+    comparisonsEnabled:false,comparisons:[],violinLayout:'full',violinGroupField:'',facetField:'',facetScale:'shared',violinGeometry:'violin',annotationsEnabled:false,annotationField:'letter',valueField:'value',heatmapAggregate:'mean',heatmapPalette:'sequential',cellGap:2,cellRadius:2,binCount:14,histogramMode:'count',bandwidthFactor:1,violinScale:'width',violinInner:'box',chromosomeField:'chromosome',chromosomeGap:.04,secondaryColor:'#95a5bd',significantColor:'#e2ad42',showThreshold:true,showSuggestive:false,suggestiveThreshold:1e-5,labelLimit:12,barLayout:'grouped',horizontal:false,barPadding:.22,lineWidth:2.5,smooth:false,area:false,showPoints:true,xField:type==='volcano'?'log2FC':type==='box'?'group':'expressionA', yField:type==='volcano'?'pvalue':type==='box'?'expression':'expressionB',groupField:type==='volcano'?'':'group',labelField:type==='volcano'?'gene':'sample',radius:4,opacity:.8,color:'#197f8a',width:800,height:440,xAxis:true,yAxis:true,grid:true,tooltip:true,legend:true,zoom:false,labels:false,xScale:'linear',yScale:'linear',pThreshold:.05,fcThreshold:1,tooltipFields:type==='volcano'?['gene','log2FC','pvalue']:type==='box'?['group','expression']:['sample','expressionA','expressionB','group']};
 }
 export function validNumber(value: unknown): boolean {
   return value !== null && value !== undefined && String(value).trim() !== '' && Number.isFinite(Number(value));
 }
 export function validateRows(type: ChartType, data: Row[], c: Config) {
+  if((type==='bar'||type==='histogram')&&c.barVariant!=='basic')return barRows(data,c);
+  if(type==='scatter'&&c.scatterVariant!=='basic')return scatterRows(data,c);
+  if(isComposition(type))return compositionRows(type,data,c);
   if (type === 'histogram') return data.filter(row => validNumber(row[c.xField]) && (!c.histogramRangeEnabled || +row[c.xField]! >= c.histogramMin && +row[c.xField]! <= c.histogramMax));
   if (type === 'heatmap') return data.filter(row =>
     row[c.xField] != null && String(row[c.xField]).trim() !== ''
@@ -160,6 +179,7 @@ export function validateRows(type: ChartType, data: Row[], c: Config) {
   const pvalues = type === 'volcano' || type === 'manhattan';
   return data.filter(d => {
     if (!validNumber(d[c.yField])) return false;
+    if (type === 'violin' && [c.violinGroupField,c.facetField].filter(Boolean).some(field => d[field] == null || String(d[field]).trim() === '')) return false;
     if (category ? d[c.xField] == null || String(d[c.xField]).trim() === '' : !validNumber(d[c.xField])) return false;
     if (pvalues && !(+d[c.yField]! > 0 && +d[c.yField]! <= 1)) return false;
     if (type === 'manhattan') return +d[c.xField]! >= 0

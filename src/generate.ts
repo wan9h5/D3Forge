@@ -1,3 +1,8 @@
+import { generateBarsCode } from './generateBars';
+import { generateScatterCode } from './generateScatter';
+import { generateViolinCode } from './generateViolin';
+import { isComposition } from './compositionModel';
+import { generateCompositionCode } from './generateComposition';
 import { marginSource, axisOptions, scaleOverrides, appearanceSource } from './generatePresentation';
 import { generateDistributionCode } from './generateDistribution';
 import { codeComment } from './codeComments';
@@ -12,8 +17,12 @@ const importLine = 'import * as d3 from "d3";';
 export interface CodeParts { logic: string; data: string; source: string; }
 
 export function generateCodeParts(type: ChartType, data: Row[], c: Config, locale: Locale = 'en'): CodeParts {
+  if((type==='bar'||type==='histogram')&&c.barVariant!=='basic')return generateBarsCode(data,c,locale);
+  if(type==='scatter'&&c.scatterVariant!=='basic')return generateScatterCode(data,c,locale);
+  if(isComposition(type))return generateCompositionCode(type,data,c,locale);
   if (type === 'heatmap' || type === 'histogram') return generateDistributionCode(type, data, c, locale);
-  if (type === 'violin' || type === 'manhattan') return generateAdvancedCode(type, data, c, locale);
+  if (type === 'violin') return generateViolinCode(data,c,locale);
+  if (type === 'manhattan') return generateAdvancedCode(type, data, c, locale);
   if (type === 'bar' || type === 'line') return generateSeriesCode(type, data, c, locale);
   const x = field(c.xField), y = field(c.yField);
   const group = type==='volcano'?'d.status':c.groupField?`String(${field(c.groupField)})`:'"All samples"';
@@ -400,6 +409,20 @@ ${c.xAxis?`      xAxis.selectAll(".tick text")
         .attr("display", zy(${c.referenceY}) >= 0 && zy(${c.referenceY}) <= innerH ? null : "none");
 `:''}    })
   );
+`:''}${type==='box'&&c.annotationsEnabled?`  // ${codeComment("Display supplied annotations only; no statistical test is performed.",locale)}
+  g.selectAll("text.annotation")
+    .data(summaries)
+    .join("text")
+    .attr("class", "annotation")
+    .attr("x", d => x(d.group) + x.bandwidth() / 2)
+    .attr("y", d => Math.max(12, y(d.high) - 12))
+    .attr("text-anchor", "middle")
+    .attr("fill", ${js(c.labelStyle?c.labelColor:'#26394c')})
+    .attr("font-size", ${c.labelStyle?c.labelFontSize:14})
+    .text(d => Array.from(new Set(processedData.filter(row => row._group === d.group)
+      .map(row => String(row[${js(c.annotationField)}] ?? "")).filter(Boolean)))
+      .join(" / ")
+    );
 `:''}${appearanceSource(type,c,locale)}  return svg.node();
 }
 

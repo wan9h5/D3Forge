@@ -1,0 +1,21 @@
+import type { ChartEntry } from './chartEntries';
+export const barEntries:ChartEntry[]=[
+ {id:"bar-error",type:"bar",name:"Error Bar",zh:"误差线柱状图",description:"从重复观测计算均值与 SD、SEM 或 95% 均值置信区间，也可映射已汇总的上下界。适合展示实验组的中心趋势与不确定性；可叠加原始点，不自动生成显著性检验结果。",patch:{barVariant:"error",radius:3,barAggregate:'mean',errorPoints:true}},
+ {id:"bar-circos",type:"bar",name:"Two-track Circular Bar",zh:"双轨道环形柱状图",description:"把两个系列沿同一分类角度放入内外两条环形轨道，适合展示多条件指标、分类丰度和环形概览。轨道可使用独立或共用数值范围；此图展示分类数据，不自动解析基因组坐标。",patch:{barVariant:"circos",radius:3,height:600}},
+ {id:"bar-percent",type:"bar",name:"Linked Percentage Bar",zh:"连接带百分比柱状图",description:"将每个分类的非负系列归一化为 100%，比较样本组成及其变化。可按需显示相邻柱之间的连接带，帮助追踪同一成分；连接带表示组成变化，不代表对象流转。",patch:{barVariant:"percent",radius:3,barLinks:true}},
+ {id:"bar-butterfly",type:"bar",name:"Butterfly Chart",zh:"蝴蝶图",description:"让两个系列围绕中线向左右展开，适合比较两组在相同分类上的数量、丰度或构成。左右系列可选择，轴标签显示实际非负大小，两侧共用范围以保证可比性。",patch:{barVariant:"butterfly",radius:3,horizontal:true}},
+ {id:"bar-vertical",type:"bar",name:"Vertical Bar",zh:"垂直柱状图",description:"按分类比较数值总量或均值，适合时间分类、实验组和指标汇总。支持排序、标签与可选趋势折线；若同一分类有多条记录，按所选方式汇总。",patch:{barVariant:"vertical",radius:3,groupField:'',labels:true}},
+ {id:"histogram-fit",type:"histogram",name:"Histogram with Fit",zh:"带拟合直方图",description:"观察单个数值变量的分布，并叠加正态拟合或核密度曲线。适合测量质控和分布探索；曲线与频数或密度单位保持一致，正态曲线只是一种拟合假设。",patch:{barVariant:"histfit",radius:3,xField:'value',yField:'value',histogramMode:'density',groupField:'',tooltipFields:['sample','value']}},
+ {id:"bar-polar",type:"bar",name:"Polar Bar",zh:"极坐标柱状图",description:"将分类排列在角度方向，用半径或扇区面积表达非负数值，适合周期分类、组成概览与环形展示。可调整角度范围、内半径和柱间距；面积模式避免扇区面积与数值比例失真。",patch:{barVariant:"polar",radius:3,groupField:'',height:580}},
+ {id:"bar-grouped",type:"bar",name:"Grouped Vertical Bar",zh:"多组垂直柱状图",description:"在每个分类内并排展示多个系列，适合多处理、多队列和重复条件比较。支持分类排序、系列配色与数值标签，重复分类和系列记录按所选方式汇总。",patch:{barVariant:"grouped",radius:3,}},
+ {id:"bar-dot",type:"bar",name:"Dot Bar",zh:"点状柱状图",description:"用规则排列的圆点表达非负分类数值，适合强调数量单位与分类差异。每点代表的数值可配置，最后一个点按剩余比例缩小面积；提示始终保留真实数值。",patch:{barVariant:"dot",radius:3,groupField:'',dotUnit:10}},
+ {id:"bar-stacked",type:"bar",name:"Stacked Vertical Bar",zh:"堆叠柱状图",description:"在分类柱中叠加多个系列，展示总量和内部构成，适合样本组成和多指标汇总。支持正负值分别堆叠、分类排序及系列配色；中间层的长度需要结合坐标和提示比较。",patch:{barVariant:"stacked",radius:3,barLayout:'stacked'}},
+ {id:"bar-hstacked",type:"bar",name:"Horizontal Stacked Bar",zh:"堆叠条形图",description:"以横向堆叠条形比较分类总量与系列组成，适合名称较长的通路、功能或实验类别。正负值在零线两侧分别堆叠，可配置间距、排序和标签。",patch:{barVariant:"hstacked",radius:3,horizontal:true,barLayout:'stacked'}},
+ {id:"bar-3d",type:"bar",name:"3D Bar",zh:"三维柱状图",description:"用两个分类方向和柱高展示多系列数值，适合小型分类矩阵和多条件概览。支持旋转与缩放，遮挡可通过视角调整；源码包含柱体投影和深度排序，仅依赖 D3 与 DOM。",patch:{barVariant:"3d",radius:3,height:560,zoom:true}},
+ {id:"bar-aggregate",type:"bar",name:"Converging Bar",zh:"底部汇聚柱状图",description:"让分类柱底部通过连接面汇聚到共同位置，突出它们属于同一整体的视觉关系。适合分类概览和展示场景；连接面仅表达归属，不表示额外数值或流量。",patch:{barVariant:"aggregate",radius:3,groupField:'',labels:true}},
+ {id:"bar-extruded",type:"bar",name:"Extruded Bar",zh:"立体柱状图",description:"为单排分类柱添加顶部和侧面，保留二维坐标轴上的数值高度。适合少量分类的演示，可调整立体深度；立体外观不增加第三个数据维度。",patch:{barVariant:"extruded",radius:3,groupField:'',labels:true}},
+ {id:"bar-diverging",type:"bar",name:"Diverging Bar",zh:"双向条形图",description:"以零线为中心展示带符号的变化、效应量或评分，适合正负方向比较。保留输入数值的符号，支持排序、系列颜色和标签，不把正数自动推断为另一组的负数。",patch:{barVariant:"diverging",radius:3,horizontal:true}},
+ {id:"bar-horizontal",type:"bar",name:"Grouped Horizontal Bar",zh:"多组水平条形图",description:"在每个分类中横向并排比较多个系列，适合标签较长的功能、通路和问卷分类。可选择求和或均值汇总，调整分类间距、排序与标签。",patch:{barVariant:"horizontal",radius:3,horizontal:true}},
+ {id:"bar-triangle",type:"bar",name:"Triangle Bar",zh:"三角柱状图",description:"用三角形顶点高度表达非负分类数值，适合展示排序与数量差异的图形变体。数值读取以顶点及标签为准，三角面积不作为独立的数据编码。",patch:{barVariant:"triangle",radius:3,groupField:'',labels:true}},
+ {id:"bar-broken",type:"bar",name:"Broken-axis Bar",zh:"带断轴柱状图",description:"当少数值远大于其余值时，通过明确标记的断轴同时观察高低区间。可设置省略范围和上下区域比例；落在省略区间的值不会被伪装成端点，原始值仍保留在提示中。",patch:{barVariant:"broken",radius:3,labels:true}},
+];

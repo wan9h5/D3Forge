@@ -120,6 +120,14 @@ const comments: Record<string, readonly [string, string]> = {
   "Optional presentation settings; chart values remain unchanged.": [
     "可选展示设置，图形数据值保持不变。",
     "任意の表示設定。図のデータ値は変更しません。"
+  ],
+  "Nonnegative values are summed within each category; zero totals have no proportions.": [
+    "按分类汇总非负数值；总量为零时不计算占比。",
+    "分類ごとに非負の値を合計し、総量がゼロの場合は割合を計算しません。"
+  ],
+  "Display supplied annotations only; no statistical test is performed.": [
+    "仅显示提供的标注，不执行统计检验。",
+    "指定された注釈のみを表示し、統計検定は行いません。"
   ]
 };
 

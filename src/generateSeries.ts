@@ -305,7 +305,21 @@ ${c.legend && c.groupField ? `  const legend = svg.append("g")
     );
     legendX += Math.max(text.node().getComputedTextLength(), estimatedWidth) + 32;
   }
-` : ''}${appearanceSource(type,c,locale)}  return svg.node();
+` : ''}${bar&&c.annotationsEnabled?`  // ${codeComment("Display supplied annotations only; no statistical test is performed.",locale)}
+  g.selectAll("text.annotation")
+    .data(bars)
+    .join("text")
+    .attr("class", "annotation")
+    .attr("x", d => ${horizontal?'Math.min(innerW - 10, valueScale(d.high) + 10)':'categoryPosition(d) + barSize / 2'})
+    .attr("y", d => ${horizontal?'categoryPosition(d) + barSize / 2':'Math.max(12, valueScale(d.high) - 10)'})
+    .attr("text-anchor", ${js(horizontal?'start':'middle')})
+    .attr("fill", ${js(c.labelStyle?c.labelColor:'#26394c')})
+    .attr("font-size", ${c.labelStyle?c.labelFontSize:14})
+    .text(d => Array.from(new Set(processedData.filter(row => row._x === d.category && row._series === d.series)
+      .map(row => String(row[${js(c.annotationField)}] ?? "")).filter(Boolean)))
+      .join(" / ")
+    );
+`:''}${appearanceSource(type,c,locale)}  return svg.node();
 }
 
 const container = document.querySelector("#chart")

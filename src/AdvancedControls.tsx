@@ -14,7 +14,7 @@ const range=(key:keyof Config,label:string,min:number,max:number,step=1):Control
 const select=(key:keyof Config,label:string,options:Control['options']):Control=>({key,label,kind:'select',options});
 const toggle=(key:keyof Config,label:string):Control=>({key,label,kind:'toggle'});
 
-function Bounds({minKey,maxKey,positive=false}:{minKey:keyof Config;maxKey:keyof Config;positive?:boolean}) {
+export function Bounds({minKey,maxKey,positive=false}:{minKey:keyof Config;maxKey:keyof Config;positive?:boolean}) {
   const c=useBuilder(state=>state.config),set=useBuilder(state=>state.setConfig);
   const [low,setLow]=useState(String(c[minKey])),[high,setHigh]=useState(String(c[maxKey])),[error,setError]=useState(false);
   useEffect(()=>{setLow(String(c[minKey]));setHigh(String(c[maxKey]));setError(false);},[c[minKey],c[maxKey]]);
@@ -48,7 +48,7 @@ export function AdvancedControls() {
     }
     return <details className="advanced-group" key={String(flag)}><summary><span>{t(title)}</span><small className={enabled?'is-enabled':''}>{t(enabled?'已启用':'按需开启')}</small></summary><div className="advanced-group-body"><label className="toggle"><span>{t('启用{feature}',{feature:t(title)})}</span><input type="checkbox" disabled={!available} checked={enabled} onChange={e=>enable(e.target.checked)}/><span className="switch" aria-hidden="true"/></label>{hint&&<p className="help">{t(hint)}</p>}{available&&enabled&&<>{items.map(control)}{children}</>}</div></details>;
   }
-  const chartSpecific:Record<typeof type,Control[]>={
+  const chartSpecific:Partial<Record<typeof type,Control[]>>={
     scatter:[select('pointShape','点形状',[['circle','圆形'],['square','方形'],['triangle','三角形'],['diamond','菱形'],['star','星形'],['cross','十字']])],
     volcano:[select('pointShape','点形状',[['circle','圆形'],['square','方形'],['triangle','三角形'],['diamond','菱形']]),color('upColor','上调颜色'),color('downColor','下调颜色'),color('neutralColor','非显著颜色'),color('thresholdColor','阈值线颜色'),range('thresholdWidth','阈值线宽',.5,4,.5),select('thresholdDash','阈值线型',dashes)],
     box:[range('boxWidth','箱体最大宽度',12,160),toggle('showOutliers','显示离群值'),color('outlierFill','离群点填充'),color('medianColor','中位线颜色'),range('medianWidth','中位线宽',1,5,.5)],
@@ -62,7 +62,7 @@ export function AdvancedControls() {
   const ordinalLegend=type!=='histogram';
   const needsGroup=['scatter','bar','line'].includes(type)&&!c.groupField;
   return <section className="advanced-settings"><h3>{t('高级配置')}</h3><p className="advanced-intro">{t('展开查看适用于当前图形的选项，新增效果默认关闭。')}</p>
-    {group('图形专属样式','chartStyle',chartSpecific[type],undefined,type==='line'?'高级曲线优先于基础平滑开关；面积透明度仅在开启面积填充时生效。':type==='violin'?'抖动宽度仅在显示观测点时生效。':undefined)}
+    {group('图形专属样式','chartStyle',chartSpecific[type]??[],undefined,type==='line'?'高级曲线优先于基础平滑开关；面积透明度仅在开启面积填充时生效。':type==='violin'?'抖动宽度仅在显示观测点时生效。':undefined)}
     {type==='scatter'&&group('按字段映射点大小','scatterSizeEnabled',[{key:'sizeField',label:'大小数值字段',kind:'field'},range('sizeMin','最小点半径',1,12,.5),range('sizeMax','最大点半径',12,40)],undefined,'非负数值按平方根映射；缺失或负值使用基础点半径。',numericFields.length>0)}
     {type!=='heatmap'&&group(type==='bar'||type==='histogram'?'柱形边框':type==='box'?'箱体与离群点边框':'点边框','markBorder',[color('borderColor','边框颜色'),range('borderWidth','边框宽度',.5,5,.5)],undefined,['line','violin'].includes(type)?'启用点边框会同时显示数据点。':undefined)}
     {group('坐标轴样式','axisStyle',[
@@ -73,7 +73,7 @@ export function AdvancedControls() {
     {axes.x&&group('X 显示范围','xDomainEnabled',[],<Bounds minKey="xMin" maxKey="xMax" positive={c.xScale==='log'&&type!=='bar'}/>, '显示范围只裁剪图形，不删除或重新汇总数据。')}
     {axes.y&&group('Y 显示范围','yDomainEnabled',[],<Bounds minKey="yMin" maxKey="yMax" positive={c.yScale==='log'&&['scatter','box','line'].includes(type)}/>, '显示范围只裁剪图形，不删除或重新汇总数据。')}
     {group(type==='heatmap'?'单元格边框样式':'网格样式','gridStyle',[color('gridColor','辅助线颜色'),range('gridWidth','辅助线宽度',.5,4,.5),range('gridOpacity','辅助线透明度',.1,1,.1),select('gridDash','辅助线型',dashes)])}
-    {!['box','violin'].includes(type)&&group('标签样式','labelStyle',[range('labelFontSize','标签字号',9,24),color('labelColor','标签颜色'),range('labelOffsetX','标签水平偏移',-30,30),range('labelOffsetY','标签垂直偏移',-30,30),...(['bar','heatmap','histogram'].includes(type)?[select('valueFormat','标签数值格式',formats.filter(([key])=>key!==''))]:[])])}
+    {(!['box','violin'].includes(type)||c.annotationsEnabled)&&group('标签样式','labelStyle',[range('labelFontSize','标签字号',9,24),color('labelColor','标签颜色'),range('labelOffsetX','标签水平偏移',-30,30),range('labelOffsetY','标签垂直偏移',-30,30),...(['bar','heatmap','histogram'].includes(type)?[select('valueFormat','标签数值格式',formats.filter(([key])=>key!==''))]:[])])}
     {ordinalLegend&&group('图例样式','legendStyle',[select('legendPosition','图例位置',[['top','顶部'],['bottom','底部']]),...(type!=='heatmap'?[select('legendDirection','图例排列',[['row','横向换行'],['column','纵向']]),range('legendGap','图例间距',4,24),range('legendMaxItems','最多图例项',1,20),range('legendLabelLength','图例文字长度',6,40)]:[]),range('legendFontSize','图例字号',9,20)],undefined,needsGroup?'请先在数据处理中选择颜色或系列分组。':'长图例自动换行并限制显示数量，完整数据始终保留。',!needsGroup)}
     {(axes.x||axes.y)&&<details className="advanced-group"><summary><span>{t('参考线')}</span><small className={c.referenceXEnabled||c.referenceYEnabled?'is-enabled':''}>{t(c.referenceXEnabled||c.referenceYEnabled?'已启用':'按需开启')}</small></summary><div className="advanced-group-body">{axes.x&&control(toggle('referenceXEnabled','垂直参考线'))}{axes.x&&c.referenceXEnabled&&<label className="field"><span>{t('X 参考值')}</span><input type="number" step="any" value={c.referenceX} onChange={e=>{if(e.target.value&&Number.isFinite(+e.target.value))set('referenceX',+e.target.value);}}/></label>}{axes.y&&control(toggle('referenceYEnabled','水平参考线'))}{axes.y&&c.referenceYEnabled&&<label className="field"><span>{t('Y 参考值')}</span><input type="number" step="any" value={c.referenceY} onChange={e=>{if(e.target.value&&Number.isFinite(+e.target.value))set('referenceY',+e.target.value);}}/></label>}{(c.referenceXEnabled||c.referenceYEnabled)&&[color('referenceColor','参考线颜色'),range('referenceWidth','参考线宽度',.5,4,.5),select('referenceDash','参考线型',dashes)].map(control)}<p className="help">{t('仅显示落在当前数值轴范围内的参考线；对数轴参考值必须大于零。')}</p></div></details>}
     {type==='heatmap'&&group('颜色数值范围','colorDomainEnabled',[],<Bounds minKey="colorMin" maxKey="colorMax"/>, '发散配色仍以零为中心，使用上下界绝对值的最大值作为对称范围。')}

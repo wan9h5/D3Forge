@@ -94,7 +94,7 @@ export const translations: Record<string, readonly [string, string]> = {
   ],
   "分类字段": [
     "Category field",
-    "カテゴリ項目"
+    "分類の項目"
   ],
   "X 字段 · 数值 / 时间序号": [
     "X field · number / time index",
@@ -1511,5 +1511,649 @@ export const translations: Record<string, readonly [string, string]> = {
   "常用配置已配好，更多选项由你发挥": [
     "Common settings are ready. Make the rest your own.",
     "よく使う設定は準備済み。あとは自由にカスタマイズ。"
+  ],
+  "组成与占比": [
+    "Composition",
+    "構成と割合"
+  ],
+  "比较分类比例、层级组成与样本总量。": [
+    "Compare proportions, hierarchies and sample totals.",
+    "分類の割合、階層構成、標本の総量を比較します。"
+  ],
+  "饼图与环图": [
+    "Pie / Donut",
+    "円グラフ・ドーナツ"
+  ],
+  "展示分类组成，支持环形与扇形": [
+    "Show category composition as pies, rings or fans",
+    "円・リング・扇形で分類構成を表示"
+  ],
+  "矩阵饼图": [
+    "Pie Matrix",
+    "円グラフ行列"
+  ],
+  "比较行列分组中的分类占比": [
+    "Compare category proportions across row and column groups",
+    "行と列のグループ間で分類の割合を比較"
+  ],
+  "双层分类饼图": [
+    "Nested Pie",
+    "二層分類円グラフ"
+  ],
+  "展示父分类与子分类的组成关系": [
+    "Show parent and child category composition",
+    "親分類と子分類の構成関係を表示"
+  ],
+  "华夫饼图": [
+    "Waffle Chart",
+    "ワッフルチャート"
+  ],
+  "用方格、圆点或图标表示分类比例": [
+    "Represent proportions with squares, dots or icons",
+    "正方形・点・アイコンで分類の割合を表示"
+  ],
+  "饼图与条形细分": [
+    "Bar of Pie",
+    "円グラフと内訳棒グラフ"
+  ],
+  "展开一个父分类的内部组成": [
+    "Break down one parent category into its children",
+    "親分類の子分類の内訳を展開"
+  ],
+  "柱状图与饼图": [
+    "Bar with Pies",
+    "棒グラフと円グラフ"
+  ],
+  "同时比较样本总量与分类占比": [
+    "Compare sample totals and category proportions",
+    "標本の総量と分類の割合を同時に比較"
+  ],
+  "父分类字段": [
+    "Parent category field",
+    "親分類の項目"
+  ],
+  "子分类字段": [
+    "Child category field",
+    "子分類の項目"
+  ],
+  "矩阵行分组": [
+    "Matrix row grouping",
+    "行列の行グループ"
+  ],
+  "矩阵列分组": [
+    "Matrix column grouping",
+    "行列の列グループ"
+  ],
+  "样本分组字段": [
+    "Sample grouping field",
+    "標本グループの項目"
+  ],
+  "组成统计": [
+    "Composition statistics",
+    "構成の集計"
+  ],
+  "输入非负数值，重复分类求和；零值保留，负值与无效行跳过。占比以当前分组的数值总和计算。": [
+    "Use nonnegative values. Repeated categories are summed; zero values are retained, negative and invalid rows skipped. Shares use the current group's total.",
+    "非負の値を入力してください。同じ分類は合計し、ゼロは保持、負数や無効な行は除外します。割合は現在のグループの合計で計算します。"
+  ],
+  "每行表示父分类下的一个子分类数值，父分类总量由子分类求和；同名子分类在不同父分类下分别计算。": [
+    "Each row gives a child value under a parent. Parent totals sum their children; identical child names under different parents remain separate.",
+    "各行は親分類に属する子分類の値です。親の総量は子の合計で、異なる親に属する同名の子分類は別々に計算します。"
+  ],
+  "每行包含行分组、列分组、分类和数值；每个格子的饼图独立归一化，空组合留白。": [
+    "Each row contains row group, column group, category and value. Each pie is normalized independently; missing combinations stay blank.",
+    "各行に行グループ、列グループ、分類、数値を含めます。各円は独立して正規化し、欠損した組合せは空白にします。"
+  ],
+  "每行包含样本、分类和数值；柱高表示样本总量，饼图表示该样本内部占比。": [
+    "Each row contains sample, category and value. Bar height shows the sample total; its pie shows within-sample proportions.",
+    "各行に標本、分類、数値を含めます。棒の高さは標本の総量、円は標本内の割合を表します。"
+  ],
+  "固定数量的单元按最大余数法分配，单元显示为近似比例，提示保留真实数值与占比。": [
+    "A fixed number of units is allocated by largest remainder. Units approximate shares; tooltips retain exact values and proportions.",
+    "固定数の単位を最大剰余法で割り当てます。表示は割合の近似で、ツールチップには実際の数値と割合を保持します。"
+  ],
+  "组成样式": [
+    "Composition style",
+    "構成のスタイル"
+  ],
+  "图形形式": [
+    "Chart form",
+    "図の形式"
+  ],
+  "饼图": [
+    "Pie Chart",
+    "円グラフ"
+  ],
+  "环图": [
+    "Donut",
+    "ドーナツ"
+  ],
+  "扇形图": [
+    "Fan Chart",
+    "扇形グラフ"
+  ],
+  "内孔比例": [
+    "Hole ratio",
+    "内側の穴の比率"
+  ],
+  "单元形状": [
+    "Unit shape",
+    "単位の形"
+  ],
+  "方格": [
+    "Square",
+    "正方形"
+  ],
+  "圆点": [
+    "Dot",
+    "点"
+  ],
+  "人物图标": [
+    "Person icon",
+    "人物アイコン"
+  ],
+  "单元行数": [
+    "Unit rows",
+    "単位の行数"
+  ],
+  "单元列数": [
+    "Unit columns",
+    "単位の列数"
+  ],
+  "单元间距": [
+    "Unit gap",
+    "単位の間隔"
+  ],
+  "分类配色": [
+    "Category palette",
+    "分類の配色"
+  ],
+  "分类数值排序": [
+    "Category value order",
+    "分類値の並び順"
+  ],
+  "格内留白": [
+    "Cell margin",
+    "セル内の余白"
+  ],
+  "两层间距": [
+    "Ring gap",
+    "二層の間隔"
+  ],
+  "展开父分类": [
+    "Parent to expand",
+    "展開する親分類"
+  ],
+  "自动选择首个分类": [
+    "First category automatically",
+    "最初の分類を自動選択"
+  ],
+  "条形显示所选父分类的子分类数值，条形占比相对于该父分类。": [
+    "Bars show the selected parent's child values. Their shares are relative to that parent.",
+    "棒は選択した親分類の子分類値を表します。割合はその親分類に対するものです。"
+  ],
+  "条形间距": [
+    "Bar spacing",
+    "棒の間隔"
+  ],
+  "柱形颜色": [
+    "Bar color",
+    "棒の色"
+  ],
+  "比例摘要": [
+    "Proportion summary",
+    "割合の概要"
+  ],
+  "扇区标签": [
+    "Slice labels",
+    "扇区のラベル"
+  ],
+  "提示显示汇总后的数值与占比，不使用单条原始记录。": [
+    "Tooltips show aggregated values and shares, rather than individual source rows.",
+    "ツールチップは元の個別行ではなく、集計後の数値と割合を表示します。"
+  ],
+  "内层表示父分类在总量中的占比，外层角度延续父分类；外层标签与提示中的百分比相对于所属父分类。": [
+    "The inner ring shows each parent's share of the total. Outer angles preserve parent spans; outer percentages are relative to their parent.",
+    "内層は総量に対する親分類の割合です。外層は親の角度範囲を引き継ぎ、外層の百分率は所属する親分類に対する割合です。"
+  ],
+  "弧形与圆角": [
+    "Arcs and corners",
+    "円弧と角丸"
+  ],
+  "起始角度": [
+    "Start angle",
+    "開始角度"
+  ],
+  "扇形总角度": [
+    "Total sweep angle",
+    "扇形の総角度"
+  ],
+  "扇区间隙": [
+    "Slice gap",
+    "扇区の間隔"
+  ],
+  "扇区圆角": [
+    "Slice corner radius",
+    "扇区の角丸"
+  ],
+  "单元圆角": [
+    "Unit corner radius",
+    "単位の角丸"
+  ],
+  "启用后使用指定角度，覆盖基础图形的默认角度。": [
+    "When enabled, explicit angles override the base form's angles.",
+    "有効にすると指定角度が基本形式の角度より優先されます。"
+  ],
+  "边框样式": [
+    "Border style",
+    "枠線のスタイル"
+  ],
+  "扇区标签设置": [
+    "Slice label settings",
+    "扇区ラベルの設定"
+  ],
+  "标签内容": [
+    "Label content",
+    "ラベルの内容"
+  ],
+  "分类名": [
+    "Category name",
+    "分類名"
+  ],
+  "占比": [
+    "Share",
+    "割合"
+  ],
+  "分类名与占比": [
+    "Category and share",
+    "分類名と割合"
+  ],
+  "标签位置": [
+    "Label position",
+    "ラベルの位置"
+  ],
+  "内部": [
+    "Inside",
+    "内側"
+  ],
+  "外部引线": [
+    "Outside with leaders",
+    "外側・引出線"
+  ],
+  "标签引线": [
+    "Label leaders",
+    "ラベルの引出線"
+  ],
+  "最小标注占比": [
+    "Minimum share to label",
+    "ラベル表示の最小割合"
+  ],
+  "需先开启扇区标签；小扇区可通过最小占比隐藏标签。": [
+    "Enable slice labels first. Use the minimum share to hide labels on small slices.",
+    "先に扇区ラベルを有効にしてください。最小割合で小さな扇区のラベルを非表示にできます。"
+  ],
+  "中心文字": [
+    "Center text",
+    "中央の文字"
+  ],
+  "中心文字内容": [
+    "Center text content",
+    "中央の文字内容"
+  ],
+  "留空时显示数值总量。": [
+    "Leave empty to show the total.",
+    "空欄の場合は総量を表示します。"
+  ],
+  "需先开启图例；限制显示数量不影响数据或图形。": [
+    "Enable the legend first. Limiting visible entries does not change the data or chart.",
+    "先に凡例を有効にしてください。表示項目数の制限はデータや図に影響しません。"
+  ],
+  "行：分类为空、数值无效或为负数。": [
+    "rows: missing categories, invalid or negative values.",
+    "行：分類が空、数値が無効、または負数です。"
+  ],
+  "没有可计算占比的正数总量": [
+    "No positive total available for proportions",
+    "割合を計算できる正の総量がありません"
+  ],
+  "数值": [
+    "Value",
+    "数値"
+  ],
+  "显示单元": [
+    "Displayed units",
+    "表示単位数"
+  ],
+  "占比用最大余数法分配为固定数量单元，显示单元是近似值": [
+    "Allocate fixed units by largest remainder; displayed units approximate shares.",
+    "固定単位を最大剰余法で割り当て、割合を近似表示します。"
+  ],
+  "自定义分类颜色": [
+    "Custom category colors",
+    "分類ごとの色"
+  ],
+  "未单独设置的分类沿用所选配色；层级图按父分类配色。": [
+    "Unspecified colors use the selected palette. Hierarchical charts color by parent.",
+    "未設定の分類は選択した配色を使用します。階層図は親分類で色分けします。"
+  ],
+  "总量为零": [
+    "Zero total",
+    "総量ゼロ"
+  ],
+  "启用时同时开启扇区标签；小扇区可通过最小占比隐藏标签。": [
+    "Enabling this also enables slice labels. Use the minimum share to hide labels on small slices.",
+    "有効にすると扇区ラベルも表示されます。最小割合で小さな扇区のラベルを非表示にできます。"
+  ],
+  "启用时同时开启图例；限制显示数量不影响数据或图形。": [
+    "Enabling this also enables the legend. Limiting visible entries does not change the data or chart.",
+    "有効にすると凡例も表示されます。表示項目数の制限はデータや図に影響しません。"
+  ],
+  "双层环图": [
+    "Nested Donut",
+    "二重ドーナツ"
+  ],
+  "甜甜圈图": [
+    "Donut Chart",
+    "ドーナツグラフ"
+  ],
+  "用环形展示分类占比": [
+    "Show category proportions in a ring",
+    "カテゴリの割合をリングで表示"
+  ],
+  "以半圆扇形展示分类组成": [
+    "Show composition in a semicircle",
+    "カテゴリ構成を半円で表示"
+  ],
+  "引线环图": [
+    "Donut with Leader Lines",
+    "引出線付きドーナツ"
+  ],
+  "在环外标注分类与占比": [
+    "Label categories and proportions outside the ring",
+    "リング外側にカテゴリと割合を表示"
+  ],
+  "双层饼图": [
+    "Nested Pie",
+    "二重円グラフ"
+  ],
+  "用两层扇区展示父子分类": [
+    "Show parent and child categories in two layers",
+    "親子カテゴリを二層で表示"
+  ],
+  "圆点比例图": [
+    "Dot Waffle",
+    "ドット割合グラフ"
+  ],
+  "用圆点数量展示分类比例": [
+    "Show proportions with counts of dots",
+    "点の数でカテゴリの割合を表示"
+  ],
+  "图标华夫饼图": [
+    "Icon Waffle",
+    "アイコンワッフル"
+  ],
+  "用人物图标展示分类比例": [
+    "Show proportions with person icons",
+    "人物アイコンでカテゴリの割合を表示"
+  ],
+  "水平小提琴图": [
+    "Horizontal Violin",
+    "横向きバイオリン"
+  ],
+  "横向比较各组的分布密度": [
+    "Compare group densities horizontally",
+    "グループの密度を横向きに比較"
+  ],
+  "分组对半小提琴图": [
+    "Split Violin",
+    "分割バイオリン"
+  ],
+  "在同一分类内对比两个子组": [
+    "Compare two subgroups within each category",
+    "各カテゴリ内の二つのサブグループを比較"
+  ],
+  "半小提琴图": [
+    "Half Violin",
+    "半バイオリン"
+  ],
+  "用单侧轮廓呈现密度与观测点": [
+    "Show density and observations on one side",
+    "片側の密度と観測値を表示"
+  ],
+  "雨云图": [
+    "Raincloud Plot",
+    "レインクラウド"
+  ],
+  "结合密度、箱线摘要与原始观测点": [
+    "Combine density, box summaries and observations",
+    "密度、箱ひげ要約、観測値を組み合わせて表示"
+  ],
+  "字母标注小提琴图": [
+    "Violin with Letters",
+    "文字注釈付きバイオリン"
+  ],
+  "展示用户提供的分组字母标注": [
+    "Display supplied group letter annotations",
+    "ユーザーが指定したグループの文字注釈を表示"
+  ],
+  "分面小提琴图": [
+    "Faceted Violin",
+    "ファセットバイオリン"
+  ],
+  "按组织或条件分面比较分布": [
+    "Compare distributions by tissue or condition",
+    "組織や条件ごとに分布を比較"
+  ],
+  "分面箱线图": [
+    "Faceted Box Plot",
+    "ファセット箱ひげ図"
+  ],
+  "按分面比较四分位数与离群点": [
+    "Compare quartiles and observations across facets",
+    "ファセット間の四分位数と観測値を比較"
+  ],
+  "分布布局": [
+    "Distribution layout",
+    "分布レイアウト"
+  ],
+  "轮廓形式": [
+    "Density shape",
+    "密度の形状"
+  ],
+  "完整小提琴": [
+    "Full violin",
+    "全バイオリン"
+  ],
+  "半小提琴": [
+    "Half violin",
+    "半バイオリン"
+  ],
+  "对半小提琴": [
+    "Split violin",
+    "分割バイオリン"
+  ],
+  "分布图形": [
+    "Distribution marks",
+    "分布の図形"
+  ],
+  "不分组": [
+    "None",
+    "なし"
+  ],
+  "子组字段": [
+    "Subgroup field",
+    "サブグループ列"
+  ],
+  "分面设置": [
+    "Facet settings",
+    "ファセット設定"
+  ],
+  "分面字段": [
+    "Facet field",
+    "ファセット列"
+  ],
+  "分面数值范围": [
+    "Facet value range",
+    "ファセットの数値範囲"
+  ],
+  "统一范围": [
+    "Shared range",
+    "共通範囲"
+  ],
+  "各面独立": [
+    "Independent ranges",
+    "個別範囲"
+  ],
+  "字母标注": [
+    "Letter annotations",
+    "文字注釈"
+  ],
+  "显示已有标注": [
+    "Show supplied annotations",
+    "指定された注釈を表示"
+  ],
+  "标注字段": [
+    "Annotation field",
+    "注釈列"
+  ],
+  "仅展示数据中的标注，不执行统计检验；示例字母仅用于演示。": [
+    "Displays supplied annotations without statistical testing. Example letters are illustrative only.",
+    "データ内の注釈のみを表示し、統計検定は行いません。例の文字はデモ用です。"
+  ],
+  "对半小提琴图需要恰好两个子组，请选择子组字段。": [
+    "Split violins require exactly two subgroups. Select a subgroup field.",
+    "分割バイオリンには二つのサブグループが必要です。列を選択してください。"
+  ],
+  "没有符合当前字段的有效数据。": [
+    "No valid rows for the selected fields.",
+    "選択した列に有効なデータがありません。"
+  ],
+  "中位数": [
+    "Median",
+    "中央値"
+  ],
+  "小提琴与雨云图": [
+    "Violin and raincloud",
+    "バイオリン・レインクラウド"
+  ],
+  "箱线与分面箱线图": [
+    "Box and faceted box",
+    "箱ひげ・ファセット箱ひげ"
+  ],
+  "直方与热力图": [
+    "Histogram and heatmap",
+    "ヒストグラム・ヒートマップ"
+  ],
+  "比例方格与图标": [
+    "Proportion grids and icons",
+    "割合グリッド・アイコン"
+  ],
+  "样本组成比较": [
+    "Sample composition",
+    "サンプル構成比較"
+  ],
+  "选择饼图、环图、扇形或层级组成图。": [
+    "Choose pie, donut, fan or hierarchical composition charts.",
+    "円、ドーナツ、扇形、階層構成図を選択します。"
+  ],
+  "用方格、圆点和图标展示占比。": [
+    "Show proportions with squares, dots and icons.",
+    "四角、点、アイコンで割合を表示します。"
+  ],
+  "比较多个样本或展开分类组成。": [
+    "Compare samples or explore category composition.",
+    "サンプル比較やカテゴリ構成の詳細を表示します。"
+  ],
+  "比较密度、观测点与分组统计摘要。": [
+    "Compare densities, observations and group summaries.",
+    "密度、観測値、グループの要約を比較します。"
+  ],
+  "比较四分位数、分面与原始观测点。": [
+    "Compare quartiles, facets and observations.",
+    "四分位数、ファセット、観測値を比較します。"
+  ],
+  "查看数值频数与矩阵中的数值。": [
+    "Explore value frequencies and matrix values.",
+    "数値の頻度と行列の値を表示します。"
+  ],
+  "字母标注柱状图": [
+    "Bar with Letters",
+    "文字注釈付き棒グラフ"
+  ],
+  "字母标注箱线图": [
+    "Box with Letters",
+    "文字注釈付き箱ひげ図"
+  ],
+  "请选择字段": [
+    "Select a field",
+    "列を選択"
+  ],
+  "组间比较标注": [
+    "Group comparisons",
+    "グループ比較の注釈"
+  ],
+  "显示比较连线": [
+    "Show comparison brackets",
+    "比較の括弧を表示"
+  ],
+  "起始组": [
+    "First group",
+    "開始グループ"
+  ],
+  "结束组": [
+    "Second group",
+    "終了グループ"
+  ],
+  "标注文字": [
+    "Annotation text",
+    "注釈テキスト"
+  ],
+  "添加比较": [
+    "Add comparison",
+    "比較を追加"
+  ],
+  "移除": [
+    "Remove",
+    "削除"
+  ],
+  "填写已有检验结果或说明；不会自动计算 P 值。无效组或空文字不显示。": [
+    "Enter existing test results or descriptions. P-values are not calculated. Invalid groups and empty labels are omitted.",
+    "既存の検定結果や説明を入力します。P値は計算しません。無効なグループや空の注釈は表示しません。"
+  ],
+  "比较标注小提琴图": [
+    "Violin with Comparisons",
+    "比較注釈付きバイオリン"
+  ],
+  "手动标注组间比较结果": [
+    "Annotate supplied group comparison results",
+    "グループ比較結果を手動で注釈"
+  ],
+  "搜索图形": [
+    "Search charts",
+    "グラフを検索"
+  ],
+  "搜索图形，如散点图、violin…": [
+    "Search charts, e.g. scatter, violin…",
+    "グラフを検索：散布図、violin…"
+  ],
+  "清空搜索": [
+    "Clear search",
+    "検索をクリア"
+  ],
+  "找到 {count} 个图形": [
+    "{count} charts found",
+    "{count} 件のグラフ"
+  ],
+  "没有找到匹配的图形": [
+    "No matching charts",
+    "一致するグラフがありません"
+  ],
+  "试试其他名称，或切换图形分类。": [
+    "Try another name or chart category.",
+    "別の名前やグラフカテゴリをお試しください。"
+  ],
+  "查看全部分类": [
+    "View all categories",
+    "すべてのカテゴリを表示"
   ]
 };

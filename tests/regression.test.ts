@@ -1,3 +1,5 @@
+import { chartEntries, entryData } from '../src/chartEntries';
+import { isComposition } from '../src/compositionModel';
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
 import * as d3 from 'd3';
@@ -17,7 +19,7 @@ function run(type: ChartType, rows = mockData(type), patch: Partial<Config> = {}
   expect(svg).not.toBeNull();
   for (const node of svg.querySelectorAll('*')) {
     for (const name of ['x', 'y', 'x1', 'x2', 'y1', 'y2', 'cx', 'cy', 'r', 'width', 'height', 'd', 'transform']) {
-      if (node.hasAttribute(name)) expect(node.getAttribute(name), `${type}: ${name}`).not.toMatch(/NaN|Infinity/);
+      if (node.hasAttribute(name)) expect(node.getAttribute(name), `${type}: ${name}: ${node.outerHTML}`).not.toMatch(/NaN|Infinity/);
     }
   }
   return { svg, parts, config };
@@ -314,8 +316,10 @@ describe('advanced options execute the exported source', () => {
       const {svg,parts}=run(type,undefined,advanced);
       expect(svg.style.background).toBe('rgb(248, 249, 255)');
       expect(new Function(parts.data+'\nreturn data;')()).toEqual(mockData(type));
-      expect(svg.querySelector('.axis-title-x')?.textContent).toBe('Custom X');
-      expect(svg.querySelector('.axis-title-y')?.textContent).toBe('Custom Y');
+      if(!isComposition(type)){
+        expect(svg.querySelector('.axis-title-x')?.textContent).toBe('Custom X');
+        expect(svg.querySelector('.axis-title-y')?.textContent).toBe('Custom Y');
+      }
       expect(parts.source).not.toMatch(/\)\.(attr|style|data|join|nice|range|padding|remove)\(/);
     });
     it(`${type}: advanced settings tolerate disabled axes, grid, labels and legend`,()=>{
@@ -363,5 +367,135 @@ describe('advanced options execute the exported source', () => {
     useBuilder.getState().setConfig({scatterSizeEnabled:true,sizeField:'old',chartStyle:true});
     useBuilder.getState().loadData([{x:1,y:2,size:3}],'data.csv');
     expect(useBuilder.getState().config).toMatchObject({scatterSizeEnabled:true,sizeField:'x',chartStyle:true});
+  });
+});
+
+describe('composition charts: independent arithmetic and optional configurations',()=>{
+  const simple=[{category:'A',value:2},{category:'A',value:1},{category:'B',value:1},{category:'Zero',value:0},{category:'Bad',value:-4},{category:'Missing',value:null}];
+  it('pie sums repeated categories and computes exact shares and angles',()=>{
+    const {svg,config}=run('pie',simple);
+    const arcs=values<{data:{name:string;value:number;share:number};startAngle:number;endAngle:number}>(svg,'path.segment');
+    expect(arcs.map(d=>d.data)).toMatchObject([{name:'A',value:3,share:.75},{name:'B',value:1,share:.25},{name:'Zero',value:0,share:0}]);
+    expect(arcs[0].endAngle-arcs[0].startAngle).toBeCloseTo(Math.PI*1.5,12);
+    expect(validateRows('pie',simple,config)).toHaveLength(4);
+  });
+  it('matrix normalizes each cell independently and leaves missing combinations blank',()=>{
+    const rows=[{condition:'C',sample:'S1',category:'A',value:3},{condition:'C',sample:'S1',category:'B',value:1},{condition:'T',sample:'S2',category:'A',value:2},{condition:'T',sample:'S2',category:'B',value:2}];
+    const {svg}=run('pie-matrix',rows);
+    expect(svg.querySelectorAll('.pie-cell')).toHaveLength(2);
+    expect(values<{data:{share:number}}>(svg,'.pie-cell:nth-child(1) .segment').map(d=>d.data.share)).toEqual([.75,.25]);
+    expect(values<{data:{share:number}}>(svg,'.pie-cell:nth-child(3) .segment').map(d=>d.data.share)).toEqual([.5,.5]);
+  });
+  const hierarchy=[{parent:'P',category:'Same',value:3},{parent:'P',category:'Other',value:1},{parent:'Q',category:'Same',value:4}];
+  it('nested pie preserves parent angular spans and separates identical child names',()=>{
+    const {svg}=run('nested-pie',hierarchy);
+    const arcs=values<{data:{name:string;value:number;share:number;context:string};startAngle:number;endAngle:number}>(svg,'.segment');
+    expect(arcs.slice(0,2).map(d=>d.data)).toMatchObject([{name:'P',value:4,share:.5},{name:'Q',value:4,share:.5}]);
+    expect(arcs[2].startAngle).toBeCloseTo(arcs[0].startAngle,12);
+    expect(arcs[3].endAngle).toBeCloseTo(arcs[0].endAngle,12);
+    expect(arcs[2].data).toMatchObject({name:'Same',value:3,share:.75,context:'P'});
+    expect(arcs[4].data).toMatchObject({name:'Same',value:4,share:1,context:'Q'});
+  });
+  it('bar-of-pie expands only the selected parent and normalizes within it',()=>{
+    const {svg}=run('pie-bar',hierarchy,{splitCategory:'P'});
+    expect(values(svg,'.detail-bar')).toMatchObject([{name:'Same',value:3,share:.75,context:'P'},{name:'Other',value:1,share:.25,context:'P'}]);
+  });
+  it('bar-with-pies keeps sample totals and independent category shares',()=>{
+    const rows=[{sample:'S1',category:'A',value:3},{sample:'S1',category:'B',value:1},{sample:'S2',category:'A',value:5}];
+    const {svg}=run('bar-pie',rows);
+    expect(values(svg,'.total-bar')).toMatchObject([{name:'S1',value:4},{name:'S2',value:5}]);
+    expect(values<{data:{share:number}}>(svg,'.segment').map(d=>d.data.share)).toEqual([.75,.25,1]);
+  });
+  for(const waffleShape of ['square','circle','person'] as const)it(`waffle ${waffleShape}: largest remainders keep exact unit count with stable ties`,()=>{
+    const {svg}=run('waffle',[{category:'A',value:1},{category:'B',value:1},{category:'C',value:1}],{waffleShape,waffleRows:2,waffleColumns:5});
+    const units=values<{name:string;units:number;share:number}>(svg,'.unit');
+    expect(units).toHaveLength(10);
+    expect(units.filter(d=>d.name==='A')).toHaveLength(4);
+    expect(units.filter(d=>d.name==='B')).toHaveLength(3);
+    expect(units.filter(d=>d.name==='C')).toHaveLength(3);
+    expect(units[0].share).toBeCloseTo(1/3,12);
+    expect(svg.querySelectorAll(`.unit > ${waffleShape==='square'?'rect':waffleShape==='circle'?'circle':'path'}`)).toHaveLength(10);
+  });
+  for(const type of ['pie','pie-matrix','nested-pie','waffle','pie-bar','bar-pie'] as const){
+    for(const pieMode of ['pie','donut','fan'] as const)it(`${type}/${pieMode}: optional settings execute together`,()=>{
+      const {svg,parts}=run(type,undefined,{pieMode,arcStyle:true,startAngle:-90,sweepAngle:240,arcGap:.02,arcCorner:4,labels:true,compositionLabelStyle:true,labelPlacement:type==='pie'?'outside':'inside',leaderLines:true,labelStyle:true,centerTextEnabled:true,centerText:'Total',categoryColorsEnabled:true,categoryColors:{'T cells':'#123456'},compositionOrder:'descending',markBorder:true,legendStyle:true,legendPosition:'bottom',legendDirection:'column',canvasStyle:true});
+      expect(svg.querySelectorAll('.segment,.unit').length).toBeGreaterThan(0);
+      expect(parts.logic).not.toMatch(/\)\.(?:attr|style|data|join|nice|range|padding|remove)\(/);
+    });
+    it(`${type}: zero totals render an explanation without nonfinite geometry`,()=>{
+      const rows=mockData(type).map(row=>({...row,value:0}));
+      const {svg}=run(type,rows);expect(svg.querySelectorAll('.segment,.unit')).toHaveLength(0);
+      expect(svg.textContent).toContain('No positive total');
+    });
+    it(`${type}: CSV remaps required fields and retains configuration`,()=>{
+      useBuilder.getState().selectChart(type);useBuilder.getState().setConfig({opacity:.4,waffleShape:'person'});
+      useBuilder.getState().loadData([{cell_type:'T',abundance:4,parent:'P',condition:'C',sample:'S1'}],'composition.csv');
+      const {config,data}=useBuilder.getState();
+      expect(config).toMatchObject({categoryField:'cell_type',valueField:'abundance',opacity:.4,waffleShape:'person'});
+      expect(validateRows(type,data,config)).toHaveLength(1);
+    });
+  }
+  it('custom category colors safely support names inherited from Object prototypes',()=>{
+    const {svg}=run('pie',[{category:'__proto__',value:1},{category:'constructor',value:1}],{categoryColorsEnabled:true,categoryColors:JSON.parse('{"__proto__":"#123456"}')});
+    expect(svg.querySelector('.segment')?.getAttribute('fill')).toBe('#123456');
+    expect(svg.querySelectorAll('.segment')[1].getAttribute('fill')).toBe('#f28e2c');
+  });
+});
+
+
+describe('gallery examples and extended distribution layouts',()=>{
+  for(const entry of chartEntries.filter(item=>item.id!==item.type))it(`${entry.id}: exports standalone source and renders its selected layout`,()=>{
+    const {svg,parts}=run(entry.type,entryData(entry.type,entry.id),entry.patch);
+    expect(svg.querySelectorAll('.violin,.summary,.segment,.unit,.annotation,.point,.nes,.bar').length).toBeGreaterThan(0);
+    expect(parts.source).toBe(parts.logic.replace('import * as d3 from "d3";', 'import * as d3 from "d3";\n\n' + parts.data));
+    expect(parts.logic).not.toMatch(/\)\.(attr|style|data|join|nice|range|padding|remove)\(/);
+    expect(new Function(parts.data+'\nreturn data;')()).toEqual(entryData(entry.type,entry.id)??mockData(entry.type));
+  });
+  const rows=['One','Two'].flatMap(sex=>[1,2,3,4,5,100].map(value=>({group:'A',sex,tissue:'Blood',value,letter:'a'})));
+  for(const horizontal of [false,true])for(const violinLayout of ['full','half','split','raincloud'] as const)it(`statistics remain correct: ${violinLayout}, horizontal=${horizontal}`,()=>{
+    const {svg}=run('violin',rows,{violinLayout,horizontal,violinGroupField:'sex',showPoints:true,facetField:'tissue'});
+    const summaries=values<{q1:number;median:number;q3:number;low:number;high:number;density:number[][]}>(svg,'.distribution');
+    expect(summaries).toHaveLength(2);
+    for(const summary of summaries){
+      expect(summary).toMatchObject({q1:2.25,median:3.5,q3:4.75,low:1,high:5});
+      expect(summary.density).toHaveLength(81);
+    }
+    expect(svg.querySelectorAll('.observation')).toHaveLength(12);
+    const axis=svg.querySelector(horizontal?'.axis-y':'.axis-x');
+    expect(axis?.textContent).toContain('A');
+  });
+  it('facets partition the input and missing subgroup rows match the validity count',()=>{
+    const data=[...rows,...rows.map(row=>({...row,tissue:'Liver'})),{group:'A',sex:null,tissue:'Blood',value:5}];
+    const {svg,config}=run('violin',data,{violinGroupField:'sex',facetField:'tissue',facetScale:'free',showPoints:true});
+    expect(svg.querySelectorAll('.facet')).toHaveLength(2);
+    expect(svg.querySelectorAll('.distribution')).toHaveLength(4);
+    expect(svg.querySelectorAll('.observation')).toHaveLength(24);
+    expect(validateRows('violin',data,config)).toHaveLength(24);
+  });
+  it('split layout rejects more or fewer than two subgroups without hiding data',()=>{
+    const {svg,parts}=run('violin',rows,{violinLayout:'split'});
+    expect(svg.textContent).toContain('exactly two subgroups');
+    expect(svg.querySelector('.violin')).toBeNull();
+    expect(new Function(parts.data+'\nreturn data;')()).toEqual(rows);
+  });
+  it('letter annotations and tooltips use safe text and actual line breaks',()=>{
+    const {svg}=run('violin',rows.map(row=>({...row,letter:'<img src=x>'})),{annotationsEnabled:true,annotationField:'letter',showPoints:true});
+    expect(svg.querySelector('.annotation')?.textContent).toBe('<img src=x>');
+    expect(document.querySelector('img')).toBeNull();
+    svg.querySelector('.violin')!.dispatchEvent(new MouseEvent('pointermove',{bubbles:true}));
+    expect(document.querySelector('#chart > div')?.textContent).toContain('\nN: 12\nQ1: 2\n');
+  });
+  it('constant and singleton distributions remain finite in horizontal rainclouds',()=>{
+    run('violin',[{group:'A',value:0},{group:'B',value:5},{group:'B',value:5}],{horizontal:true,violinLayout:'raincloud',showPoints:true});
+  });
+});
+
+
+describe('supplied comparison annotations',()=>{
+  for(const horizontal of [false,true])it(`horizontal=${horizontal}: only valid supplied comparisons render`,()=>{
+    const {svg}=run('violin',undefined,{horizontal,comparisonsEnabled:true,comparisons:[{from:'Control',to:'Treatment',label:'<b>supplied</b>'},{from:'Missing',to:'Recovery',label:'invalid'},{from:'Control',to:'Control',label:'same'},{from:'Treatment',to:'Recovery',label:''}]});
+    expect(svg.querySelectorAll('.comparison-bracket')).toHaveLength(1);
+    expect(svg.querySelector('.comparison-label')?.textContent).toBe('<b>supplied</b>');
+    expect(svg.querySelector('b')).toBeNull();
   });
 });
