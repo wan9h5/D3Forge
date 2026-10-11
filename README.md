@@ -1,155 +1,172 @@
 <div align="center">
   <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge Logo" />
   <h1>D3Forge</h1>
-  <p><strong>调好图表，带走原生 D3 源码</strong></p>
-  <p>通过可视化配置构建图表，实时预览并导出可独立运行的 D3.js 代码</p>
-  <p><a href="README.md">简体中文</a> · <a href="README.en.md">English</a> · <a href="README.ja.md">日本語</a></p>
+  <p><strong>Build your chart. Take the native D3 code.</strong></p>
+  <p>Configure charts visually, preview changes live, and export standalone D3.js code.</p>
+  <p><a href="README.zh.md">简体中文</a> · <a href="README.md">English</a> · <a href="README.ja.md">日本語</a></p>
   <p>
-    <a href="#快速开始">快速开始</a> ·
-    <a href="#功能概览">功能概览</a> ·
-    <a href="docs/architecture.md">架构设计</a> ·
-    <a href="https://github.com/wan9h5/D3Forge/issues">反馈问题</a>
+    <a href="https://wan9h5.github.io/D3Forge/">Live demo</a> ·
+    <a href="#quick-start">Quick start</a> ·
+    <a href="#features">Features</a> ·
+    <a href="docs/architecture.md">Architecture (Chinese)</a> ·
+    <a href="https://github.com/wan9h5/D3Forge/issues">Report an issue</a>
   </p>
   <p>D3 v7 · React · TypeScript · MIT</p>
 </div>
 
 ---
 
-## 关于 D3Forge
+## About D3Forge
 
-D3Forge 是一个纯前端的可视化 D3.js 代码构建工具。选择图形，使用示例数据或本地 CSV 调整效果，然后把完整源码带回自己的项目。
+D3Forge is a frontend-only visual code builder for D3.js. Choose a chart, customize it with sample data or a local CSV file, and take the complete source into your own project.
 
-**常用配置已配好，更多选项由你发挥。** 每种图形默认启用基础、常用配置，打开即可看到结果；其余适用选项放在高级配置中，默认关闭，由你按需启用和调整。不同图形提供各自适用的配置，并持续根据实际使用场景和社区贡献扩展。所有调整同步生成对应的原生 D3 源码。
+**Common settings are ready to use. The rest is yours to explore.** Each chart starts with practical defaults. Additional applicable options are grouped in advanced sections and disabled by default, so you can enable them as needed. Each chart has its own controls, expanded through real use cases and community contributions. Every adjustment produces corresponding native D3 code.
 
-详情页采用三栏工作台：**配置 → 实时预览 → 只读源码**。预览执行的就是生成的源码；导出的代码仅依赖 D3 和 DOM API，可直接用于其他 Web 项目。
+The desktop workspace has three columns: **configuration → live preview → read-only source**. The preview executes the generated source itself. Exported code depends only on D3 and DOM APIs and can run in other web projects.
 
-## 功能概览
+## The idea behind D3Forge
 
-- **图形库** — 按类别浏览图表，每种图形自带确定性示例数据
-- **按需加载** — 图形库只为视口附近的卡片生成缩略图，完成的 SVG 会缓存，滚动和筛选时再补齐其余图形
-- **可视化配置** — 调节点大小、透明度、颜色、坐标轴、网格、图例和悬浮提示
-- **即时源码反馈** — 配置变化同步更新图表，定位并高亮对应代码行
-- **源码阅读** — D3 绘图逻辑与数据分 Tab 展示，支持语法着色、自动换行和 `Ctrl+F` 搜索
-- **完整导出** — 一键复制或下载 `.js`，包含绘图逻辑和当前数据
-- **本地 CSV** — 浏览器内解析、字段映射与数据预览，无需上传文件
-- **多语言** — 中文、English、日本語即时切换，记住语言偏好，生成代码注释同步翻译
-- **产品首页** — 交互式演示、快速入门与使用说明
+D3Forge began with two things. My boss was enthusiastic about D3 and believed it could be used to create wonderfully engaging tools, so he encouraged me to learn it. As I studied D3, I found that its many APIs were difficult to keep in mind, and even a simple chart could take a lot of code. I realized chart code could be understood through two layers: a **data layer**, which maps fields and calculates positions, and a **visual configuration layer**, which controls how the chart looks. In D3, axes, grids, lines, and tooltips can then be composed as separate visual layers. That observation led to D3Forge: make these choices easier to explore visually while keeping the resulting native D3 code visible and reusable.
 
-### 已支持的图形
+We use a line chart as a compact model with four visual layers:
 
-| 图形 | 用途 | 特性 |
+1. **Coordinate axes** — data processing determines the range, scale, and ticks; view configuration controls axis lines, ticks, and text styles.
+2. **Grid** — data processing places guides from the same scale; view configuration controls color, width, and dash patterns.
+3. **Line** — data processing maps fields, sorts observations, and calculates coordinates; view configuration controls color, width, curve, and points.
+4. **Tooltip** — interaction selects a row and formats its values; view configuration controls hover behavior and tooltip styling.
+
+Each layer keeps data processing separate from view configuration. That separation makes the source easier to read, lets users change presentation without changing data semantics, and gives each chart only the controls that make sense for it. This is the design foundation for adding more scientific and bioinformatics examples through community contributions.
+
+The line-chart example is intentionally simple: change a data mapping or a visual setting, see the preview update, and locate the corresponding source change. D3Forge applies the same layered idea to scatter, volcano, heatmap, survival, Circos, composition, and other chart families.
+
+## Features
+
+- **Chart library** — Browse by chart family; every example includes deterministic sample data.
+- **Search and categories** — Find examples by chart name or family in Chinese, English, or Japanese.
+- **On-demand loading** — Gallery cards render thumbnails near the viewport, cache completed SVGs, and fill in the rest as you scroll or filter.
+- **Visual configuration** — Adjust mark size, opacity, colors, axes, grids, legends, and tooltips.
+- **Immediate source feedback** — Changes update the chart and locate and highlight the corresponding code lines.
+- **Source reader** — Separate tabs for D3 logic and data, syntax highlighting, line wrapping, and `Ctrl+F` search.
+- **Complete export** — Copy or download a `.js` file containing both drawing logic and current data.
+- **Local CSV** — Parse, map fields, and preview data in the browser without uploading files.
+- **Three languages** — Switch between Chinese, English, and Japanese; the app remembers your choice and translates generated comments too.
+- **Product home** — Interactive demonstration, quick start, and usage guidance.
+
+### Supported chart families
+
+| Chart | Purpose | Capabilities |
 | --- | --- | --- |
-| Scatter Plot · 散点图 | 比较两个数值变量 | 分组配色、数值 / 对数坐标、标签、缩放和平移 |
-| Volcano Plot · 火山图 | 展示差异幅度与显著性 | `−log10(p)` 转换、显著性分类、阈值线 |
-| Box Plot · 箱线图 | 比较各组数据分布 | 四分位数、中位数、1.5 × IQR 须线与离群值 |
-| Bar Chart · 柱状图 | 比较分类数值与系列构成 | 分组 / 堆叠、横向 / 纵向、正负数值、数值标签 |
-| Line Chart · 折线图 | 展示随时间或顺序的变化 | 多系列、平滑曲线、数据点、面积填充、数值 / 对数坐标 |
-| Violin Plot · 小提琴图 | 比较分组分布密度 | 可调带宽、横向 / 对半 / 半小提琴 / 雨云、子组、分面、箱线摘要与抖动观测点 |
-| Manhattan Plot · 曼哈顿图 | 展示染色体关联显著性 | 染色体排序与累积位置、交替配色、显著性 / 提示阈值、显著点标注 |
-| Heatmap · 热力图 | 比较矩阵数值 | 长表映射、重复坐标均值 / 求和、连续 / 零中心发散配色、数值图例 |
-| Histogram · 直方图 | 查看单个变量的分布 | 可调等宽分箱、频数 / 概率密度、最大值归入最后一箱 |
-| Pie / Donut · 饼图与环图 | 展示分类组成 | 饼形 / 环形 / 扇形、角度与圆角、外部引线标签、中心文字 |
-| Pie Matrix · 矩阵饼图 | 比较行列分组的组成 | 长表映射、逐格独立占比、缺失组合留白、统一分类颜色 |
-| Nested Pie · 双层分类饼图 | 展示两级分类关系 | 父子长表、父总量自动汇总、子分类角度与父分类衔接、环形变体 |
-| Waffle · 华夫饼图 | 用等量单元表示比例 | 方格 / 圆点 / 人物图标、可调行列、最大余数分配、真实比例提示 |
-| Bar of Pie · 饼图与条形细分 | 查看某个父分类的内部组成 | 父分类饼图、可选展开分类、子分类条形与引导连线 |
-| Bar with Pies · 柱状图与饼图 | 同时比较总量和组成 | 样本总量柱形、每个样本的分类饼图、组内独立占比 |
+| Scatter plot | Compare two numeric variables | Group colors, linear/log scales, labels, zoom and pan |
+| Volcano plot | Show effect size and significance | `−log10(p)`, significance classes, threshold lines |
+| Box plot | Compare distributions across groups | Quartiles, median, 1.5 × IQR whiskers, outliers |
+| Bar chart | Compare categories and composition | Grouped/stacked, horizontal/vertical, signed values, value labels |
+| Line chart | Show change over time or sequence | Multiple series, smooth curves, points, area fill, linear/log scales |
+| Violin plot | Compare distribution densities | Bandwidth, horizontal/split/half/raincloud layouts, subgroups, facets, box summaries, jittered observations |
+| Manhattan plot | Show chromosome association significance | Chromosome order, cumulative position, alternating colors, significance/suggestive thresholds, labels |
+| Heatmap | Compare matrix values | Long-form mapping, mean/sum for duplicate coordinates, sequential/zero-centered diverging colors, numeric legend |
+| Histogram | Inspect a variable's distribution | Equal-width bins, counts/density, maximum included in the last bin |
+| Pie / donut | Show categorical composition | Pie/donut/sector, angles and corner radius, leader labels, center text |
+| Pie matrix | Compare composition across rows and columns | Long-form mapping, independent cell proportions, gaps for missing combinations, consistent category colors |
+| Nested pie | Show two-level categories | Parent/child records, automatic parent totals, aligned child angles, donut variants |
+| Waffle | Represent proportions with equal units | Squares/dots/person icons, adjustable grid, largest-remainder allocation, exact proportions in tooltips |
+| Bar of pie | Inspect one parent's composition | Parent pie, selectable category, child bars, guide links |
+| Bar with pies | Compare totals and composition together | Sample total bars, per-sample category pies, independent proportions |
 
-### 散点图扩展与三维图
+### Scatter extensions and 3D
 
-提供联合分析、分组回归、倍数变化、回归方程与 R²、边缘分布、气泡矩阵、排序、密度、motif、配对、连续配色、GSEA NES / FDR、相关系数以及分类 / 渐变三维散点图入口。每个入口有独立字段映射和配置；基础项开箱可用，置信带、大小映射、点边框等可按需启用。
+Examples cover joint analysis, grouped regression, fold change, equations and R², marginal distributions, bubble matrices, ranked points, density, motif results, paired observations, continuous color, GSEA NES/FDR, correlation, and categorical/gradient 3D scatter. Each has dedicated field mappings and controls. Confidence bands, size mapping, and point borders can be enabled as needed.
 
-示例使用 6–36 条确定性记录，目的是展示配置效果。下载包含数据数组及完整绘图、统计和交互逻辑，可直接替换数据并保留映射字段。三维图用 D3 和 SVG 实现投影、深度排序、旋转与缩放，无额外运行时依赖。
+Scatter examples use 6–36 deterministic records to demonstrate configuration. Downloads include the data array and complete drawing, statistical, and interaction logic. Replace the data while keeping the mapped field names. The 3D charts implement projection, depth sorting, rotation, and zoom with D3 and SVG, without an additional runtime dependency.
 
-- 数值散点：两列数值，可增加标签、分类、大小和连续颜色字段；三维图增加第三列数值。
-- 气泡矩阵：行分类、列分类、非负大小、颜色数值；重复坐标不自动汇总。
-- 配对散点：对象 ID、条件、数值，可增加队列；同队列、同对象、同条件的重复观测取均值。
-- GSEA 组合图：通路名称、NES、FDR（0–1）；HOMER / motif 图接收已计算的显著性与富集结果。
+- Numeric scatter: two numeric fields, optionally labels, categories, size, and continuous color; 3D adds a third numeric field.
+- Bubble matrix: row category, column category, nonnegative size, and color value. Duplicate coordinates are not automatically aggregated.
+- Paired scatter: subject ID, condition, value, and optional cohort. Repeated observations within the same cohort, subject, and condition are averaged.
+- GSEA combination: pathway, NES, and FDR (0–1). HOMER/motif charts take previously computed significance and enrichment results.
 
-回归支持线性和二次模型。可选 95% 置信带采用固定种子的 200 次配对 bootstrap，表示平均曲线的逐点区间，不是个体预测区间。Pearson / Spearman 不自动生成 P 值；Spearman 的并列值使用平均秩。GSEA、HOMER、PCA 等上游分析不在浏览器中执行。
+Regression supports linear and quadratic models. Optional 95% confidence bands use 200 paired bootstrap resamples with a fixed seed and show pointwise intervals for the mean curve, not individual prediction intervals. Pearson/Spearman charts do not generate P values; Spearman uses average ranks for ties. Upstream analyses such as GSEA, HOMER, and PCA are not performed in the browser.
 
-### 生存分析、Circos 与染色体图
+### Survival, Circos and chromosome charts
 
-新增 11 个入口，已有曼哈顿图、圆形聚类热图及双轨道环形柱图继续复用。侧栏增加生存曲线、Circos 图、染色体图分类；SNP 连锁不平衡图归入热力图。各图默认配好基础样式，风险人数表、标签、检验及其他扩展按需启用。
+Eleven new entries reuse existing Manhattan, circular heatmap and two-track circular bar support. The sidebar adds survival, Circos and chromosome families; SNP LD is under heatmaps. Basic styles are ready to use, with optional risk tables, tests, annotations and other controls.
 
-| 图形 | 默认数据字段 | 主要配置 |
+| Chart | Default fields | Main controls |
 | --- | --- | --- |
-| KM 生存曲线 | `subject, time, event, group` | 90/95/99% 置信区间、删失标记、风险人数表、log-rank |
-| 探索性最佳 cutoff 生存曲线 | `subject, time, event, score` | 手动／中位数／最大 log-rank 扫描、最小分组比例 |
-| 基因标注 Circos | `chromosome, length, position, end, gene, group` | 比例扇区、基因引线、坐标刻度、标注数量 |
-| 融合基因 Circos | `chromosome, length, position, targetChr, targetLength, targetPos, gene, group, weight` | 连接显示、支持强度线宽与筛选 |
-| 受体–配体 Circos | `source, target, ligand, receptor, weight` | 有向弦带、强度筛选、箭头、细胞名称 |
-| SNP 连锁不平衡 | `chromosome, snpA, position, snpB, targetPos, r2` | 染色体选择、LD 颜色范围、SNP 名称与数值 |
-| SNP 密度 | `chromosome, length, position` | 窗口大小、每窗口计数／每 Mb 密度、方向、色阶 |
-| 染色体位点分布 | `chromosome, length, position, gene, group` | 点大小、横纵排列、轨道厚度、标签 |
-| 染色体示意与峰分布／片段分布 | `chromosome, length, position, end, gene, group` | 区间色彩、共用物理尺度、方向与轨道厚度 |
-| 带着丝粒的片段分布 | 上述区间字段 + `centStart, centEnd` | 着丝粒轮廓、片段、坐标与参考组装说明 |
+| Kaplan–Meier | `subject, time, event, group` | 90/95/99% confidence intervals, censor marks, risk table, log-rank |
+| Exploratory best cutoff | `subject, time, event, score` | Manual/median/maximum log-rank scan, minimum group proportion |
+| Gene-labeled Circos | `chromosome, length, position, end, gene, group` | Proportional sectors, leaders, coordinate ticks, label limit |
+| Fusion Circos | `chromosome, length, position, targetChr, targetLength, targetPos, gene, group, weight` | Link visibility, support-weight widths and filtering |
+| Receptor–ligand Circos | `source, target, ligand, receptor, weight` | Directed ribbons, strength filter, arrows, cell names |
+| SNP linkage disequilibrium | `chromosome, snpA, position, snpB, targetPos, r2` | Chromosome, LD color limits, SNP labels and values |
+| SNP density | `chromosome, length, position` | Window size, count/per-Mb density, orientation, color scale |
+| Chromosome loci | `chromosome, length, position, gene, group` | Radius, orientation, track thickness, annotations |
+| Chromosome ideogram/peaks and segments | `chromosome, length, position, end, gene, group` | Interval colors, shared physical scale, orientation, thickness |
+| Segments with centromeres | Interval fields plus `centStart, centEnd` | Centromere outlines, segments, coordinates, assembly note |
 
-- **生存分析**：每对象一行，时间非负，`event=1` 为事件、`event=0` 为右删失；可不映射对象 ID，映射后重复 ID 全部排除。同一时刻事件与删失均参与风险集，先计事件。KM 使用 Greenwood 方差的 log-log 区间；不处理延迟入组、竞争风险或协变量调整。
-- **探索性切点**：扫描相邻唯一评分的中点，两组至少各 2 例并满足最小比例；报告候选数、原始及 Bonferroni 校正 P 值。该扫描不等同于 `maxstat`，不能把样本内最优切点视为已验证的预测阈值。
-- **基因组坐标**：提供同一组装版本的参考长度，区间使用 0-based 半开 `[position,end)`；点位允许 `0–length`。长度矛盾、越界区间、着丝粒矛盾的染色体会排除。示例长度为演示值，不对应真实物种；不自动生成细胞遗传带或检测融合／峰。
-- **SNP 与关联数据**：LD 接收已计算的 `r²` 或 `|D′|`（0–1），重复 SNP 对取均值，同名位置冲突排除；不从基因型计算 LD。密度每行计一个位点，空窗口为零，末端按实际窗口长度换算。受体–配体图按来源／目标汇总正强度，扇区表示收发总量，展示已有结果。
-- **导出与语言**：确定性示例、计算、布局、提示均包含于独立 D3 + DOM 源码；字段映射可替换，视觉配置保留，界面和源码注释支持中文、英文、日语。
+- **Survival:** one row per subject, nonnegative time, `event=1` for an event and `event=0` for right censoring. IDs are optional; all duplicates are excluded when mapped. Tied events and censors share the risk set, with events counted first. KM uses Greenwood log-log intervals. No delayed entry, competing risks or covariate adjustment.
+- **Exploratory cutoff:** scan midpoints between unique scores, requiring at least two subjects per group and the selected minimum proportion. Report candidate count, raw P and Bonferroni-adjusted P. This is not the `maxstat` procedure; an in-sample optimum needs independent validation.
+- **Coordinates:** supply reference lengths from one assembly and 0-based half-open `[position,end)` intervals. Loci allow `0–length`. Conflicting lengths/centromeres and out-of-range intervals are excluded. Mock lengths are illustrative, not a real species. Cytobands, fusions and peaks are not inferred.
+- **SNPs and associations:** LD accepts precomputed `r²` or `|D′|` in [0,1]; duplicate pairs use the mean and conflicting SNP positions are excluded. No genotype-to-LD analysis. Density counts one locus per row, includes empty windows and uses actual terminal-window length. Receptor–ligand links aggregate positive supplied strengths; sectors encode incoming plus outgoing totals.
+- **Export and languages:** deterministic data, calculations, layout and tooltips are included in standalone D3 + DOM source. Replace mappings while preserving visual controls. UI and generated comments support Chinese, English and Japanese.
 
-### 热图扩展
+### Heatmap extensions
 
-新增 17 种样式：聚类、圆形聚类、矩阵、日历、双三角、部分基因标注、聚类切割、临床分组、行列注释、表达趋势、趋势与通路注释、文字标记、摘要柱、左右组合、点棒、符号及桑基组合。每种图提供适用的字段映射和配置，基础项默认配好，额外选项按需开启。
+17 new styles cover clustering, circular clustering, matrices, calendars, paired triangles, selected gene labels, cluster cuts, clinical metadata, row/column annotations, trends, trends with terms, text marks, summary bars, paired panels, dot/stem cells, symbols and Sankey links. Each provides relevant mappings and controls with practical defaults and optional advanced settings.
 
-- **长表输入**：`sample, gene, value`；日历使用 `date, value`，日期为严格 `YYYY-MM-DD`。附加列承载注释、第二指标、大小或链接权重。
-- **真实聚类**：支持欧氏、曼哈顿和 `1 − Pearson` 距离，以及平均、单连接和完全连接；按指定簇数切割。无共同观测的分支最后连接，常量相关距离采用明确的确定性规则。
-- **标准化与缺失**：按行／列总体标准差 Z-score；常量向量为零，缺失保持空白。重复坐标按均值或总和汇总；左右面板分别汇总，共享颜色范围。
-- **组合与注释**：分类／数值注释条、双指标三角、均值／总和柱、簇趋势和守恒桑基带。趋势使用列顺序，缺失处断线；注释冲突显示 `mixed`。通路、标记和权重使用已有结果，不运行富集或显著性检验。
-- **原生导出**：聚类计算、布局和交互均包含在导出的 D3 + DOM 代码中；无需 D3Forge 运行环境。中文、英文和日语说明及代码注释同步切换。
+- **Input**: long-form `sample, gene, value`; calendars use `date, value` with strict `YYYY-MM-DD` dates. Additional columns supply metadata, a second value, size or link weight.
+- **Clustering**: Euclidean, Manhattan or `1 − Pearson` distances; average, single or complete linkage; cuts by cluster count. Disconnected observations join last and constant-vector correlations use explicit deterministic rules.
+- **Normalization**: row/column population Z-scores, constant vectors mapped to zero, missing cells left blank. Duplicate coordinates use mean or sum. Paired panels aggregate separately and share color limits.
+- **Combinations**: categorical/numeric annotation tracks, two-metric triangles, row mean/sum bars, cluster trends and flow-conserving Sankey ribbons. Trends follow column order and break at missing values. Conflicting metadata displays `mixed`. Terms, marks and weights display supplied results without enrichment or significance testing.
+- **Export**: clustering, layout and interaction logic are included in standalone D3 + DOM source. Chinese, English and Japanese descriptions and code comments follow the selected language.
 
-### 火山图扩展
+### Volcano extensions
 
-新增 12 个入口：基因标注、渐变、基因连线双面板、VIP、双曲线阈值、单细胞 Cluster、双色与四色、单细胞 Marker 分面、环形单细胞、多类别标注、动态交互及三色火山图。各入口提供专属配置、确定性数据和三语说明，基础项默认配好，其余选项按需开启。
+Twelve entries cover gene annotations, gradients, linked pairs, VIP, hyperbolic thresholds, cell clusters, two/four-class colors, marker facets, radial clusters, category annotations, interactive exploration, and three-color volcano plots. Each has dedicated controls, deterministic data, and three-language guidance. Common settings are ready; additional options can be enabled as needed.
 
-- 基础输入为 `gene,log2FC,pvalue`，可映射原始或校正后的 P 值列，轴标题显示所选列名。VIP 图增加非负 `VIP`；类别图增加 `category`；双面板、单细胞及环形图增加 `cluster` 或比较分组列。重复记录保留，不运行差异分析或多重校正。
-- 基因标签可按 P 值优先选择，或使用指定名单，配置数量、避让和引导线。双面板可选择比较组与共用／独立范围，只连接两侧各唯一的同名基因。
-- 双曲线采用明确的探索性边界：`|x| > FC` 且 `−log10(P) > −log10(P阈值) + a / (|x| − FC)`。绘制和分类使用同一公式，不代表显著性检验或 FDR 控制。
-- Cluster 图以簇内横向偏移编码 log2FC，以带方向的 `−log10(P)` 为纵轴。环形图以簇内角度编码 log2FC、基准环内外距离编码带方向的显著性；这些布局不执行单细胞分析。
-- VIP 的点面积在最小标记面积之上与 VIP 成正比。连续配色可映射显著性或自选数值列；类别配色只对通过筛选的点生效。
-- 基因搜索、框选数量提示和点击固定标签随原生 D3 / DOM 代码导出。搜索与框选只改变高亮，不过滤或修改导出数据；框选模式与悬浮、点击、缩放分开操作。
+- Base input is `gene,log2FC,pvalue`; map raw or adjusted P values and the axis will name the selected field. Add nonnegative `VIP` for size, `category` for functional colors, or `cluster`/contrast for grouped layouts. Duplicate records remain; no differential analysis or multiple-testing correction is performed.
+- Labels prioritize P values or a supplied gene list, with limits, collision avoidance, and leader lines. Linked panels offer contrast selection and shared/independent ranges; only gene names unique within both panels are connected.
+- The explicit exploratory hyperbola is `|x| > FC` and `−log10(P) > −log10(P threshold) + a / (|x| − FC)`. Drawing and classification use the same formula; it is not a statistical test or FDR control.
+- Cluster plots encode log2FC by within-cluster horizontal offset and signed `−log10(P)` vertically. Radial layouts encode log2FC by within-sector angle and signed significance by inward/outward distance from a reference ring. No single-cell analysis is run.
+- VIP is proportional to area above the minimum marker area. Continuous color maps significance or a numeric field; category color applies only to points passing the filter.
+- Gene search, brush counts, and click-to-pin labels are included in native D3/DOM exports. Search and brushing only highlight; they do not filter or change exported data. Brush mode is separate from hovering, clicking, and zooming.
 
-### 柱状图与直方图扩展
+### Bar and histogram extensions
 
-新增误差线、双轨道环形、连接带百分比、蝴蝶、垂直、极坐标、分组、点状、堆叠、水平堆叠、三维、底部汇聚、立体、双向、水平分组、三角、断轴柱状图和带拟合直方图，共 18 个入口。每个入口配备小规模确定性数据、专属字段映射和中英日三语配置及代码注释。
+An initial set of 18 entries covers error bars, two-track circular bars, linked percentage composition, butterfly, vertical, polar, grouped, dot, stacked, horizontal stacked, 3D, bottom aggregation, extruded, diverging, horizontal grouped, triangle, broken-axis bars, and histograms with fitted curves. Each includes small deterministic data, dedicated mappings, and Chinese/English/Japanese controls and source comments.
 
-- 分类柱图使用长表 `category,series,value`；系列可选，重复组合可按求和或均值汇总。双向图保留输入符号，百分比与径向布局要求非负值。
-- 误差线可从重复观测计算均值、样本 SD、SEM 或 Student t 的 95% 均值置信区间。`n < 2` 不估计误差；已有汇总数据可映射中心值、下界和上界，每个分类与系列组合须唯一。不会自动生成显著性检验。
-- 直方图接收一列数值；等宽分箱支持频数与概率密度，正态近似和核密度曲线与纵轴单位一致。正态近似不意味着数据通过正态性检验。
-- 点状柱可设置单位和列数，末尾圆点用面积表示不足一个单位的部分。百分比连接带表达构成变化，不代表个体流转。
-- 双轨道环形图可选择内外两个分类系列，设置各轨道独立或共用范围；不自动解析基因组坐标。三维柱通过原生 SVG 投影、深度排序及旋转缩放展示小型分类矩阵。
-- 断轴图明确标记省略区间，区间内数值以空心点表示，提示保留原始值；底部连接面与立体侧面属于视觉呈现，不编码额外数值。
+- Category bars use long-form `category,series,value` data. Series is optional; duplicate combinations can be summed or averaged. Diverging bars preserve input signs; percentage and radial layouts require nonnegative values.
+- Error bars can calculate means, sample SD, SEM, or Student t 95% confidence intervals for the mean from repeated observations. No error estimate is made for `n < 2`. Summary data can map center/lower/upper fields, with one row per category/series combination. No significance tests are generated.
+- Histograms take one numeric field. Equal-width bins support counts and probability density; normal approximations and kernel density curves use matching vertical units. A normal approximation is not a normality test.
+- Dot bars offer unit size and column controls; a final partial unit is encoded by dot area. Percentage links show composition changes, not individual flows.
+- Two-track circular bars select inner/outer series and shared or independent ranges. They do not parse genomic coordinates. 3D bars use native SVG projection, depth sorting, rotation, and zoom for small categorical matrices.
+- Broken axes explicitly mark omitted intervals. Values inside the gap appear as hollow points with original values in tooltips. Bottom connecting surfaces and extruded sides are decorative and encode no additional quantities.
 
-### 双轴、分组堆叠与柱形变体
+### Dual axes, grouped stacks, and bar shapes
 
-另外提供雪糕、铅笔、带背景茎叶、上下、双轴柱线、曲线连接百分比、2.5D 台座、双轴柱、多组堆叠、堆叠连线、双轴 GO、多组极坐标、堆叠折线及基因上下调，共 14 个专属入口；已有柱饼组合、GSEA NES / FDR 与极坐标入口继续复用。
+Another 14 entries provide ice-cream, pencil, background stem, up/down, dual-axis bar/line, curved percentage stacks, 2.5D platforms, dual-axis bars, grouped stacks, linked stacks, dual-axis GO, grouped polar, stack/line, and gene up/down layouts. Existing bar/pie, GSEA NES/FDR, and polar entries remain available.
 
-- 双轴长表使用 `category,value,secondary`。左右指标分别选择汇总方式后独立缩放；右轴支持标题/单位、刻度格式和自定义范围。P 值变换只接受 `0 < P ≤ 1`，先汇总再计算 `−log10(P)`，汇总值也必须处于有效 P 值范围。GO 默认读取最小 P 值代表该分类最显著的记录；这不等于合并 P 值，不执行富集检验。轴颜色对应指标，两种柱高不能跨轴直接比较。
-- 多组堆叠使用 `category,cohort,series,value`；先在分类内并排放置组，再按成分堆叠。缺失组合显示为零，重复组合按求和或均值汇总。多组极坐标在同一分类扇区内并排放置系列，并共用径向尺度。
-- 堆叠连接可选直线/曲线、边界线/连接带，连接表示相同成分的汇总变化。堆叠折线按分类对所选趋势字段取均值，与堆叠总量共用数值轴；不同单位请使用双轴图。
-- 上下柱将所选非负系列放在零线上下，下侧刻度显示数量大小。基因上下调图则保留输入变化值的正负号，按方向配色；不运行差异分析。
-- 雪糕细柄、铅笔尖端、背景参照和 2.5D 台座分别提供适用配置。装饰不改变编码数值的顶点位置；背景参照值不限制数据的实际范围。
+- Dual-axis data uses `category,value,secondary`. Each metric has its own aggregation and scale. The right axis supports a title/unit, tick format, and custom range. The P-value transform accepts only `0 < P ≤ 1`, aggregates first, then computes `−log10(P)`; the aggregate must also be valid. GO defaults to the minimum P value to show the most significant record in a category. This is not a combined P value or an enrichment test. Axis colors identify the metrics; heights cannot be compared directly across axes.
+- Grouped stacks use `category,cohort,series,value`: cohorts sit side by side within each category, and components stack within each cohort. Missing combinations become zero; duplicates are summed or averaged. Grouped polar charts place series side by side within category sectors on a shared radial scale.
+- Stack links offer straight/curved paths and boundary lines/bands to show aggregate changes of the same component. Stack/line charts average the selected trend field per category and share the stack's numeric axis. Use dual axes for different units.
+- Up/down bars place selected nonnegative series above and below zero; lower ticks show magnitudes. Gene up/down bars retain input signs and use direction colors. They do not perform differential analysis.
+- Ice-cream sticks, pencil tips, background references, and 2.5D platforms have dedicated controls. Decoration does not move the value-encoding endpoint. Reference values do not cap the data range.
 
-### 组成图形的输入
+### Composition data
 
-组成图接收 CSV 长表，数值为非负数，重复分类求和。基础饼图与华夫饼图需要「分类、数值」；矩阵饼图增加「行分组、列分组」；双层分类图和饼图细分需要「父分类、子分类、数值」；柱状图与饼图需要「样本、分类、数值」。实际 CSV 列名可在数据处理中映射。
+Composition charts accept nonnegative long-form CSV data and sum duplicate categories. Pie/waffle charts need category and value; pie matrices add row and column groups; nested pie and bar-of-pie need parent, child, and value; bar-with-pies needs sample, category, and value. Map your actual CSV column names in the data controls.
 
-各样本或矩阵格子独立计算占比。双层图内层表示父分类占总量的比例，外层角度延续父分类，外层百分比表示所属父分类内的占比。华夫饼图单元比例是近似显示，提示保留真实数值与占比。图形只展示已有分类统计，不自动推断生物学分类或做显著性检验。
+Proportions are calculated independently per sample or matrix cell. Nested pies show each parent's share of the total on the inner ring; outer angles follow the parent, and outer percentages are relative to that parent. Waffle units approximate proportions while tooltips retain exact values. Charts display supplied summaries; they do not infer biological categories or run significance tests.
 
-### 直接选择需要的图形样式
+### Choose a style directly
 
-图形库提供 **118 个示例入口**，左侧直接按散点图、折线图、柱状图、箱线图、小提琴图、饼图、华夫饼图、直方图、热力图、火山图、曼哈顿图、生存曲线、Circos 图及染色体图分类，同类型的变体集中展示。环图、扇形图、引线环图等可以直接从卡片打开，无需先进入基础图再寻找配置。
+The library has **118 example entries**, organized by scatter, line, bar, box, violin, pie, waffle, histogram, heatmap, volcano, Manhattan, survival, Circos, and chromosome families. Variants are grouped with their family. Open donut, sector, or leader-label styles directly from their cards.
 
-小提琴相关图形接收长表：`group,value`，可增加 `sex` 子组、`tissue` 分面和 `letter` 标注字段，列名均可映射。对半小提琴要求恰好两个子组；分面默认共用数值范围，也可选择独立范围。
+Violin variants use `group,value`, with optional `sex` subgroup, `tissue` facet, and `letter` annotation fields; all column names are configurable. Split violins require exactly two subgroups. Facets share a numeric range by default, with independent ranges available.
 
-柱状图、箱线图和小提琴图支持读取已有字母标注；小提琴图可手动添加组间比较连线和说明文字。**不自动执行统计检验或生成 P 值，示例字母与比较文字仅用于演示。**
+Bar, box, and violin charts can read existing letter annotations. Violins also support manual comparison brackets and text. **Statistical tests and P values are not generated. Sample letters and comparison text are illustrative.**
 
-## 快速开始
+## Quick start
 
-本地开发建议使用 **Node.js 22.12+ 或 24**，以及 npm。
+For local development, use **Node.js 22.12+ or 24** and npm.
 
 ```bash
 git clone https://github.com/wan9h5/D3Forge.git
@@ -158,28 +175,28 @@ npm ci
 npm run dev
 ```
 
-打开终端显示的地址，默认是 `http://localhost:4173`。
+Open the address printed in the terminal, normally `http://localhost:4173`.
 
-1. 进入「图形库」，选择一种图形
-2. 在左侧调整配置，或导入 CSV 并映射字段
-3. 在中间查看图表，在右侧阅读对应的 D3 源码
-4. 复制完整代码，或下载 `.js` 文件
+1. Open the chart library and choose a chart.
+2. Adjust the controls, or import a CSV and map its fields.
+3. Inspect the chart in the center and the D3 source on the right.
+4. Copy the complete code or download the `.js` file.
 
-### 在自己的项目中使用源码
+### Use exported source in your project
 
-安装 D3：
+Install D3:
 
 ```bash
 npm install d3
 ```
 
-将导出的代码放入支持 JavaScript 模块的项目，在 DOM 就绪后执行。代码优先使用页面中的 `#chart` 容器，没有该容器时会自动创建。
+Run the exported code after the DOM is ready in a project supporting JavaScript modules. It uses an existing `#chart` container, or creates one if absent.
 
 ```html
 <div id="chart"></div>
 ```
 
-导出包含当前示例或 CSV 数据。也可以替换 `const data` 数组，保持映射字段名一致：
+Exports include the current sample or CSV data. You can replace `const data` while preserving mapped field names:
 
 ```js
 const data = [
@@ -188,93 +205,93 @@ const data = [
 ];
 ```
 
-### 构建与部署
+### Build and deploy
 
 ```bash
 npm run build
 npm run preview
 ```
 
-构建产物位于 `dist/`，可部署到静态网站托管服务。页面使用 Hash 路由。
+Deploy `dist/` to a static host. Navigation uses hash routing.
 
-仓库已包含 GitHub Pages 的自动部署工作流。首次发布时，在仓库的 `Settings` → `Pages` → `Build and deployment` → `Source` 中选择 `GitHub Actions`，然后将 `main` 分支推送到 GitHub。之后每次推送 `main` 都会自动构建并更新页面，访问地址为：<https://wan9h5.github.io/D3Forge/>。
+This repository includes an automatic GitHub Pages workflow. For the first release, open `Settings` → `Pages` → `Build and deployment` → `Source` and select `GitHub Actions`, then push the `main` branch to GitHub. Every later push to `main` rebuilds and updates the site automatically. The published site is <https://wan9h5.github.io/D3Forge/>.
 
-## 开发
+## Development
 
-技术栈：React 19、TypeScript、Vite、D3 v7、Zustand、CodeMirror 6、Papa Parse。
+Stack: React 19, TypeScript, Vite, D3 v7, Zustand, CodeMirror 6, and Papa Parse.
 
 ```text
 src/
-  App.tsx          路由、导航与页面分包
-  Home.tsx         产品首页与快速入门
-  Builder.tsx      三栏配置、预览与源码工作台
-  Guide.tsx        快速入门与使用说明
-  HeroDemo.tsx     配置、图形与源码的交互演示
-  Gallery.tsx      图形分类、搜索与预览卡片
-  ChartThumbnail.tsx 视口附近的缩略图按需渲染
-  thumbnailScheduler.ts 缩略图并发队列与 SVG 缓存
-  model.ts         图表类型、示例数据、默认配置与有效性检查
-  store.ts         配置与数据状态
-  generate*.ts     原生 D3 布局、统计和完整源码生成
-  *Controls.tsx    按图形提供渐进式配置面板
-  *Entries.ts      图形库入口、变体和多语言说明
-  Preview.tsx      隔离执行生成源码
-  CodePanel.tsx    只读编辑器、搜索、高亮与导出
-  SiteFooter.tsx   项目与许可证链接
+  App.tsx             Routing, navigation, and route chunks
+  Home.tsx            Product home and quick start
+  Builder.tsx         Three-column configuration workspace
+  Guide.tsx           Quick start and usage guidance
+  HeroDemo.tsx        Interactive controls/chart/source demo
+  Gallery.tsx         Chart families, search, and preview cards
+  ChartThumbnail.tsx  On-demand thumbnails near the viewport
+  thumbnailScheduler.ts Thumbnail queue and SVG cache
+  model.ts            Types, sample data, defaults, validation
+  store.ts            Configuration and data state
+  generate*.ts        Native D3 layouts, statistics, and source generation
+  *Controls.tsx       Progressive chart-specific controls
+  *Entries.ts         Library entries, variants, and translations
+  Preview.tsx         Isolated execution of generated source
+  CodePanel.tsx       Read-only editor, search, highlighting, export
+  SiteFooter.tsx      Project and license links
 docs/
-  architecture.md  产品决策与架构说明
-  assets/          README 视觉资源
-tests/             生成逻辑、统计计算与组件行为测试
+  architecture.md     Product decisions and architecture (Chinese)
+  assets/             README visual assets
+tests/                Generation, statistics, and component behavior
 ```
 
-项目测试与构建命令：
+Validation commands:
 
 ```bash
 npm test
 npm run build
 ```
 
-产品约定见 [AGENTS.md](AGENTS.md)，设计演进见 [架构说明](docs/architecture.md)。
+See [AGENTS.md](AGENTS.md) for development rules and [Architecture](docs/architecture.md) (Chinese) for design decisions.
 
-## 数据与当前限制
+## Data and current limitations
 
-- CSV 在本地处理，最多 **10 MB / 10,000 行**；较大的 SVG 数据集可能影响交互速度
-- 空白与无效数值会被跳过；对数坐标仅接受正值，火山图要求 `0 < p ≤ 1`
-- 配置暂不跨刷新保存；切换图形会恢复该图形的默认数据和配置
-- 修改配置会重新生成预览，缩放位置随之重置
-- 柱状图对重复的分类 / 系列组合默认求和，支持按配置改为均值；数值轴采用线性比例尺并包含零
-- 折线图的 X 字段接受数值或时间序号；日期字符串请先转换为数值，数据按 X 值排序
-- 小提琴图使用线性数值轴与 Epanechnikov 核密度估计，支持带宽倍率调整；单点或常数分组使用回退带宽，密度形状应结合样本量阅读
-- 曼哈顿图的位置字段必须非负，P-value 要求 `0 < p ≤ 1`；染色体跨度依据当前数据的最大位置计算，不代表参考基因组的完整染色体长度
-- 曼哈顿图的 `5e-8` 默认阈值可按研究需要调整；显著点标签优先标注最小 P-value，数量可限制
-- 基础图例为单行；高级图例支持换行、纵向排列、位置、字号及可见项限制，完整数据仍保留
-- 源码为只读，暂不提供反向编辑同步、图片导出或组件代码生成
+- CSV files are processed locally, up to **10 MB / 10,000 rows**. Larger SVG datasets can affect interaction speed.
+- Blank/invalid numbers are skipped. Log scales require positive values; volcano charts require `0 < p ≤ 1`.
+- Configuration does not persist across reloads. Switching charts restores that chart's default data and controls.
+- Configuration changes regenerate the preview and reset its zoom position.
+- Bar charts sum duplicate category/series combinations by default, with mean aggregation available. Numeric axes are linear and include zero.
+- Line X fields accept numbers or time indices. Convert date strings to numbers first; data is sorted by X.
+- Violins use a linear numeric axis and Epanechnikov kernel density estimation with a bandwidth multiplier. Single-point/constant groups use fallback bandwidths; interpret shape alongside sample size.
+- Manhattan positions must be nonnegative and P values satisfy `0 < p ≤ 1`. Chromosome spans come from maximum positions in current data, not full reference-genome lengths.
+- The default Manhattan threshold of `5e-8` is adjustable. Significant-point labels prioritize the smallest P values and can be limited in number.
+- Basic legends use one row; advanced legends support wrapping, vertical layout, position, font size, and visible-item limits. All data remains included.
+- Source is read-only. Bidirectional editing, image export, and component code generation are not currently available.
 
-预览使用应用内打包的 D3，通过受限 iframe 执行，无需外部 CDN。导入字符串使用文本节点展示，嵌入预览的源码会转义 script 结束标签。图形库缩略图使用同一份生成源码，最多同时运行两个附近预览，绘制完成后序列化为受限缓存的 SVG 图片并释放 iframe。分享导出文件前，请确认其中的数据适合公开。
+Previews use bundled D3 in a restricted iframe without an external CDN. Imported strings are rendered as text nodes, and script end tags are escaped in embedded source. Gallery thumbnails use the same generated source, run at most two nearby previews at once, then serialize the SVG into a bounded cache and release the iframe. Before sharing an export, check that its included data is suitable for disclosure.
 
-## 路线图
+## Roadmap
 
-- [x] Scatter / Volcano / Box 图形构建与原生源码导出
-- [x] 图形库、三栏工作台与代码搜索
-- [x] 产品首页、交互演示与快速入门
-- [x] 图形库缩略图懒加载、SVG 缓存与首页／路由分包
-- [x] Bar / Line 图形构建与源码导出
-- [x] Violin / Manhattan 图形构建与源码导出
-- [x] Heatmap / Histogram 与六类组成图形、专属字段映射及配置
-- [ ] 完善真实浏览器交互覆盖与详情页大数据量性能
+- [x] Scatter / Volcano / Box with native source export
+- [x] Chart library, three-column workspace, code search
+- [x] Product home, interactive demo, quick start
+- [x] Lazy gallery thumbnails, SVG caching, and home/route code splitting
+- [x] Bar / Line with source export
+- [x] Violin / Manhattan with source export
+- [x] Heatmap / Histogram and six composition families with dedicated mappings and controls
+- [x] Survival, Circos, chromosome, SNP, and association examples with specialized mappings
+- [x] Progressive chart-specific controls, multilingual UI/source comments, and local CSV remapping
+- [ ] Broader real-browser interaction coverage and large-dataset detail-page performance
 
-## 可选高级配置
+## Optional advanced controls
 
-视觉区保留基础设置，并按图形提供可折叠、默认关闭的高级选项：坐标轴、显示范围、网格、标签、图例、参考线、背景与留白，以及各图形专属样式。数值显示范围只裁剪展示；直方图分箱范围会筛选样本并重新归一化密度。
+Basic controls remain readily available. Collapsible, initially disabled advanced sections expose applicable axes, domains, grids, labels, legends, reference lines, backgrounds, spacing, and chart-specific styles. Numeric display domains only clip the view; histogram bin ranges filter observations and renormalize density.
 
-## 参与贡献
+## Contributing
 
-欢迎通过 [Issues](https://github.com/wan9h5/D3Forge/issues) 报告问题、讨论图表需求，或提交 Pull Request。
+Use [Issues](https://github.com/wan9h5/D3Forge/issues) to report bugs and discuss chart requests, or submit a pull request. See the [contribution guide](CONTRIBUTING.md) (Chinese) for extension steps and PR requirements.
 
-配置与图形扩展步骤、PR 要求见 [贡献指南](CONTRIBUTING.md)。
+Include reproduction steps, expected/actual behavior, browser version, and a minimal dataset safe to share. New charts should reuse the configuration and source-generation flow so that preview and export execute the same native D3 code.
 
-报告问题时，请尽量提供复现步骤、预期与实际行为、浏览器版本，以及可公开的最小数据示例。新增图形应复用配置与源码生成流程，确保预览和导出使用同一份原生 D3 代码。
+## License
 
-## 许可证
-
-本项目采用 [MIT License](LICENSE)。
+Released under the [MIT License](LICENSE).
