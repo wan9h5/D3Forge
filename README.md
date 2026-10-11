@@ -1,7 +1,6 @@
-[简体中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
-
 <div align="center">
   <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge Logo" />
+  <p><a href="README.md">简体中文</a> · <a href="README.en.md">English</a> · <a href="README.ja.md">日本語</a></p>
   <h1>D3Forge</h1>
   <p><strong>调好图表，带走原生 D3 源码</strong></p>
   <p>通过可视化配置构建图表，实时预览并导出可独立运行的 D3.js 代码</p>

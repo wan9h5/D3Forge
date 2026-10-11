@@ -1,7 +1,6 @@
-[简体中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
-
 <div align="center">
   <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge Logo" />
+  <p><a href="README.md">简体中文</a> · <a href="README.en.md">English</a> · <a href="README.ja.md">日本語</a></p>
   <h1>D3Forge</h1>
   <p><strong>Build your chart. Take the native D3 code.</strong></p>
   <p>Configure charts visually, preview changes live, and export standalone D3.js code.</p>
