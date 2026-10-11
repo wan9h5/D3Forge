@@ -1,3 +1,9 @@
+import { bioEntries } from './bioEntries';
+import { bioMock } from './bioModel';
+import { heatmapEntries } from './heatmapEntries';
+import { heatmapMock } from './heatmapModel';
+import { volcanoEntries } from './volcanoEntries';
+import { volcanoMock } from './volcanoModel';
 import { barEntries } from './barEntries';
 import { barMock } from './barModel';
 import { scatterEntries } from './scatterEntries';
@@ -13,6 +19,9 @@ const entries: ChartEntry[] = [
     ...(chart.id === 'nested-pie' ? { name: 'Nested Donut', zh: '双层环图' } : {}),
   })),
   ...scatterEntries,
+  ...volcanoEntries,
+  ...heatmapEntries,
+  ...bioEntries,
   ...barEntries,
   { id:'bar-letters',type:'bar',name:'Bar with Letters',zh:'字母标注柱状图',description:'展示用户提供的分组字母标注',patch:{annotationsEnabled:true,annotationField:'letter'} },
   { id:'box-letters',type:'box',name:'Box with Letters',zh:'字母标注箱线图',description:'展示用户提供的分组字母标注',patch:{annotationsEnabled:true,annotationField:'letter'} },
@@ -40,6 +49,9 @@ export function entryConfig(type: ChartType, entryId: string): Config {
 
 export function entryData(type:ChartType,id:string) {
  const entry=entryById(id);
+ if(entry?.patch.bioVariant)return bioMock(entry.patch.bioVariant);
+ if(type==='heatmap'&&entry?.patch.heatmapVariant)return heatmapMock(entry.patch.heatmapVariant);
+ if(type==='volcano'&&entry?.patch.volcanoVariant)return volcanoMock(entry.patch.volcanoVariant);
  if(entry?.patch.barVariant)return barMock(entry.patch.barVariant);
  return type==='scatter'&&entry?.patch.scatterVariant?scatterMock(entry.patch.scatterVariant):undefined;
 }

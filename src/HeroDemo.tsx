@@ -3,26 +3,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { defaults } from './model';
 import { generateCodeParts } from './generate';
 import { Preview } from './Preview';
-import { javascriptLanguage } from '@codemirror/lang-javascript';
-import { highlightTree, tagHighlighter, tags } from '@lezer/highlight';
-
-const demoSyntax = tagHighlighter([
-  { tag: tags.keyword, class: 'demo-token-keyword' },
-  { tag: tags.string, class: 'demo-token-string' },
-  { tag: tags.number, class: 'demo-token-number' },
-  { tag: [tags.function(tags.variableName), tags.function(tags.propertyName)], class: 'demo-token-function' },
-  { tag: [tags.variableName, tags.propertyName], class: 'demo-token-name' },
-  { tag: tags.operator, class: 'demo-token-operator' },
-]);
-
 function highlightedDemoLine(line: string) {
+  // The homepage shows a short, generated excerpt; load the full editor only in Builder.
   const tokens: { text: string; className?: string }[] = [];
   let cursor = 0;
-  highlightTree(javascriptLanguage.parser.parse(line), demoSyntax, (from, to, className) => {
+  const pattern = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*|=>|[=+*<>!-]+/g;
+  for (const match of line.matchAll(pattern)) {
+    const from = match.index!, text = match[0], to = from + text.length;
+    const kind = /^['"]/.test(text) ? 'string' : /^\d/.test(text) ? 'number' : /^(const|let|return|new|true|false|null|undefined)$/.test(text) ? 'keyword' : /^[A-Za-z_$]/.test(text) ? (/^\s*\(/.test(line.slice(to)) ? 'function' : 'name') : 'operator';
     if (from > cursor) tokens.push({ text: line.slice(cursor, from) });
-    tokens.push({ text: line.slice(from, to), className });
+    tokens.push({ text, className: `demo-token-${kind}` });
     cursor = to;
-  });
+  }
   if (cursor < line.length) tokens.push({ text: line.slice(cursor) });
   return tokens.map((token, index) => <span key={index} className={token.className}>{token.text}</span>);
 }

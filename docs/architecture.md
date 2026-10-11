@@ -175,3 +175,49 @@ Publish individual chart packages only if chart size, dependency isolation or in
 多组堆叠接收分类、并排组、堆叠成分与值，按三字段键汇总，缺失成分补零。多组极坐标按分类内的系列划分角度，并共享径向范围。连接图可选曲线与直线、边界与带；同单位堆叠折线按分类对映射趋势取均值。
 
 输入行保存在生成数据项的 `sourceRow` 中，附加字段始终从原始行读取，避免用户字段名与布局辅助字段重名时改变第二指标、组别或误差上下界。雪糕、铅笔、背景茎叶、台座和上下调样式保留数值顶点及输入符号的语义。
+
+## Volcano extensions
+
+The volcano family adds 12 entries through `volcanoEntries.ts`, with chart-specific mappings and optional controls in `VolcanoControls.tsx`. `volcanoModel.ts` owns defaults, deterministic samples, and row validation. `generateVolcano.ts` returns native D3/DOM source; the application preview executes this same source and exports include the full data array. The legacy basic volcano remains available.
+
+- Input is precomputed log2FC and raw/adjusted P values. Validity requires finite effects and `0 < P ≤ 1`; VIP mapping additionally requires a nonnegative numeric VIP. Faceted layouts require a nonblank group. No differential analysis, P adjustment, enrichment, or single-cell processing is performed.
+- Strict thresholds use `abs(x) > FC` and `−log10(P) > boundary(x)`. The optional exploratory boundary is `−log10(P threshold) + a / (abs(x) − FC)` outside the FC cutoff. The displayed hyperbola and classes share the same function; this is not FDR control.
+- Records retain a separate `sourceRow`, preventing mapped input names from colliding with derived coordinates. Repeated records are not aggregated. Linked panels connect only gene names unique in both selected panels.
+- VIP uses square-root radius mapping: `r² = rMin² + VIP / maxVIP × (rMax² − rMin²)`. Continuous color includes a numeric legend. Functional-category colors apply to selected points; neutral points remain neutral.
+- Cluster layouts encode within-cluster log2FC offsets and signed significance. Radial layouts encode within-sector log2FC angles and signed significance relative to a reference ring. Marker facets support shared or independent ranges.
+- Optional search, brushing, and pinned labels use native D3/DOM and remain in exported source. Search/brush highlight records without modifying data. Brush mode separates selection from point interactions and zoom. Controls live in an SVG `foreignObject` to preserve preview dimensions without adding an inner scrollbar; interactive SVGs expose a group role so HTML controls remain accessible.
+- Local CSV remaps effect, P, group, category, VIP, and color fields while preserving visual settings. UI copy, chart descriptions, generated comments, and interaction prompts have Chinese, English, and Japanese versions.
+
+## Heatmap extensions
+
+`heatmapEntries.ts` adds 17 heatmap examples (118 entries overall, including the later bio extensions). `heatmapModel.ts` owns deterministic long-form mocks, defaults and input validation; `HeatmapControls.tsx` supplies chart-specific mappings and progressive controls. `generateHeatmap.ts` emits native D3/DOM, including the plain JavaScript helpers in `heatmapMath.ts`. Preview executes this exact source; copy/download includes original input data.
+
+- Duplicate coordinates aggregate by mean or sum within each selected panel. Row/column normalization uses population standard deviation, leaves missing values null, and maps constant observed vectors to zero. Both halves of dual-triangle cells receive the selected normalization independently and share the color domain.
+- Agglomeration uses original pairwise Euclidean/Manhattan/correlation distances with average/single/complete linkage. Pairwise distances exclude missing coordinate pairs. No overlap gives infinite distance; disconnected components join last using a deterministic display height. Correlation distance for constant vectors is zero when observed pairs are identical, otherwise one. Ties preserve input order. A cut splits the highest remaining branch until the requested cluster count or leaf limit is reached.
+- Circular heatmaps use row angle and column ring, with a radial dendrogram. Rectangular dendrogram heights correspond to linkage distances. Selected labels use a supplied gene list or raw row variance. Triangular matrix masking requires matching row/column category sets.
+- Annotation tracks read original records separately from derived cells. Numeric tracks use continuous colors, categorical tracks discrete colors; conflicting metadata is mixed, not silently taken from the first record. Full keys are available on hover. Trends use displayed column order, individual lines, optional means and points; missing observations break paths. Terms count unique associated rows, without enrichment.
+- Calendar validation requires exact ISO dates in UTC and uses week intervals across leap years and year boundaries. Unobserved dates stay blank. Row summary bars use displayed normalized observations and are mutually exclusive with trend panels in the UI.
+- Sankey memberships are deduplicated per row/term, and weights are one per membership or the mean supplied nonnegative weight. A global thickness scale preserves source/target flow; repeated sample measurements do not multiply a membership. Sources align with matrix rows and destinations use summed flow.
+- Extra input mappings are restored on local CSV import where available; chart settings remain intact. No brain atlas or external rendering dependency is introduced.
+
+
+## Survival, Circos and chromosome extensions
+
+`bioEntries.ts` registers 11 additional examples (118 total), reusing existing renderer type tags without adding duplicate Manhattan/circular heatmap/two-track bar entries. `bioModel.ts` supplies mappings, deterministic data and validation; `BioControls.tsx` presents specific progressive controls. `generateBio.ts`, `generateGenomics.ts` and `generateChromosomes.ts` export D3/DOM source; survival calculations are emitted from `survivalMath.ts` unchanged.
+
+- Survival input is one right-censored record per subject, optional unique ID, time ≥ 0 and event 0/1. Duplicate mapped IDs are all excluded. Product-limit KM handles tied events before censors and uses Greenwood log-log intervals (90/95/99%). Risk tables count records with follow-up ≥ each displayed time. Generalized log-rank uses the event-time hypergeometric covariance and chi-square upper tail; singular covariance yields no test.
+- Cutoff scanning considers unique-score midpoints with at least two records and the minimum proportion in each group. It chooses maximum log-rank chi-square, breaking ties toward the lower cutoff, and reports all eligible candidate counts plus Bonferroni-adjusted P. This is exploratory and is not the maxstat method. Manual and median splits do not scan or adjust.
+- Genomic lengths must be positive and consistent, including fusion targets. Intervals are 0-based half-open and must have positive width; point coordinates range from zero through reference length. Centromere intervals must also be valid and consistent. No atlas, cytobands or assembly inference is used. Generic mock lengths are not real species.
+- Genomic Circos sectors are proportional to lengths; fusion links use supplied endpoints and optional positive support weights. Directed receptor–ligand chords aggregate positive strengths by source/target and preserve pair names in text-only tooltips; sector widths encode incoming plus outgoing totals.
+- LD uses precomputed [0,1] pair values, excludes conflicting positions per SNP within a chromosome and averages canonical duplicate pairs. SNP order follows physical position; leaders connect physical coordinates to ordinal diamond cells.
+- Density uses complete fixed windows, including zero counts, and includes a locus at reference length in the terminal window. Per-Mb normalization divides by actual window length. Each input row counts once. Chromosome layouts share an actual reference coordinate scale and use clipping paths for supplied centromere constrictions.
+- Local CSV remaps specialized fields while keeping visual controls; LD selection resets for the new input. Category names, descriptions, controls and generated comments support all three locales. Existing preview/source composition and editor-only change highlighting are preserved.
+- Statistical references: [R survival confidence intervals](https://stat.ethz.ch/R-manual/R-devel/library/survival/html/survfit_confint.html), [R survdiff](https://www.stat.math.ethz.ch/R-manual/R-devel/library/survival/html/survdiff.html), and [maxstat methods](https://www.stat.ethz.ch/CRAN/web/packages/maxstat/refman/maxstat.html) for the distinction from maximally selected rank procedures.
+
+## Gallery loading and memory
+
+- `ChartThumbnail.tsx` observes each card with a 200px viewport margin. Only nearby cards generate source; offscreen cards retain their accessible links and a fixed-aspect placeholder, without a live renderer or image.
+- `thumbnailScheduler.ts` runs at most two sandboxed previews concurrently, starting work in idle callbacks (with a timer fallback). Leaving the viewport or unmounting cancels queued work and releases active slots; failures/timeouts also release slots.
+- Thumbnails execute the same generated D3 source as detail previews. After drawing, `Preview` serializes the SVG and posts it only to its parent; the parent checks the sending frame. Cards display the result through an inert SVG image and unmount the iframe. No separate chart renderer or export format is introduced.
+- A per-session LRU caches snapshots by chart and locale, bounded to 128 entries and 16 MiB of estimated string storage. Revisiting a cached card avoids regenerating its chart; changing languages uses the appropriate localized snapshot.
+- Home, Gallery, Guide and Builder are separate lazy route chunks. The full CodeMirror editor loads with Builder; the homepage excerpt uses lightweight text highlighting. Search uses a precomputed multilingual index and deferred filtering to keep typing responsive.

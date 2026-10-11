@@ -1,8 +1,11 @@
 import type { ReactNode } from 'react';
 
-export type ChartCategory = 'all' | 'scatter' | 'line' | 'bar' | 'box' | 'violin' | 'pie' | 'waffle' | 'histogram' | 'heatmap' | 'volcano' | 'manhattan';
+export type ChartCategory = 'survival' | 'circos' | 'chromosome' | 'all' | 'scatter' | 'line' | 'bar' | 'box' | 'violin' | 'pie' | 'waffle' | 'histogram' | 'heatmap' | 'volcano' | 'manhattan';
 
 const icons: Record<ChartCategory, ReactNode> = {
+  survival: <><path d="M3 3v18h18M4 5h5v4h4v5h4v4h4"/></>,
+  circos: <><circle cx="12" cy="12" r="9"/><path d="M5 7q15 1 9 13M6 18Q8 2 20 10"/></>,
+  chromosome: <><path d="M6 3q-3 0-1 5l4 8q2 5 4 5M18 3q3 0 1 5l-4 8q-2 5-4 5M5 4l14 16M19 4L5 20"/></>,
   all: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
   scatter: <><path d="M3 3v18h18"/>{[[7,15],[10,9],[14,13],[17,5],[20,10]].map(([cx,cy])=><circle key={cx} cx={cx} cy={cy} r="1.6" fill="currentColor" stroke="none"/>)}</>,
   line: <><path d="M3 3v18h18M6 16l5-7 5 3 5-8"/></>,

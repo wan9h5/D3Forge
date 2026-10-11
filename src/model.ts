@@ -1,10 +1,13 @@
+import { bioDefaults, bioRows, type BioConfig } from './bioModel';
+import { heatmapDefaults, heatmapRows, type HeatmapConfig } from './heatmapModel';
+import { volcanoDefaults, volcanoRows, type VolcanoConfig } from './volcanoModel';
 import { barDefaults, barRows, type BarConfig } from './barModel';
 import { scatterDefaults, scatterRows, type ScatterConfig } from './scatterModel';
 import { compositionDefaults, compositionMock, compositionRows, isComposition, type CompositionConfig, type CompositionType } from './compositionModel';
 import { advancedDefaults, type AdvancedConfig } from './advancedModel';
 export type ChartType = CompositionType | 'scatter' | 'volcano' | 'box' | 'bar' | 'line' | 'violin' | 'manhattan' | 'heatmap' | 'histogram';
 export type Row = Record<string, string | number | null>;
-export interface Config extends AdvancedConfig, CompositionConfig, ScatterConfig, BarConfig {
+export interface Config extends BioConfig, AdvancedConfig, CompositionConfig, ScatterConfig, BarConfig, VolcanoConfig, HeatmapConfig {
   xField: string; yField: string; groupField: string; labelField: string;
   radius: number; opacity: number; color: string; width: number; height: number;
   xAxis: boolean; yAxis: boolean; grid: boolean; tooltip: boolean; legend: boolean;
@@ -159,13 +162,16 @@ export function defaults(type: ChartType): Config {
     groupField: 'series', labelField: type === 'bar' ? 'category' : 'time', color: '#356ae6',
     tooltipFields: [type === 'bar' ? 'category' : 'time', 'value', 'series'],
   };
-  return {...advancedDefaults,...compositionDefaults,...scatterDefaults,...barDefaults,
+  return {...advancedDefaults,...compositionDefaults,...scatterDefaults,...barDefaults,...volcanoDefaults,...heatmapDefaults,...bioDefaults,
     comparisonsEnabled:false,comparisons:[],violinLayout:'full',violinGroupField:'',facetField:'',facetScale:'shared',violinGeometry:'violin',annotationsEnabled:false,annotationField:'letter',valueField:'value',heatmapAggregate:'mean',heatmapPalette:'sequential',cellGap:2,cellRadius:2,binCount:14,histogramMode:'count',bandwidthFactor:1,violinScale:'width',violinInner:'box',chromosomeField:'chromosome',chromosomeGap:.04,secondaryColor:'#95a5bd',significantColor:'#e2ad42',showThreshold:true,showSuggestive:false,suggestiveThreshold:1e-5,labelLimit:12,barLayout:'grouped',horizontal:false,barPadding:.22,lineWidth:2.5,smooth:false,area:false,showPoints:true,xField:type==='volcano'?'log2FC':type==='box'?'group':'expressionA', yField:type==='volcano'?'pvalue':type==='box'?'expression':'expressionB',groupField:type==='volcano'?'':'group',labelField:type==='volcano'?'gene':'sample',radius:4,opacity:.8,color:'#197f8a',width:800,height:440,xAxis:true,yAxis:true,grid:true,tooltip:true,legend:true,zoom:false,labels:false,xScale:'linear',yScale:'linear',pThreshold:.05,fcThreshold:1,tooltipFields:type==='volcano'?['gene','log2FC','pvalue']:type==='box'?['group','expression']:['sample','expressionA','expressionB','group']};
 }
 export function validNumber(value: unknown): boolean {
   return value !== null && value !== undefined && String(value).trim() !== '' && Number.isFinite(Number(value));
 }
 export function validateRows(type: ChartType, data: Row[], c: Config) {
+  if(c.bioVariant!=='none')return bioRows(data,c);
+  if(type==='heatmap'&&c.heatmapVariant!=='basic')return heatmapRows(data,c);
+  if(type==='volcano'&&c.volcanoVariant!=='basic')return volcanoRows(data,c);
   if((type==='bar'||type==='histogram')&&c.barVariant!=='basic')return barRows(data,c);
   if(type==='scatter'&&c.scatterVariant!=='basic')return scatterRows(data,c);
   if(isComposition(type))return compositionRows(type,data,c);

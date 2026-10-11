@@ -1,9 +1,9 @@
 <div align="center">
   <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge Logo" />
-  <p><a href="README.md">简体中文</a> · <a href="README.en.md">English</a> · <a href="README.ja.md">日本語</a></p>
   <h1>D3Forge</h1>
   <p><strong>Build your chart. Take the native D3 code.</strong></p>
   <p>Configure charts visually, preview changes live, and export standalone D3.js code.</p>
+  <p><a href="README.md">简体中文</a> · <a href="README.en.md">English</a> · <a href="README.ja.md">日本語</a></p>
   <p>
     <a href="#quick-start">Quick start</a> ·
     <a href="#features">Features</a> ·
@@ -67,6 +67,50 @@ Scatter examples use 6–36 deterministic records to demonstrate configuration. 
 
 Regression supports linear and quadratic models. Optional 95% confidence bands use 200 paired bootstrap resamples with a fixed seed and show pointwise intervals for the mean curve, not individual prediction intervals. Pearson/Spearman charts do not generate P values; Spearman uses average ranks for ties. Upstream analyses such as GSEA, HOMER, and PCA are not performed in the browser.
 
+### Survival, Circos and chromosome charts
+
+Eleven new entries reuse existing Manhattan, circular heatmap and two-track circular bar support. The sidebar adds survival, Circos and chromosome families; SNP LD is under heatmaps. Basic styles are ready to use, with optional risk tables, tests, annotations and other controls.
+
+| Chart | Default fields | Main controls |
+| --- | --- | --- |
+| Kaplan–Meier | `subject, time, event, group` | 90/95/99% confidence intervals, censor marks, risk table, log-rank |
+| Exploratory best cutoff | `subject, time, event, score` | Manual/median/maximum log-rank scan, minimum group proportion |
+| Gene-labeled Circos | `chromosome, length, position, end, gene, group` | Proportional sectors, leaders, coordinate ticks, label limit |
+| Fusion Circos | `chromosome, length, position, targetChr, targetLength, targetPos, gene, group, weight` | Link visibility, support-weight widths and filtering |
+| Receptor–ligand Circos | `source, target, ligand, receptor, weight` | Directed ribbons, strength filter, arrows, cell names |
+| SNP linkage disequilibrium | `chromosome, snpA, position, snpB, targetPos, r2` | Chromosome, LD color limits, SNP labels and values |
+| SNP density | `chromosome, length, position` | Window size, count/per-Mb density, orientation, color scale |
+| Chromosome loci | `chromosome, length, position, gene, group` | Radius, orientation, track thickness, annotations |
+| Chromosome ideogram/peaks and segments | `chromosome, length, position, end, gene, group` | Interval colors, shared physical scale, orientation, thickness |
+| Segments with centromeres | Interval fields plus `centStart, centEnd` | Centromere outlines, segments, coordinates, assembly note |
+
+- **Survival:** one row per subject, nonnegative time, `event=1` for an event and `event=0` for right censoring. IDs are optional; all duplicates are excluded when mapped. Tied events and censors share the risk set, with events counted first. KM uses Greenwood log-log intervals. No delayed entry, competing risks or covariate adjustment.
+- **Exploratory cutoff:** scan midpoints between unique scores, requiring at least two subjects per group and the selected minimum proportion. Report candidate count, raw P and Bonferroni-adjusted P. This is not the `maxstat` procedure; an in-sample optimum needs independent validation.
+- **Coordinates:** supply reference lengths from one assembly and 0-based half-open `[position,end)` intervals. Loci allow `0–length`. Conflicting lengths/centromeres and out-of-range intervals are excluded. Mock lengths are illustrative, not a real species. Cytobands, fusions and peaks are not inferred.
+- **SNPs and associations:** LD accepts precomputed `r²` or `|D′|` in [0,1]; duplicate pairs use the mean and conflicting SNP positions are excluded. No genotype-to-LD analysis. Density counts one locus per row, includes empty windows and uses actual terminal-window length. Receptor–ligand links aggregate positive supplied strengths; sectors encode incoming plus outgoing totals.
+- **Export and languages:** deterministic data, calculations, layout and tooltips are included in standalone D3 + DOM source. Replace mappings while preserving visual controls. UI and generated comments support Chinese, English and Japanese.
+
+### Heatmap extensions
+
+17 new styles cover clustering, circular clustering, matrices, calendars, paired triangles, selected gene labels, cluster cuts, clinical metadata, row/column annotations, trends, trends with terms, text marks, summary bars, paired panels, dot/stem cells, symbols and Sankey links. Each provides relevant mappings and controls with practical defaults and optional advanced settings.
+
+- **Input**: long-form `sample, gene, value`; calendars use `date, value` with strict `YYYY-MM-DD` dates. Additional columns supply metadata, a second value, size or link weight.
+- **Clustering**: Euclidean, Manhattan or `1 − Pearson` distances; average, single or complete linkage; cuts by cluster count. Disconnected observations join last and constant-vector correlations use explicit deterministic rules.
+- **Normalization**: row/column population Z-scores, constant vectors mapped to zero, missing cells left blank. Duplicate coordinates use mean or sum. Paired panels aggregate separately and share color limits.
+- **Combinations**: categorical/numeric annotation tracks, two-metric triangles, row mean/sum bars, cluster trends and flow-conserving Sankey ribbons. Trends follow column order and break at missing values. Conflicting metadata displays `mixed`. Terms, marks and weights display supplied results without enrichment or significance testing.
+- **Export**: clustering, layout and interaction logic are included in standalone D3 + DOM source. Chinese, English and Japanese descriptions and code comments follow the selected language.
+
+### Volcano extensions
+
+Twelve entries cover gene annotations, gradients, linked pairs, VIP, hyperbolic thresholds, cell clusters, two/four-class colors, marker facets, radial clusters, category annotations, interactive exploration, and three-color volcano plots. Each has dedicated controls, deterministic data, and three-language guidance. Common settings are ready; additional options can be enabled as needed.
+
+- Base input is `gene,log2FC,pvalue`; map raw or adjusted P values and the axis will name the selected field. Add nonnegative `VIP` for size, `category` for functional colors, or `cluster`/contrast for grouped layouts. Duplicate records remain; no differential analysis or multiple-testing correction is performed.
+- Labels prioritize P values or a supplied gene list, with limits, collision avoidance, and leader lines. Linked panels offer contrast selection and shared/independent ranges; only gene names unique within both panels are connected.
+- The explicit exploratory hyperbola is `|x| > FC` and `−log10(P) > −log10(P threshold) + a / (|x| − FC)`. Drawing and classification use the same formula; it is not a statistical test or FDR control.
+- Cluster plots encode log2FC by within-cluster horizontal offset and signed `−log10(P)` vertically. Radial layouts encode log2FC by within-sector angle and signed significance by inward/outward distance from a reference ring. No single-cell analysis is run.
+- VIP is proportional to area above the minimum marker area. Continuous color maps significance or a numeric field; category color applies only to points passing the filter.
+- Gene search, brush counts, and click-to-pin labels are included in native D3/DOM exports. Search and brushing only highlight; they do not filter or change exported data. Brush mode is separate from hovering, clicking, and zooming.
+
 ### Bar and histogram extensions
 
 An initial set of 18 entries covers error bars, two-track circular bars, linked percentage composition, butterfly, vertical, polar, grouped, dot, stacked, horizontal stacked, 3D, bottom aggregation, extruded, diverging, horizontal grouped, triangle, broken-axis bars, and histograms with fitted curves. Each includes small deterministic data, dedicated mappings, and Chinese/English/Japanese controls and source comments.
@@ -96,7 +140,7 @@ Proportions are calculated independently per sample or matrix cell. Nested pies 
 
 ### Choose a style directly
 
-The library has **78 example entries**, organized by scatter, line, bar, box, violin, pie, waffle, histogram, heatmap, volcano, and Manhattan families. Variants are grouped with their family. Open donut, sector, or leader-label styles directly from their cards.
+The library has **118 example entries**, organized by scatter, line, bar, box, violin, pie, waffle, histogram, heatmap, volcano, Manhattan, survival, Circos, and chromosome families. Variants are grouped with their family. Open donut, sector, or leader-label styles directly from their cards.
 
 Violin variants use `group,value`, with optional `sex` subgroup, `tissue` facet, and `letter` annotation fields; all column names are configurable. Split violins require exactly two subgroups. Facets share a numeric range by default, with independent ranges available.
 

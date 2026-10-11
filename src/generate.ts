@@ -1,3 +1,6 @@
+import { generateBioCode } from './generateBio';
+import { generateHeatmapCode } from './generateHeatmap';
+import { generateVolcanoCode } from './generateVolcano';
 import { generateBarsCode } from './generateBars';
 import { generateScatterCode } from './generateScatter';
 import { generateViolinCode } from './generateViolin';
@@ -17,6 +20,9 @@ const importLine = 'import * as d3 from "d3";';
 export interface CodeParts { logic: string; data: string; source: string; }
 
 export function generateCodeParts(type: ChartType, data: Row[], c: Config, locale: Locale = 'en'): CodeParts {
+  if(c.bioVariant!=='none')return generateBioCode(data,c,locale);
+  if(type==='heatmap'&&c.heatmapVariant!=='basic')return generateHeatmapCode(data,c,locale);
+  if(type==='volcano'&&c.volcanoVariant!=='basic')return generateVolcanoCode(data,c,locale);
   if((type==='bar'||type==='histogram')&&c.barVariant!=='basic')return generateBarsCode(data,c,locale);
   if(type==='scatter'&&c.scatterVariant!=='basic')return generateScatterCode(data,c,locale);
   if(isComposition(type))return generateCompositionCode(type,data,c,locale);

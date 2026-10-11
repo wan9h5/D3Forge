@@ -73,7 +73,7 @@
 .header{background:#fff;color:var(--ink);height:72px;border-bottom:1px solid var(--line);box-shadow:0 2px 12px #202c4603;gap:24px}
 .brand{color:#253250;font-size:23px}.brand-icon{border:0;background:var(--accent);color:#fff;border-radius:9px;font-weight:600}
 .header-caption{color:#8590a3;border-color:var(--line);font-size:12px;padding-left:24px}
-.header-nav{display:flex;align-items:center;gap:8px;margin-left:auto}.header-nav>a{color:#68748c;text-decoration:none;padding:10px 13px;font-size:14px;border-radius:6px;white-space:nowrap}.header-nav>a:hover{background:#f4f6fc;color:var(--accent)}.header-nav>a[aria-current=page]{color:var(--accent);background:#edf2ff;font-weight:600}
+.header-nav{display:flex;align-items:center;gap:8px;margin-left:auto}.header-nav>a{color:#68748c;text-decoration:none;padding:10px 13px;font-size:14px;border-radius:6px;white-space:nowrap}.header-nav>a:hover{background:#f4f6fc;color:var(--accent)}.header-nav>a[aria-current=page]{color:var(--accent);background:#edf2ff;font-weight:600}.header-nav>a.github-link,.header-nav>a.github-link:hover,.header-nav>a.github-link:active{background:transparent;color:#68748c}
 .github-link{display:inline-flex;align-items:center;gap:8px}.github-link svg{width:21px;height:21px;flex-shrink:0}.gallery-ready>span{background:var(--accent)}
 .gallery-layout{max-width:none;border:0;min-height:calc(100vh - 72px)}
 .site-footer{display:flex;align-items:center;justify-content:space-between;gap:24px;border-top:1px solid var(--line);padding:30px 0;margin-top:56px;color:var(--muted);font-size:12px}.footer-brand{font-size:16px;font-weight:650;letter-spacing:-.4px;color:#35405b;text-decoration:none}.footer-caption{display:block;margin-top:8px;line-height:1.7}.site-footer nav{display:flex;align-items:center;gap:24px}.site-footer nav a{color:#78849a;text-decoration:none;white-space:nowrap}.site-footer nav a:hover{color:var(--accent)}.site-footer .github-link svg{width:18px;height:18px}
@@ -385,3 +385,13 @@ html[lang=en] .detail-chart-name,html[lang=en] .chart-english-name{display:none}
 @media(prefers-reduced-motion:reduce){.gallery-sidebar .category-menu button{transition:none}}
 
 .controls .control-content{overflow-x:hidden}
+
+/* Thumbnails keep their card dimensions while rendering only near the viewport. */
+.thumbnail-image,.thumbnail-placeholder{display:block;width:100%;height:auto;aspect-ratio:800/440;object-fit:contain}
+.thumbnail-placeholder{display:grid;place-items:center;background:linear-gradient(145deg,#fff,#f8faff);border-radius:4px}
+.thumbnail-placeholder svg{width:48%;max-width:130px;stroke:#e2e9f4;stroke-width:1.5}
+.thumbnail-placeholder.is-unavailable svg{stroke:#cbd5e5}
+.page-loading{min-height:calc(100dvh - 72px);display:flex;align-items:center;justify-content:center;gap:12px;color:#8290a5;font-size:14px}
+.loading-mark{width:18px;height:18px;border:2px solid #e4eaff;border-top-color:var(--accent);border-radius:50%;animation:page-spin .8s linear infinite}
+@keyframes page-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.loading-mark{animation:none}}

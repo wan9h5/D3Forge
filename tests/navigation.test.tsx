@@ -19,17 +19,18 @@ beforeEach(() => {
   root = createRoot(document.getElementById('root')!);
 });
 afterEach(() => { act(() => root.unmount()); vi.restoreAllMocks(); });
-function render() { act(() => root.render(<App/>)); }
-function navigate(hash: string) {
-  act(() => {
+async function render() { await act(async () => { root.render(<App/>); }); await act(async()=>{await vi.dynamicImportSettled();}); }
+async function navigate(hash: string) {
+  await act(async () => {
     window.history.pushState(null, '', hash);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
   });
+  await act(async()=>{await vi.dynamicImportSettled();});
 }
 
 describe('chart library navigation', () => {
-  it('opens the library with chart cards and filters by sidebar category', () => {
-    render();
+  it('opens the library with chart cards and filters by sidebar category', async()=> {
+    await render();
     expect(document.querySelectorAll('.chart-card')).toHaveLength(chartEntries.length);
     expect(document.querySelector('.builder')).toBeNull();
     const category = [...document.querySelectorAll<HTMLButtonElement>('.category-menu button')].find(button => button.textContent?.startsWith('箱线图'))!;
@@ -38,10 +39,10 @@ describe('chart library navigation', () => {
     expect(document.querySelector('.chart-card')?.getAttribute('href')).toBe('#/charts/box');
     expect(category.getAttribute('aria-current')).toBe('page');
   });
-  it('opens a chart detail with its own mock data and returns to the library', () => {
-    render();
+  it('opens a chart detail with its own mock data and returns to the library', async()=> {
+    await render();
     expect(document.querySelector('.chart-card[href="#/charts/volcano"]')).not.toBeNull();
-    navigate('#/charts/volcano');
+    await navigate('#/charts/volcano');
     expect(document.querySelector('.preview-panel h2')?.textContent).toContain('火山图');
     expect(document.querySelector('.controls')).not.toBeNull();
     expect(document.querySelector('.preview-panel')).not.toBeNull();
@@ -49,74 +50,74 @@ describe('chart library navigation', () => {
     expect(document.querySelector('.chart-picker')).toBeNull();
     expect(useBuilder.getState().data[0]).toHaveProperty('pvalue');
     expect(document.querySelector('.breadcrumbs a')?.getAttribute('href')).toBe('#/gallery');
-    navigate('#/gallery');
+    await navigate('#/gallery');
     expect(document.querySelectorAll('.chart-card')).toHaveLength(chartEntries.length);
     expect(document.querySelector('.builder')).toBeNull();
   });
-  it('supports direct chart links and keeps configuration when reopening the same chart', () => {
+  it('supports direct chart links and keeps configuration when reopening the same chart', async()=> {
     window.history.replaceState(null, '', '#/charts/box');
-    render();
+    await render();
     expect(document.querySelector('.preview-panel h2')?.textContent).toContain('箱线图');
     act(() => useBuilder.getState().setConfig({ radius: 9 }));
-    navigate('#/gallery');
-    navigate('#/charts/box');
+    await navigate('#/gallery');
+    await navigate('#/charts/box');
     expect(useBuilder.getState().config.radius).toBe(9);
-    navigate('#/charts/scatter');
+    await navigate('#/charts/scatter');
     expect(useBuilder.getState().type).toBe('scatter');
     expect(useBuilder.getState().data[0]).toHaveProperty('expressionA');
   });
-  it('falls back to the library for an unknown chart link', () => {
+  it('falls back to the library for an unknown chart link', async()=> {
     window.history.replaceState(null, '', '#/charts/unknown');
-    render();
+    await render();
     expect(document.querySelectorAll('.chart-card')).toHaveLength(chartEntries.length);
   });
 });
 
 describe('product home and guide', () => {
-  it('opens a product home at the root with working entry points and repository links', () => {
+  it('opens a product home at the root with working entry points and repository links', async()=> {
     window.history.replaceState(null, '', '#/');
-    render();
+    await render();
     expect(document.getElementById('home-title')?.textContent).toContain('带走 D3 源码');
     expect(document.querySelector('.hero-actions a')?.getAttribute('href')).toBe('#/gallery');
     expect(document.querySelector('.hero-actions a:nth-child(2)')?.getAttribute('href')).toBe('#/guide');
     expect(document.querySelector('.site-footer .github-link')?.getAttribute('href')).toBe('https://github.com/wan9h5/D3Forge');
     expect(document.querySelector('.site-footer svg')).not.toBeNull();
     expect(document.querySelector('.builder')).toBeNull();
-    navigate('#/gallery');
+    await navigate('#/gallery');
     expect(document.querySelectorAll('.chart-card')).toHaveLength(chartEntries.length);
     expect(document.querySelector('.header-nav [aria-current="page"]')?.textContent).toBe('图形库');
   });
-  it('opens the guide with privacy, data and export information', () => {
+  it('opens the guide with privacy, data and export information', async()=> {
     window.history.replaceState(null, '', '#/guide');
-    render();
+    await render();
     expect(document.querySelector('.guide-main')).not.toBeNull();
     expect(document.getElementById('usage-notes')?.textContent).toBe('数据与使用须知');
     expect(document.querySelector('.guide-notes')?.textContent).toContain('不上传文件');
     expect(document.querySelector('.guide-notes')?.textContent).toContain('不会跨刷新保存');
     expect(document.querySelector('.guide-steps')?.textContent).toContain('复制完整代码');
-    navigate('#/charts/scatter');
+    await navigate('#/charts/scatter');
     expect(document.querySelector('.builder')).not.toBeNull();
     expect(useBuilder.getState().config.color).toBe('#197f8a');
-    navigate('#/');
+    await navigate('#/');
     expect(document.getElementById('home-title')).not.toBeNull();
   });
 });
 
 describe('registered chart route/state synchronization',()=>{
-  for(const {id:type} of charts) it(`${type}: direct URL, switching and reopening preserve correct state`,()=>{
+  for(const {id:type} of charts) it(`${type}: direct URL, switching and reopening preserve correct state`,async()=>{
     window.history.replaceState(null,'',`#/charts/${type}`);
-    render();
+    await render();
     expect(useBuilder.getState().type).toBe(type);
     act(()=>useBuilder.getState().setConfig({opacity:.45}));
-    navigate('#/gallery');
-    navigate(`#/charts/${type}`);
+    await navigate('#/gallery');
+    await navigate(`#/charts/${type}`);
     expect(useBuilder.getState().type).toBe(type);
     expect(useBuilder.getState().config.opacity).toBe(.45);
-    navigate(`#/charts/${type==='scatter'?'box':'scatter'}`);
+    await navigate(`#/charts/${type==='scatter'?'box':'scatter'}`);
     expect(useBuilder.getState().type).toBe(type==='scatter'?'box':'scatter');
   });
   it('handles unreadable CSV without losing the existing data',async()=>{
-    window.history.replaceState(null,'','#/charts/scatter');render();
+    window.history.replaceState(null,'','#/charts/scatter');await render();
     act(()=>[...document.querySelectorAll<HTMLButtonElement>('.controls .tabs button')].find(button=>button.textContent==='数据处理')!.click());
     const input=document.querySelector<HTMLInputElement>('input[type=file]')!;
     const file=new File(['a,b'],'unreadable.csv',{type:'text/csv'});
@@ -129,8 +130,8 @@ describe('registered chart route/state synchronization',()=>{
 });
 
 describe('composition-specific configuration panels',()=>{
-  for(const {id:type} of charts.filter(chart=>['pie','pie-matrix','nested-pie','waffle','pie-bar','bar-pie'].includes(chart.id)))it(`${type}: shows applicable controls and its own input fields`,()=>{
-    window.history.replaceState(null,'',`#/charts/${type}`);render();
+  for(const {id:type} of charts.filter(chart=>['pie','pie-matrix','nested-pie','waffle','pie-bar','bar-pie'].includes(chart.id)))it(`${type}: shows applicable controls and its own input fields`,async()=>{
+    window.history.replaceState(null,'',`#/charts/${type}`);await render();
     expect(document.querySelector('.controls')?.textContent).toContain('组成样式');
     expect(document.querySelector('.controls')?.textContent).not.toContain('坐标与辅助线');
     const label=type==='waffle'?'单元形状':'图形形式';
@@ -146,24 +147,24 @@ describe('composition-specific configuration panels',()=>{
 
 
 describe('gallery example links',()=>{
-  for(const entry of chartEntries.filter(item=>item.id!==item.type))it(`${entry.id}: deep link, title, reopen and reset preserve the selected example`,()=>{
+  for(const entry of chartEntries.filter(item=>item.id!==item.type))it(`${entry.id}: deep link, title, reopen and reset preserve the selected example`,async()=>{
     window.history.replaceState(null,'',`#/charts/${entry.id}`);
-    render();
+    await render();
     expect(useBuilder.getState().type).toBe(entry.type);
     expect(useBuilder.getState().config).toMatchObject(entry.patch);
     expect(document.querySelector('.preview-panel h2')?.textContent).toContain(entry.zh);
     act(()=>useBuilder.getState().setConfig({opacity:.42}));
-    navigate('#/gallery');navigate(`#/charts/${entry.id}`);
+    await navigate('#/gallery');await navigate(`#/charts/${entry.id}`);
     expect(useBuilder.getState().config.opacity).toBe(.42);
     act(()=>useBuilder.getState().reset());
     expect(useBuilder.getState().config).toMatchObject(entry.patch);
   });
-  it('switches between examples of the same chart without leaking their settings',()=>{
-    render();navigate('#/charts/donut');
+  it('switches between examples of the same chart without leaking their settings',async()=>{
+    await render();await navigate('#/charts/donut');
     expect(useBuilder.getState().config.pieMode).toBe('donut');
-    navigate('#/charts/fan');expect(useBuilder.getState().config.pieMode).toBe('fan');
-    navigate('#/charts/pie');expect(useBuilder.getState().config.pieMode).toBe('pie');
-    navigate('#/charts/raincloud');expect(useBuilder.getState().config.horizontal).toBe(true);
-    navigate('#/charts/violin');expect(useBuilder.getState().config.horizontal).toBe(false);
+    await navigate('#/charts/fan');expect(useBuilder.getState().config.pieMode).toBe('fan');
+    await navigate('#/charts/pie');expect(useBuilder.getState().config.pieMode).toBe('pie');
+    await navigate('#/charts/raincloud');expect(useBuilder.getState().config.horizontal).toBe(true);
+    await navigate('#/charts/violin');expect(useBuilder.getState().config.horizontal).toBe(false);
   });
 });
