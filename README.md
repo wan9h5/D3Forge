@@ -26,6 +26,7 @@ D3Forge 是一个纯前端的可视化 D3.js 代码构建工具。选择图形�
 ## 功能概览
 
 - **图形库** — 按类别浏览图表，每种图形自带确定性示例数据
+- **按需加载** — 图形库只为视口附近的卡片生成缩略图，完成的 SVG 会缓存，滚动和筛选时再补齐其余图形
 - **可视化配置** — 调节点大小、透明度、颜色、坐标轴、网格、图例和悬浮提示
 - **即时源码反馈** — 配置变化同步更新图表，定位并高亮对应代码行
 - **源码阅读** — D3 绘图逻辑与数据分 Tab 展示，支持语法着色、自动换行和 `Ctrl+F` 搜索
@@ -202,19 +203,19 @@ npm run preview
 
 ```text
 src/
-  App.tsx          页面导航与三栏工作台
+  App.tsx          路由、导航与页面分包
   Home.tsx         产品首页与快速入门
+  Builder.tsx      三栏配置、预览与源码工作台
+  Guide.tsx        快速入门与使用说明
   HeroDemo.tsx     配置、图形与源码的交互演示
-  Gallery.tsx      图形分类与预览卡片
+  Gallery.tsx      图形分类、搜索与预览卡片
+  ChartThumbnail.tsx 视口附近的缩略图按需渲染
+  thumbnailScheduler.ts 缩略图并发队列与 SVG 缓存
   model.ts         图表类型、示例数据、默认配置与有效性检查
   store.ts         配置与数据状态
-  generate.ts      原生 D3 逻辑、数据与完整源码生成
-  generateSeries.ts 柱状图与折线图的原生 D3 生成
-  generateBars.ts  扩展柱状图布局的原生 D3 生成
-  generateBarExtensions.ts 双轴、分组堆叠与多组极坐标布局
-  generateAdvanced.ts 曼哈顿图的原生 D3 生成
-  generateViolin.ts 小提琴、雨云与分面分布图的原生 D3 生成
-  chartEntries.ts  图形库示例入口和默认样式
+  generate*.ts     原生 D3 布局、统计和完整源码生成
+  *Controls.tsx    按图形提供渐进式配置面板
+  *Entries.ts      图形库入口、变体和多语言说明
   Preview.tsx      隔离执行生成源码
   CodePanel.tsx    只读编辑器、搜索、高亮与导出
   SiteFooter.tsx   项目与许可证链接
@@ -247,17 +248,18 @@ npm run build
 - 基础图例为单行；高级图例支持换行、纵向排列、位置、字号及可见项限制，完整数据仍保留
 - 源码为只读，暂不提供反向编辑同步、图片导出或组件代码生成
 
-预览使用应用内打包的 D3，通过受限 iframe 执行，无需外部 CDN。导入字符串使用文本节点展示，嵌入预览的源码会转义 script 结束标签。分享导出文件前，请确认其中的数据适合公开。
+预览使用应用内打包的 D3，通过受限 iframe 执行，无需外部 CDN。导入字符串使用文本节点展示，嵌入预览的源码会转义 script 结束标签。图形库缩略图使用同一份生成源码，最多同时运行两个附近预览，绘制完成后序列化为受限缓存的 SVG 图片并释放 iframe。分享导出文件前，请确认其中的数据适合公开。
 
 ## 路线图
 
 - [x] Scatter / Volcano / Box 图形构建与原生源码导出
 - [x] 图形库、三栏工作台与代码搜索
 - [x] 产品首页、交互演示与快速入门
-- [ ] 完善真实浏览器交互覆盖与大数据量性能
+- [x] 图形库缩略图懒加载、SVG 缓存与首页／路由分包
 - [x] Bar / Line 图形构建与源码导出
 - [x] Violin / Manhattan 图形构建与源码导出
 - [x] Heatmap / Histogram 与六类组成图形、专属字段映射及配置
+- [ ] 完善真实浏览器交互覆盖与详情页大数据量性能
 
 ## 可选高级配置
 

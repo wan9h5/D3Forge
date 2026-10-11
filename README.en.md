@@ -26,6 +26,7 @@ The desktop workspace has three columns: **configuration → live preview → re
 ## Features
 
 - **Chart library** — Browse by chart family; every example includes deterministic sample data.
+- **On-demand loading** — Gallery cards render thumbnails near the viewport, cache completed SVGs, and fill in the rest as you scroll or filter.
 - **Visual configuration** — Adjust mark size, opacity, colors, axes, grids, legends, and tooltips.
 - **Immediate source feedback** — Changes update the chart and locate and highlight the corresponding code lines.
 - **Source reader** — Separate tabs for D3 logic and data, syntax highlighting, line wrapping, and `Ctrl+F` search.
@@ -202,19 +203,19 @@ Stack: React 19, TypeScript, Vite, D3 v7, Zustand, CodeMirror 6, and Papa Parse.
 
 ```text
 src/
-  App.tsx             Navigation and three-column workspace
+  App.tsx             Routing, navigation, and route chunks
   Home.tsx            Product home and quick start
+  Builder.tsx         Three-column configuration workspace
+  Guide.tsx           Quick start and usage guidance
   HeroDemo.tsx        Interactive controls/chart/source demo
-  Gallery.tsx         Chart families and preview cards
+  Gallery.tsx         Chart families, search, and preview cards
+  ChartThumbnail.tsx  On-demand thumbnails near the viewport
+  thumbnailScheduler.ts Thumbnail queue and SVG cache
   model.ts            Types, sample data, defaults, validation
   store.ts            Configuration and data state
-  generate.ts         D3 logic, data, and complete source generation
-  generateSeries.ts   Base bar and line generation
-  generateBars.ts     Extended bar layouts
-  generateBarExtensions.ts Dual-axis, grouped-stack, and grouped-polar layouts
-  generateAdvanced.ts Manhattan generation
-  generateViolin.ts   Violin, raincloud, and faceted distributions
-  chartEntries.ts     Library entries and default styles
+  generate*.ts        Native D3 layouts, statistics, and source generation
+  *Controls.tsx       Progressive chart-specific controls
+  *Entries.ts         Library entries, variants, and translations
   Preview.tsx         Isolated execution of generated source
   CodePanel.tsx       Read-only editor, search, highlighting, export
   SiteFooter.tsx      Project and license links
@@ -247,17 +248,18 @@ See [AGENTS.md](AGENTS.md) for development rules and [Architecture](docs/archite
 - Basic legends use one row; advanced legends support wrapping, vertical layout, position, font size, and visible-item limits. All data remains included.
 - Source is read-only. Bidirectional editing, image export, and component code generation are not currently available.
 
-Previews use bundled D3 in a restricted iframe without an external CDN. Imported strings are rendered as text nodes, and script end tags are escaped in embedded source. Before sharing an export, check that its included data is suitable for disclosure.
+Previews use bundled D3 in a restricted iframe without an external CDN. Imported strings are rendered as text nodes, and script end tags are escaped in embedded source. Gallery thumbnails use the same generated source, run at most two nearby previews at once, then serialize the SVG into a bounded cache and release the iframe. Before sharing an export, check that its included data is suitable for disclosure.
 
 ## Roadmap
 
 - [x] Scatter / Volcano / Box with native source export
 - [x] Chart library, three-column workspace, code search
 - [x] Product home, interactive demo, quick start
-- [ ] Broader real-browser interaction coverage and large-dataset performance
+- [x] Lazy gallery thumbnails, SVG caching, and home/route code splitting
 - [x] Bar / Line with source export
 - [x] Violin / Manhattan with source export
 - [x] Heatmap / Histogram and six composition families with dedicated mappings and controls
+- [ ] Broader real-browser interaction coverage and large-dataset detail-page performance
 
 ## Optional advanced controls
 
