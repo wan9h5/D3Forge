@@ -28,6 +28,8 @@ The desktop workspace has three columns: **configuration → live preview → re
 
 D3Forge began with two things. My boss was enthusiastic about D3 and believed it could be used to create wonderfully engaging tools, so he encouraged me to learn it. As I studied D3, I found that its many APIs were difficult to keep in mind, and even a simple chart could take a lot of code. I realized chart code could be understood through two layers: a **data layer**, which maps fields and calculates positions, and a **visual configuration layer**, which controls how the chart looks. In D3, axes, grids, lines, and tooltips can then be composed as separate visual layers. That observation led to D3Forge: make these choices easier to explore visually while keeping the resulting native D3 code visible and reusable.
 
+<p align="center"><img src="docs/assets/d3forgeinfo.jpg" width="920" alt="D3Forge: layered architecture of a line chart — coordinate axes, grid, line and tooltip layers, separating data processing from view configuration" /></p>
+
 We use a line chart as a compact model with four visual layers:
 
 1. **Coordinate axes** — data processing determines the range, scale, and ticks; view configuration controls axis lines, ticks, and text styles.
