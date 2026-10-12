@@ -2,7 +2,7 @@ import type { Config, Row } from './model';
 export const compositionTypes = ['pie','pie-matrix','nested-pie','waffle','pie-bar','bar-pie'] as const;
 export type CompositionType = typeof compositionTypes[number];
 export const isComposition = (type:string):type is CompositionType => (compositionTypes as readonly string[]).includes(type);
-// A lighter default keeps large composition marks readable without making the gallery feel heavy.
+// Keep the softer palette available as an alternative to the vivid default.
 export const softCompositionPalette = ['#6f9bd3','#f2a65a','#79b7b3','#df777f','#9986c7','#83b8d6','#e6c45c','#8fba73','#bc8cbd','#e39a63'];
 export interface CompositionConfig {
   categoryField:string; parentField:string; matrixRowField:string; matrixColumnField:string; sampleField:string;
@@ -10,7 +10,7 @@ export interface CompositionConfig {
   arcStyle:boolean; startAngle:number; sweepAngle:number; arcGap:number; arcCorner:number;
   compositionOrder:'input'|'ascending'|'descending';
   categoryColorsEnabled:boolean; categoryColors:Record<string,string>;
-  compositionPalette:'soft'|'tableau'|'category10'|'paired';
+  compositionPalette:'vivid'|'soft'|'tableau'|'category10'|'paired';
   compositionLabelStyle:boolean; labelPlacement:'inside'|'outside'; labelContent:'category'|'percent'|'both'; labelMinPercent:number; leaderLines:boolean;
   centerTextEnabled:boolean; centerText:string;
   waffleShape:'square'|'circle'|'person'; waffleRows:number; waffleColumns:number; waffleGap:number;
@@ -19,7 +19,7 @@ export interface CompositionConfig {
 export const compositionDefaults:CompositionConfig={
   categoryField:'category',parentField:'parent',matrixRowField:'condition',matrixColumnField:'sample',sampleField:'sample',
   pieMode:'pie',holeRatio:.55,arcStyle:false,startAngle:0,sweepAngle:360,arcGap:.012,arcCorner:0,
-  categoryColorsEnabled:false,categoryColors:{},compositionOrder:'input',compositionPalette:'soft',compositionLabelStyle:false,labelPlacement:'inside',labelContent:'both',labelMinPercent:3,leaderLines:true,
+  categoryColorsEnabled:false,categoryColors:{},compositionOrder:'input',compositionPalette:'vivid',compositionLabelStyle:false,labelPlacement:'inside',labelContent:'both',labelMinPercent:3,leaderLines:true,
   centerTextEnabled:false,centerText:'',waffleShape:'square',waffleRows:10,waffleColumns:10,waffleGap:3,matrixGap:24,ringGap:4,splitCategory:'',compositionBarGap:.25,
 };
 export function compositionMock(type:CompositionType):Row[] {

@@ -103,19 +103,54 @@ describe('product home and guide', () => {
     expect(document.getElementById('faq-answer-export')?.textContent).toContain('复制或下载');
     await navigate('#/charts/scatter');
     expect(document.querySelector('.builder')).not.toBeNull();
-    expect(useBuilder.getState().config.color).toBe('#197f8a');
+    expect(useBuilder.getState().config.color).toBe('#3B6FF5');
     await navigate('#/');
     expect(document.getElementById('home-title')).not.toBeNull();
   });
 });
 
-describe('gallery-only search',()=>{
-  it('shows search in the library and hides it on home, guide, and chart details',async()=>{
+describe('global chart search',()=>{
+  it('opens with Ctrl+K, navigates results with arrows, and restores focus on Escape',async()=>{
+    await render();
+    act(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true})));
+    expect(document.querySelector('.chart-search-dialog')?.hasAttribute('open')).toBe(true);
+    const input=document.querySelector<HTMLInputElement>('.chart-search-input-row input')!;
+    expect(document.activeElement).toBe(input);
+    expect(document.querySelectorAll('.chart-search-result')).toHaveLength(0);
+    act(()=>{
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!.call(input,'散点图');
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    act(()=>input.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true})));
+    expect(document.querySelectorAll('.chart-search-result')[1].getAttribute('aria-selected')).toBe('true');
+    act(()=>input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true})));
+    expect(document.querySelector('.chart-search-dialog')?.hasAttribute('open')).toBe(false);
+    expect(document.activeElement).toBe(document.querySelector('.chart-search'));
+  });
+  it('searches multilingual chart names and opens the selected result with Enter',async()=>{
+    await render();
+    act(()=>document.querySelector<HTMLButtonElement>('.chart-search')!.click());
+    const input=document.querySelector<HTMLInputElement>('.chart-search-input-row input')!;
+    act(()=>{
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!.call(input,'三维渐变');
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    expect(document.querySelectorAll('.chart-search-result')).toHaveLength(1);
+    expect(document.querySelector('.chart-search-result')?.textContent).toContain('三维渐变散点图');
+    act(()=>input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true})));
+    await navigate('#/charts/scatter-3d-gradient');
+    expect(useBuilder.getState().entryId).toBe('scatter-3d-gradient');
+    expect(document.querySelector('.chart-search-dialog')?.hasAttribute('open')).toBe(false);
+  });
+  it('keeps search available on library, home, guide, and chart details',async()=>{
     await render();
     expect(document.querySelector('.chart-search')).not.toBeNull();
     for(const hash of ['#/','#/guide','#/charts/scatter']){
       await navigate(hash);
-      expect(document.querySelector('.chart-search')).toBeNull();
+      expect(document.querySelector('.header-nav .chart-search')).not.toBeNull();
+      act(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true})));
+      expect(document.querySelector('.chart-search-dialog')?.hasAttribute('open')).toBe(true);
+      act(()=>document.querySelector<HTMLInputElement>('.chart-search-input-row input')!.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true})));
     }
     await navigate('#/gallery');
     expect(document.querySelector('.chart-search')).not.toBeNull();

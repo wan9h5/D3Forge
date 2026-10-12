@@ -178,8 +178,8 @@ export const barExtensionEntries:ChartEntry[] = [
       "radius": 3,
       "groupField": "",
       "labels": true,
-      "color": "#e65a50",
-      "secondaryColor": "#36b889"
+      "color": "#F06464",
+      "secondaryColor": "#10B981"
     }
   }
 ];

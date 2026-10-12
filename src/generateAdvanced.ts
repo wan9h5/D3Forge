@@ -1,3 +1,4 @@
+import { categoricalColors } from './chartColors';
 import { marginSource, axisOptions, scaleOverrides, appearanceSource } from './generatePresentation';
 import { codeComment } from './codeComments';
 import type { Locale } from './i18n';
@@ -115,7 +116,7 @@ ${violin ? `  // ${codeComment("Robust normal-reference bandwidth; fall back for
     .range([innerH, 0]);
   const color = d3.scaleOrdinal()
     .domain(groups)
-    .range([${js(c.color)}, "#48a58a", "#e6ad43", "#8b79bd", "#d87867"]);
+    .range(${js(categoricalColors(c.color))});
   // ${codeComment("Epanechnikov KDE: mean(0.75 * (1 - u\u00b2) / bandwidth), for |u| <= 1.", locale)}
   for (const summary of summaries) {
     // ${codeComment("Sample each group's own support so narrow groups cannot disappear.", locale)}

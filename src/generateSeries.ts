@@ -1,3 +1,4 @@
+import { categoricalColors } from './chartColors';
 import { marginSource, axisOptions, scaleOverrides, appearanceSource } from './generatePresentation';
 import { codeComment } from './codeComments';
 import type { Locale } from './i18n';
@@ -62,7 +63,7 @@ function renderChart(container, data) {
   const seriesNames = Array.from(new Set(processedData.map(d => d._series)));
   const color = d3.scaleOrdinal()
     .domain(seriesNames)
-    .range([${js(c.color)}, "#e6ad43", "#48a58a", "#8b79bd", "#d87867"]);
+    .range(${js(categoricalColors(c.color))});
 ${bar ? `
   // ${codeComment("Sum repeated category/series pairs. Missing pairs contribute zero.", locale)}
   const categories = Array.from(new Set(processedData.map(d => d._x)));

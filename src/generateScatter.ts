@@ -1,3 +1,4 @@
+import { categoricalColors } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
 import type { CodeParts } from './generate';
@@ -81,7 +82,7 @@ ${mode==='rank'?`  processedData.sort((a, b) => ${c.rankDescending?'b._y - a._y'
   const groups = Array.from(new Set(processedData.map(d => d._group)));
   const color = ${numericColor?`d3.scaleSequential(d3.${({viridis:'interpolateViridis',turbo:'interpolateTurbo',blues:'interpolateBlues'})[c.scatterPalette]})`:'d3.scaleOrdinal()'}
     .domain(${numericColor?(c.colorDomainEnabled?`[${c.colorMin}, ${c.colorMax}]`:'domain(processedData.map(d => d._value))'):'groups'})${numericColor?'':`
-    .range([${js(c.color)}, ${js(c.secondaryColor)}, "#e7ad45", "#8b76b4", "#d27668"])`};
+    .range(${js(categoricalColors(c.color,c.secondaryColor))})`};
   const pointColor = d => ${mode==='fold'?`{
     const delta = ${c.foldLog?'d._y - d._x':'d._x > 0 && d._y > 0 ? Math.log2(d._y / d._x) : 0'};
     return delta > Math.log2(${c.foldRatio}) ? ${js(c.upColor)} : delta < -Math.log2(${c.foldRatio}) ? ${js(c.downColor)} : ${js(c.neutralColor)};

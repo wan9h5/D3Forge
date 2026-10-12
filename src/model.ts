@@ -137,33 +137,33 @@ export function thumbnailConfig(type: ChartType): Config {
   };
 }
 export function defaults(type: ChartType): Config {
-  if(isComposition(type))return {...defaults('scatter'),xField:'category',yField:'value',groupField:'category',valueField:'value',labelField:'category',xAxis:false,yAxis:false,grid:false,opacity:1,color:'#4e79a7',showPoints:false,pieMode:type==='nested-pie'?'donut':'pie',holeRatio:type==='nested-pie'?.25:.55,tooltipFields:['category','value']};
+  if(isComposition(type))return {...defaults('scatter'),xField:'category',yField:'value',groupField:'category',valueField:'value',labelField:'category',xAxis:false,yAxis:false,grid:false,opacity:1,color:'#3B6FF5',showPoints:false,pieMode:type==='nested-pie'?'donut':'pie',holeRatio:type==='nested-pie'?.25:.55,tooltipFields:['category','value']};
   if (type === 'heatmap') return {
     ...defaults('scatter'), xField: 'sample', yField: 'gene', valueField: 'value', groupField: '',
-    color: '#356ae6', secondaryColor: '#e6ad43', opacity: 1, heatmapPalette: 'diverging',
+    color: '#F06464', secondaryColor: '#3B6FF5', opacity: 1, heatmapPalette: 'diverging',
     tooltipFields: ['sample', 'gene', 'value'],
   };
   if (type === 'histogram') return {
-    ...defaults('scatter'), xField: 'value', yField: 'value', groupField: '', color: '#356ae6',
-    legend: false, opacity: .85, tooltipFields: ['value'],
+    ...defaults('scatter'), xField: 'value', yField: 'value', groupField: '', color: '#3B6FF5',
+    legend: false, opacity: 1, tooltipFields: ['value'],
   };
   if (type === 'violin') return {
     ...defaults('scatter'), xField: 'group', yField: 'value', groupField: 'group',
-    color: '#356ae6', opacity: .65, showPoints: false, radius: 2.5,
+    color: '#3B6FF5', opacity: .85, showPoints: false, radius: 2.5,
     tooltipFields: ['sample', 'group', 'value'],
   };
   if (type === 'manhattan') return {
     ...defaults('scatter'), xField: 'position', yField: 'pvalue', groupField: '', labelField: 'snp',
-    chromosomeField: 'chromosome', color: '#356ae6', radius: 3, pThreshold: 5e-8,
+    chromosomeField: 'chromosome', color: '#3B6FF5', radius: 3, pThreshold: 5e-8,
     tooltipFields: ['snp', 'chromosome', 'position', 'pvalue'],
   };
   if (type === 'bar' || type === 'line') return {
     ...defaults('scatter'), xField: type === 'bar' ? 'category' : 'time', yField: 'value',
-    groupField: 'series', labelField: type === 'bar' ? 'category' : 'time', color: '#356ae6',
+    groupField: 'series', labelField: type === 'bar' ? 'category' : 'time', color: '#3B6FF5', opacity: 1,
     tooltipFields: [type === 'bar' ? 'category' : 'time', 'value', 'series'],
   };
   return {...advancedDefaults,...compositionDefaults,...scatterDefaults,...barDefaults,...volcanoDefaults,...heatmapDefaults,...bioDefaults,
-    comparisonsEnabled:false,comparisons:[],violinLayout:'full',violinGroupField:'',facetField:'',facetScale:'shared',violinGeometry:'violin',annotationsEnabled:false,annotationField:'letter',valueField:'value',heatmapAggregate:'mean',heatmapPalette:'sequential',cellGap:2,cellRadius:2,binCount:14,histogramMode:'count',bandwidthFactor:1,violinScale:'width',violinInner:'box',chromosomeField:'chromosome',chromosomeGap:.04,secondaryColor:'#95a5bd',significantColor:'#e2ad42',showThreshold:true,showSuggestive:false,suggestiveThreshold:1e-5,labelLimit:12,barLayout:'grouped',horizontal:false,barPadding:.22,lineWidth:2.5,smooth:false,area:false,showPoints:true,xField:type==='volcano'?'log2FC':type==='box'?'group':'expressionA', yField:type==='volcano'?'pvalue':type==='box'?'expression':'expressionB',groupField:type==='volcano'?'':'group',labelField:type==='volcano'?'gene':'sample',radius:4,opacity:.8,color:'#197f8a',width:800,height:440,xAxis:true,yAxis:true,grid:true,tooltip:true,legend:true,zoom:false,labels:false,xScale:'linear',yScale:'linear',pThreshold:.05,fcThreshold:1,tooltipFields:type==='volcano'?['gene','log2FC','pvalue']:type==='box'?['group','expression']:['sample','expressionA','expressionB','group']};
+    comparisonsEnabled:false,comparisons:[],violinLayout:'full',violinGroupField:'',facetField:'',facetScale:'shared',violinGeometry:'violin',annotationsEnabled:false,annotationField:'letter',valueField:'value',heatmapAggregate:'mean',heatmapPalette:'sequential',cellGap:2,cellRadius:2,binCount:14,histogramMode:'count',bandwidthFactor:1,violinScale:'width',violinInner:'box',chromosomeField:'chromosome',chromosomeGap:.04,secondaryColor:'#06B6D4',significantColor:'#F59E0B',showThreshold:true,showSuggestive:false,suggestiveThreshold:1e-5,labelLimit:12,barLayout:'grouped',horizontal:false,barPadding:.22,lineWidth:2.5,smooth:false,area:false,showPoints:true,xField:type==='volcano'?'log2FC':type==='box'?'group':'expressionA', yField:type==='volcano'?'pvalue':type==='box'?'expression':'expressionB',groupField:type==='volcano'?'':'group',labelField:type==='volcano'?'gene':'sample',radius:4,opacity:.95,color:'#3B6FF5',width:800,height:440,xAxis:true,yAxis:true,grid:true,tooltip:true,legend:true,zoom:false,labels:false,xScale:'linear',yScale:'linear',pThreshold:.05,fcThreshold:1,tooltipFields:type==='volcano'?['gene','log2FC','pvalue']:type==='box'?['group','expression']:['sample','expressionA','expressionB','group']};
 }
 export function validNumber(value: unknown): boolean {
   return value !== null && value !== undefined && String(value).trim() !== '' && Number.isFinite(Number(value));

@@ -1668,6 +1668,7 @@ export const translations: Record<string, readonly [string, string]> = {
     "Category palette",
     "分類の配色"
   ],
+  "鲜明色板": ["Vivid palette", "鮮やかなパレット"],
   "柔和色板": [
     "Soft palette",
     "ソフトパレット"

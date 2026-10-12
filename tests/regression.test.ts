@@ -168,7 +168,7 @@ describe('Manhattan transformation and chromosome layout', () => {
     const {svg}=run('manhattan',[1e-9,5e-8,.5].map((pvalue,i)=>({snp:String(i),chromosome:'1',position:i,pvalue})),{labels:true,labelLimit:1,showThreshold:false,showSuggestive:true});
     expect(svg.querySelectorAll('.marks text.label')).toHaveLength(1);
     expect(svg.querySelector('.marks text.label')?.textContent).toBe('0');
-    expect([...svg.querySelectorAll('.marks circle')].map(d=>d.getAttribute('fill'))).toEqual(['#e2ad42','#e2ad42','#356ae6']);
+    expect([...svg.querySelectorAll('.marks circle')].map(d=>d.getAttribute('fill'))).toEqual(['#F59E0B','#F59E0B','#3B6FF5']);
     expect(svg.querySelector('.significance-threshold')).toBeNull();
     expect(svg.querySelector('.suggestive-threshold')).not.toBeNull();
   });
@@ -438,7 +438,7 @@ describe('composition charts: independent arithmetic and optional configurations
   it('custom category colors safely support names inherited from Object prototypes',()=>{
     const {svg}=run('pie',[{category:'__proto__',value:1},{category:'constructor',value:1}],{categoryColorsEnabled:true,categoryColors:JSON.parse('{"__proto__":"#123456"}')});
     expect(svg.querySelector('.segment')?.getAttribute('fill')).toBe('#123456');
-    expect(svg.querySelectorAll('.segment')[1].getAttribute('fill')).toBe('#f2a65a');
+    expect(svg.querySelectorAll('.segment')[1].getAttribute('fill')).toBe('#F59E0B');
   });
 });
 

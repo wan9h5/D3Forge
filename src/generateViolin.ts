@@ -1,3 +1,4 @@
+import { categoricalColors } from './chartColors';
 import { codeComment } from './codeComments';
 import { t, type Locale } from './i18n';
 import { marginSource } from './generatePresentation';
@@ -62,7 +63,7 @@ function renderChart(container, data) {
   const colorNames = ${grouped?'series':'groups'};
   const color = d3.scaleOrdinal()
     .domain(colorNames)
-    .range([${js(c.color)}, "#48a58a", "#e6ad43", "#8b79bd", "#d87867"]);
+    .range(${js(categoricalColors(c.color))});
   const colorOf = d => color(${grouped?'d.series':'d.group'});
   const summaries = [];
   // ${codeComment("Robust normal-reference bandwidth; fall back for singleton/constant groups.",locale)}

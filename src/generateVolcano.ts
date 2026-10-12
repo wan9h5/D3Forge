@@ -1,3 +1,4 @@
+import { vividPalette } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
 import type { CodeParts } from './generate';
@@ -60,7 +61,7 @@ function renderChart(container, data) {
     return svg.node();
   }
   const categories = Array.from(new Set(processedData.map(d => d.category)));
-  const categoryColor = d3.scaleOrdinal(d3.schemeTableau10)
+  const categoryColor = d3.scaleOrdinal(${js(vividPalette)})
     .domain(categories);
   const statusColor = d3.scaleOrdinal()
     .domain(["up", "down", "pOnly", "ns"])

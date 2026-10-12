@@ -51,7 +51,7 @@ export function LanguageSwitcher() {
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); setOpen(true); }
         if (event.key === 'Escape') close();
       }}>
-      <svg className="language-globe" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18Z"/></svg>
+      <svg className="language-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 5h12M7 2v3M10 5c-1 4-3 7-6 9M5 8c1 2 3 4 6 6M12 22l5-10 5 10M14 18h6"/></svg>
       <span lang={current.lang}>{current.label}</span>
       <svg className="language-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>
     </button>

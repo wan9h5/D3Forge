@@ -13,6 +13,7 @@ import type { Locale } from './i18n';
 import { generateAdvancedCode } from './generateAdvanced';
 import { generateSeriesCode } from './generateSeries';
 import type { ChartType, Config, Row } from './model';
+import { categoricalColors } from './chartColors';
 const js = (value: unknown) => JSON.stringify(value);
 const field = (key: string) => `d[${js(key)}]`;
 const importLine = 'import * as d3 from "d3";';
@@ -36,7 +37,7 @@ export function generateCodeParts(type: ChartType, data: Row[], c: Config, local
   const shape = ({circle:'symbolCircle',square:'symbolSquare',triangle:'symbolTriangle',diamond:'symbolDiamond',star:'symbolStar',cross:'symbolCross'})[c.pointShape];
   const pointSize = type==='scatter' && c.scatterSizeEnabled ? 'pointRadius(d)' : String(c.radius);
   const point = type!=='box';
-  const colorRange = type==='volcano'?(c.chartStyle?js([c.upColor,c.downColor,c.neutralColor]):'["#c45542", "#3875b5", "#a6b0bd"]'):`[${js(c.color)}, "#dc9b41", "#7363a8", "#3875b5", "#c45542"]`;
+  const colorRange = type==='volcano'?js([c.upColor,c.downColor,c.neutralColor]):js(categoricalColors(c.color));
   const hasColor = type==='volcano' || type==='box' || !!c.groupField;
   const dataSource = `// ${codeComment("Replace this array with your own data. Keep the mapped field names.", locale)}\nconst data = ${JSON.stringify(data,null,2)};\n`;
   const logic = `${importLine}

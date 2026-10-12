@@ -1,3 +1,4 @@
+import { categoricalColors } from './chartColors';
 import { extendedBarSource } from './generateBarExtensions';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
@@ -56,7 +57,7 @@ ${['dual-line','dual-bar','go'].includes(mode)?`    && numeric(d[${js(c.barSecon
     return svg.node();
   }
   const color = d3.scaleOrdinal()
-    .range([${js(c.color)}, ${js(c.secondaryColor)}, "#e7ad45", "#8b76b4", "#db7765", "#55a788"]);
+    .range(${js(categoricalColors(c.color,c.secondaryColor))});
   const tooltip = ${c.tooltip?`root.append("div")
     .style("position", "absolute")
     .style("display", "none")

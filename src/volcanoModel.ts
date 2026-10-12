@@ -18,7 +18,7 @@ export interface VolcanoConfig {
 export const volcanoDefaults:VolcanoConfig = {
   volcanoVariant:'basic',volcanoColor:'status',volcanoCategoryField:'category',volcanoPanelField:'cluster',volcanoVipField:'VIP',
   volcanoPanelA:'',volcanoPanelB:'',volcanoSharedScale:true,volcanoLinks:false,volcanoLinkLimit:12,
-  volcanoCurve:false,volcanoCurveStrength:1,volcanoGradientBy:'significance',volcanoColorField:'score',volcanoPalette:'viridis',volcanoFourthColor:'#e7b747',
+  volcanoCurve:false,volcanoCurveStrength:1,volcanoGradientBy:'significance',volcanoColorField:'score',volcanoPalette:'viridis',volcanoFourthColor:'#F59E0B',
   volcanoVip:false,volcanoMinRadius:2,volcanoMaxRadius:9,volcanoLabelGenes:'',volcanoLabelAvoid:true,volcanoLeaders:true,
   volcanoSearch:false,volcanoBrush:false,volcanoPin:false,volcanoGroupGap:.18,volcanoInnerRadius:.55,
 };

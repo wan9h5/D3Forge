@@ -6,6 +6,7 @@ import { codeComment } from './codeComments';
 import { marginSource, appearanceSource } from './generatePresentation';
 import type { CodeParts } from './generate';
 import { softCompositionPalette } from './compositionModel';
+import { vividPalette } from './chartColors';
 const js=(value:unknown)=>JSON.stringify(value);
 export function generateCompositionCode(type:CompositionType,data:Row[],c:Config,locale:Locale='en'):CodeParts {
   const text=(key:string)=>js(t(key,{},locale));
@@ -17,8 +18,8 @@ export function generateCompositionCode(type:CompositionType,data:Row[],c:Config
   const sweep=c.arcStyle?c.sweepAngle:c.pieMode==='fan'?180:360;
   const labelSize=c.labelStyle?c.labelFontSize:12;
   const scheme=c.compositionPalette==='category10'?'schemeCategory10':c.compositionPalette==='paired'?'schemePaired':'schemeTableau10';
-  const paletteSource=c.compositionPalette==='soft'?js(softCompositionPalette):`d3.${scheme}`;
-  const paletteLength=c.compositionPalette==='paired'?12:10;
+  const paletteSource=c.compositionPalette==='vivid'?js(vividPalette):c.compositionPalette==='soft'?js(softCompositionPalette):`d3.${scheme}`;
+  const paletteLength=c.compositionPalette==='vivid'?vividPalette.length:c.compositionPalette==='paired'?12:10;
   const colors=c.categoryColorsEnabled?`names.map((name, index) => customColors.has(name) ? customColors.get(name) : ${paletteSource}[index % ${paletteLength}])`:paletteSource;
   const logic=`${importLine}
 

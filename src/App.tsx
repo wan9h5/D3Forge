@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useState, useSyncExternalStore } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
 import { entryById } from './chartEntries';
 import { useBuilder } from './store';
 import { t, useLocale } from './i18n';
@@ -27,14 +27,25 @@ const getHash = () => window.location.hash;
 
 export default function App() {
   useLocale();
-  const [searchQuery,setSearchQuery] = useState('');
-  const openSearch = () => { if(window.location.hash!=='#/gallery')window.location.hash='#/gallery'; };
-  const updateSearch = (value:string) => { setSearchQuery(value);if(value.trim())openSearch(); };
   // Read the URL in render, so event handlers cannot retain an old chart registry.
   const hash = useSyncExternalStore(subscribeToHash, getHash);
   const route = routeFromHash(hash);
   const entry = entryById(route);
   const isBuilder = !!entry;
+  const headerRef=useRef<HTMLElement>(null);
+  useLayoutEffect(()=>{
+    const header=headerRef.current;
+    if(!header)return;
+    const measure=()=>header.parentElement?.style.setProperty('--header-height',`${header.getBoundingClientRect().height||72}px`);
+    measure();
+    if(typeof ResizeObserver!=='undefined'){
+      const observer=new ResizeObserver(measure);
+      observer.observe(header);
+      return ()=>observer.disconnect();
+    }
+    window.addEventListener('resize',measure);
+    return ()=>window.removeEventListener('resize',measure);
+  },[route]);
   const selectedEntry = useBuilder(state => state.entryId);
   const selectChart = useBuilder(state => state.selectChart);
   // Synchronize the current store before painting a chart detail, including after HMR.
@@ -44,7 +55,7 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [route]);
-  return <div className={isBuilder ? 'app builder-app' : 'app'}><header className="header"><a className="brand" href="#/" aria-label={t("D3Forge 首页")}><span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none"><path d="M10 10a12 12 0 0 1 0 24V10Z" fill="#356AE6"/><path d="m34 14-8 8 8 8" stroke="#17202D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>D3Forge</a>{route === 'gallery' && <ChartSearch value={searchQuery} onChange={updateSearch} onSearch={openSearch}/>}<nav className="header-nav" aria-label={t("主导航")}><a href="#/" aria-current={route === 'home' ? 'page' : undefined}>{t("首页")}</a><a href="#/gallery" aria-current={route === 'gallery' || isBuilder ? 'page' : undefined}>{t("图形库")}</a><LanguageSwitcher/><a className="github-link" href={repositoryUrl} target="_blank" rel="noopener noreferrer" aria-label={t("D3Forge GitHub 仓库")}><GitHubIcon/></a></nav></header>
-    <Suspense fallback={<main className="page-loading" aria-busy="true"><span className="loading-mark" aria-hidden="true"/>{t('加载中…')}</main>}>{isBuilder ? (selectedEntry === route ? <Builder key={route}/> : null) : route === 'gallery' ? <Gallery query={searchQuery} onClearSearch={()=>setSearchQuery('')}/> : route === 'guide' ? <Guide/> : <Home/>}</Suspense>
+  return <div className={isBuilder ? 'app builder-app' : 'app'}><header ref={headerRef} className="header"><a className="brand" href="#/" aria-label={t("D3Forge 首页")}><span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none"><path d="M10 10a12 12 0 0 1 0 24V10Z" fill="#356AE6"/><path d="m34 14-8 8 8 8" stroke="#17202D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>D3Forge</a><nav className="header-nav" aria-label={t("主导航")}><a href="#/" aria-current={route === 'home' ? 'page' : undefined}>{t("首页")}</a><a href="#/gallery" aria-current={route === 'gallery' || isBuilder ? 'page' : undefined}>{t("图形库")}</a><ChartSearch/><LanguageSwitcher/><a className="github-link" href={repositoryUrl} target="_blank" rel="noopener noreferrer" aria-label={t("D3Forge GitHub 仓库")}><GitHubIcon/></a></nav></header>
+    <Suspense fallback={<main className="page-loading" aria-busy="true"><span className="loading-mark" aria-hidden="true"/>{t('加载中…')}</main>}>{isBuilder ? (selectedEntry === route ? <Builder key={route}/> : null) : route === 'gallery' ? <Gallery/> : route === 'guide' ? <Guide/> : <Home/>}</Suspense>
   </div>;
 }

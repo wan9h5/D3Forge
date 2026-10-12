@@ -33,10 +33,19 @@ describe('exported native D3 code',()=>{
     expect(point.getAttribute('r')).toBe('9');expect(point.getAttribute('opacity')).toBe('0.35');expect(point.getAttribute('fill')).toBe('#123456');
     expect(source).toContain('.attr("r", 9)');
   });
+  it('exports six distinct vivid categories consistently for scatter and composition charts',()=>{
+    const colors=['#3B6FF5','#F59E0B','#06B6D4','#8B5CF6','#10B981','#F06464'];
+    const scatterRows=colors.map((_,i)=>({expressionA:i+1,expressionB:i+2,group:`G${i}`,sample:`S${i}`}));
+    const scatter=run('scatter',scatterRows,{legend:false});
+    expect([...scatter.svg.querySelectorAll('g[clip-path] > circle')].map(point=>point.getAttribute('fill'))).toEqual(colors);
+    const pie=run('pie',colors.map((_,i)=>({category:`G${i}`,value:1})),{legend:false});
+    expect([...pie.svg.querySelectorAll('.segment')].map(segment=>segment.getAttribute('fill'))).toEqual(colors);
+    expect(pie.source).not.toContain('./chartColors');
+  });
   it('volcano classifies up/down/ns and drops invalid p-values',()=>{
     const rows:Row[]=[{gene:'up',log2FC:2,pvalue:.001},{gene:'down',log2FC:-2,pvalue:.001},{gene:'ns',log2FC:0,pvalue:.8},{gene:'zero',log2FC:1,pvalue:0},{gene:'blank',log2FC:1,pvalue:null},{gene:'tooBig',log2FC:1,pvalue:2}];
     const {svg}=run('volcano',rows);const points=[...svg.querySelectorAll('g[clip-path] > circle')];
-    expect(points).toHaveLength(3);expect(points.map(p=>p.getAttribute('fill'))).toEqual(['#c45542','#3875b5','#a6b0bd']);
+    expect(points).toHaveLength(3);expect(points.map(p=>p.getAttribute('fill'))).toEqual(['#F06464','#3B6FF5','#A6B0BD']);
     expect(validateRows('volcano',rows,defaults('volcano'))).toHaveLength(3);
   });
   it('box plot uses observed whiskers and identifies known outlier',()=>{

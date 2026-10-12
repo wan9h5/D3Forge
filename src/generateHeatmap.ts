@@ -1,3 +1,4 @@
+import { vividPalette } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
 import type { CodeParts } from './generate';
@@ -203,7 +204,7 @@ function matrixSource(c:Config,tr:Translate,circular:boolean,split:boolean,sanke
   ${split&&c.heatmapColumnCluster?`columnOrder = selected.flatMap(panel => {const ids = d3.range(columnKeys.length).filter(i => columnKeys[i].panel === panel); const tree = clusterMatrix(ids, ids.map(i => transpose[i]), ${js(c.heatmapDistance)}, ${js(c.heatmapLinkage)});return tree ? tree.leaves.map(i => ids[i]) : [];});`:''}
   const clusters = cutTree(rowTree, ${c.heatmapCutEnabled||c.heatmapTrend?c.heatmapCut:1});
   const membership = new Map(clusters.flatMap((part,i) => part.leaves.map(r => [r,i])));
-  const clusterColor = d3.scaleOrdinal(d3.schemeTableau10);
+  const clusterColor = d3.scaleOrdinal(${js(vividPalette)});
   const extras = rows => {
     const fields = Object.keys(rows[0] || {}), result = {};
     fields.forEach(field => { const values = Array.from(new Set(rows.map(d => d[field]).filter(v => v != null && String(v).trim() !== "")));result[field] = values.length > 1 ? "mixed" : values[0]; });
@@ -448,7 +449,7 @@ function annotationSource(_c:Config,tr:Translate){return `
     let extent = d3.extent(numbers, Number);
     if (extent[0] === extent[1]) extent = [extent[0] - 1, extent[1] + 1];
     const scale = continuous ? d3.scaleSequential(d3.interpolateViridis)
-      .domain(extent) : d3.scaleOrdinal(d3.schemeTableau10)
+      .domain(extent) : d3.scaleOrdinal(${js(vividPalette)})
       .domain(values);
     const fill = v => v == null ? missingColor : v === "mixed" ? "#343e50" : scale(continuous ? +v : v);
     const marks = g.append("g")
@@ -607,7 +608,7 @@ function sankeySource(c:Config,tr:Translate){return `
   const byRow = d3.rollup(links, rows => d3.sum(rows,d => d.value), d => d.r);
   const padding = Math.min(8, plotH / Math.max(1,terms.length * 3));
   const scale = Math.max(0,Math.min(bandH * .75 / (d3.max(byRow.values()) || 1), (plotH - padding * Math.max(0,terms.length-1)) / (d3.sum(links,d => d.value) || 1)));
-  const category = d3.scaleOrdinal(d3.schemeTableau10)
+  const category = d3.scaleOrdinal(${js(vividPalette)})
     .domain(terms);
   const endX = plotW + sideW * .65;
   const starts = new Map(rowOrder.map(r => [r, y(r) + bandH / 2 - (byRow.get(r) || 0) * scale / 2]));

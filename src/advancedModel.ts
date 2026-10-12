@@ -31,7 +31,7 @@ export const advancedDefaults: AdvancedConfig = {
   markBorder:false,borderColor:'#26394c',borderWidth:1,
   referenceXEnabled:false,referenceYEnabled:false,referenceX:0,referenceY:0,referenceColor:'#d87867',referenceWidth:1.5,referenceDash:'6,4',
   chartStyle:false,pointShape:'circle',scatterSizeEnabled:false,sizeField:'',sizeMin:2,sizeMax:12,
-  upColor:'#c45542',downColor:'#3875b5',neutralColor:'#a6b0bd',thresholdColor:'#b5bfca',thresholdWidth:1.5,thresholdDash:'6,4',
+  upColor:'#F06464',downColor:'#3B6FF5',neutralColor:'#A6B0BD',thresholdColor:'#b5bfca',thresholdWidth:1.5,thresholdDash:'6,4',
   boxWidth:80,showOutliers:true,outlierFill:'#ffffff',medianColor:'#162b3b',medianWidth:2,
   cornerRadius:0,seriesPadding:.08,curveType:'monotone',lineDash:'',areaOpacity:.2,
   violinWidth:.45,jitterWidth:.55,violinSamples:81,rowOrder:'input',columnOrder:'input',
