@@ -77,11 +77,11 @@ describe('product home and guide', () => {
   it('opens a product home at the root with working entry points and repository links', async()=> {
     window.history.replaceState(null, '', '#/');
     await render();
-    expect(document.getElementById('home-title')?.textContent).toContain('带走 D3 源码');
-    expect(document.querySelector('.hero-actions a')?.getAttribute('href')).toBe('#/gallery');
-    expect(document.querySelector('.hero-actions a:nth-child(2)')?.getAttribute('href')).toBe('#/guide');
-    expect(document.querySelector('.site-footer .github-link')?.getAttribute('href')).toBe('https://github.com/wan9h5/D3Forge');
-    expect(document.querySelector('.site-footer svg')).not.toBeNull();
+    expect(document.getElementById('home-title')?.textContent).toBe('尝试着切换卡片');
+    expect(document.querySelector('.header-nav a[href="#/gallery"]')).not.toBeNull();
+    expect(document.querySelector('.header-nav a[href="#/guide"]')).not.toBeNull();
+    expect(document.querySelector('.header-nav .github-link')?.getAttribute('href')).toBe('https://github.com/wan9h5/D3Forge');
+    expect(document.querySelector('.header-nav .github-link svg')).not.toBeNull();
     expect(document.querySelector('.builder')).toBeNull();
     await navigate('#/gallery');
     expect(document.querySelectorAll('.chart-card')).toHaveLength(chartEntries.length);

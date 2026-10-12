@@ -466,6 +466,39 @@ html[lang=en] .detail-chart-name,html[lang=en] .chart-english-name{display:none}
 .thumbnail-placeholder svg{width:48%;max-width:130px;stroke:#e2e9f4;stroke-width:1.5}
 .thumbnail-placeholder.is-unavailable svg{stroke:#cbd5e5}
 .page-loading{min-height:calc(100dvh - 72px);display:flex;align-items:center;justify-content:center;gap:12px;color:#8290a5;font-size:14px}
+.home-main.holographic-home{background:#fff;padding:0 max(28px,calc((100% - 1200px)/2));min-height:calc(100dvh - 72px)}
+.holo-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 0 74px;min-height:650px;text-align:center}
+.holo-intro{margin-bottom:30px}
+.holo-intro h1{font-size:clamp(24px,3vw,34px);line-height:1.35;font-weight:600;letter-spacing:-1.1px;color:#172033}
+.holo-stage{perspective:1100px;width:min(390px,calc(100vw - 72px));aspect-ratio:39/49}
+.holo-card{width:100%;height:100%;position:relative;outline:none;border-radius:32px;touch-action:pan-y;cursor:default;-webkit-tap-highlight-color:transparent}
+.holo-card:focus-visible{outline:3px solid #b8cefb;outline-offset:9px}
+.holo-surface{--tilt-x:0deg;--tilt-y:0deg;--pointer-x:50%;--pointer-y:50%;--foil-position:50%;--glare-opacity:0;position:relative;width:100%;height:100%;overflow:hidden;border:1px solid #30394e;border-radius:32px;background:#070b1b;transform:rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .3s;box-shadow:0 20px 42px -24px #10183245,inset 0 0 0 1px #ffffff0c;isolation:isolate}
+.holo-surface::after{content:"";position:absolute;inset:0;z-index:6;border-radius:inherit;border:1px solid #ffffff16;pointer-events:none}
+.holo-face{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:34px;opacity:0;transform:translateX(20px) scale(.97);filter:blur(5px);transition:opacity .3s ease,transform .42s cubic-bezier(.2,.8,.2,1),filter .3s ease;pointer-events:none;color:#f3f6ff}
+.holo-logo-face{transform:scale(.96)}
+.holo-chart-face{transform:translateX(-20px) scale(.97)}
+.holo-card[data-view=logo] .holo-logo-face,.holo-card[data-view=chart] .holo-chart-face,.holo-card[data-view=code] .holo-code-face{opacity:1;filter:none;transform:translateX(0) scale(1)}
+.holo-logo{width:86px;height:58px;color:#fff;margin-bottom:10px}
+.holo-brand{font-family:'Great Vibes';font-size:48px;font-weight:400;line-height:1.35;letter-spacing:0;padding:0 12px;color:#93b8ff;background:linear-gradient(100deg,#60a5fa 8%,#818cf8 48%,#c084fc 92%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.holo-face-eyebrow{position:absolute;top:30px;left:32px;right:32px;display:flex;justify-content:space-between;font:10px/1.5 var(--font-code);letter-spacing:1.8px;color:#8493ae}
+.holo-face-eyebrow>span{font-size:9px;letter-spacing:0;color:#536682}
+.holo-chart{position:relative;width:calc(100% + 26px);margin:0 -13px 18px;background:#070b1b;aspect-ratio:440/320}
+.holo-chart-renderer{position:absolute;inset:0;opacity:0;pointer-events:none;overflow:hidden}
+.holo-chart-image{display:block;width:100%;height:auto;border:0;outline:0}
+.holo-chart .chart-frame{display:block;min-height:0;height:auto;width:100%;border:0;background:#070b1b}
+.holo-face h2{font-size:20px;font-weight:500;line-height:1.5;letter-spacing:-.5px;margin:0}
+.holo-face p{font-size:11px;line-height:1.8;color:#8c9bb4;margin:8px 0 0}
+.holo-code-face{align-items:stretch}
+.holo-code-face pre{color:#e0d8f5;text-align:center;white-space:pre;overflow:visible;margin:0 0 36px;padding:70px 0}
+.holo-code-face code{font:400 clamp(25px,5.4vw,32px)/1.5 'Caveat';letter-spacing:.15px}
+.holo-code-face h2,.holo-code-face p{text-align:center}
+.holo-token-keyword{color:#b7a0ef}.holo-token-library{color:#c4b5fd}
+.holo-foil{position:absolute;inset:-1px;z-index:3;pointer-events:none;opacity:var(--glare-opacity);background:repeating-linear-gradient(115deg,#85d9e500 0%,#8bdde244 12%,#a9a1f766 22%,#e0b8fb44 32%,#faf3c444 42%,#85d9e500 55%);background-size:250% 200%;background-position:var(--foil-position) var(--pointer-y);mix-blend-mode:screen;transition:opacity .4s ease}
+.holo-glare{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:var(--glare-opacity);background:radial-gradient(ellipse at var(--pointer-x) var(--pointer-y),#e2ecff99 0%,#b5c6ef24 32%,transparent 68%);mix-blend-mode:screen;transition:opacity .4s ease}
+.holographic-home>.site-footer{margin-top:0}
+@media(max-width:760px){.home-main.holographic-home{padding:0 24px}.holo-hero{padding:16px 0 54px;min-height:560px}.holo-intro{margin-bottom:26px}.holo-stage{width:min(330px,calc(100vw - 72px))}.holo-surface,.holo-card{border-radius:28px}.holo-face{padding:28px}.holo-code-face pre{font-size:9.5px}.holo-face h2{font-size:18px}.holo-face-eyebrow{top:26px;left:28px;right:28px}.holo-brand{font-size:42px}.holo-logo{width:80px}}
+@media(prefers-reduced-motion:reduce){.holo-surface{transform:none;transition:none}.holo-face{transition:none;transform:none;filter:none}.holo-foil,.holo-glare{display:none}}
 .loading-mark{width:18px;height:18px;border:2px solid #e4eaff;border-top-color:var(--accent);border-radius:50%;animation:page-spin .8s linear infinite}
 @keyframes page-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.loading-mark{animation:none}}

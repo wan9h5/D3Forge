@@ -2,6 +2,8 @@
 @import '@fontsource-variable/noto-sans-sc';
 @import '@fontsource-variable/noto-sans-jp';
 @import '@fontsource-variable/jetbrains-mono/wght.css';
+@import '@fontsource/great-vibes/latin-400.css';
+@import '@fontsource/caveat/latin-400.css';
 
 /* Unicode ranges keep CJK font requests limited to the text being displayed. */
 :root {

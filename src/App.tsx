@@ -26,7 +26,7 @@ function subscribeToHash(listener: () => void) {
 const getHash = () => window.location.hash;
 
 export default function App() {
-  useLocale();
+  const locale=useLocale();
   // Read the URL in render, so event handlers cannot retain an old chart registry.
   const hash = useSyncExternalStore(subscribeToHash, getHash);
   const route = routeFromHash(hash);
@@ -55,7 +55,7 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [route]);
-  return <div className={isBuilder ? 'app builder-app' : 'app'}><header ref={headerRef} className="header"><a className="brand" href="#/" aria-label={t("D3Forge 首页")}><span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none"><path d="M10 10a12 12 0 0 1 0 24V10Z" fill="#356AE6"/><path d="m34 14-8 8 8 8" stroke="#17202D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>D3Forge</a><nav className="header-nav" aria-label={t("主导航")}><a href="#/" aria-current={route === 'home' ? 'page' : undefined}>{t("首页")}</a><a href="#/gallery" aria-current={route === 'gallery' || isBuilder ? 'page' : undefined}>{t("图形库")}</a><ChartSearch/><LanguageSwitcher/><a className="github-link" href={repositoryUrl} target="_blank" rel="noopener noreferrer" aria-label={t("D3Forge GitHub 仓库")}><GitHubIcon/></a></nav></header>
+  return <div className={isBuilder ? 'app builder-app' : 'app'}><header ref={headerRef} className="header"><a className="brand" href="#/" aria-label={t("D3Forge 首页")}><span className="brand-icon" aria-hidden="true"><svg viewBox="0 0 44 44" fill="none"><path d="M10 10a12 12 0 0 1 0 24V10Z" fill="#356AE6"/><path d="m34 14-8 8 8 8" stroke="#17202D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>D3Forge</a><nav className="header-nav" aria-label={t("主导航")}><a href="#/" aria-current={route === 'home' ? 'page' : undefined}>{t("首页")}</a><a href="#/gallery" aria-current={route === 'gallery' || isBuilder ? 'page' : undefined}>{t("图形库")}</a><a href="#/guide" aria-current={route === 'guide' ? 'page' : undefined}>{({zh:'使用说明',en:'Guide',ja:'使い方'})[locale]}</a><ChartSearch/><LanguageSwitcher/><a className="github-link" href={repositoryUrl} target="_blank" rel="noopener noreferrer" aria-label={t("D3Forge GitHub 仓库")}><GitHubIcon/></a></nav></header>
     <Suspense fallback={<main className="page-loading" aria-busy="true"><span className="loading-mark" aria-hidden="true"/>{t('加载中…')}</main>}>{isBuilder ? (selectedEntry === route ? <Builder key={route}/> : null) : route === 'gallery' ? <Gallery/> : route === 'guide' ? <Guide/> : <Home/>}</Suspense>
   </div>;
 }
