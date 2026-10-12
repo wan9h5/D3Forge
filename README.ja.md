@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/logo.svg" width="112" height="112" alt="D3Forge ロゴ" />
+  <img src="docs/assets/logo.svg?v=2" width="112" height="112" alt="D3Forge ロゴ" />
   <h1>D3Forge</h1>
   <p><strong>グラフを整え、ネイティブ D3 コードを持ち帰る</strong></p>
   <p>画面上でグラフを設定し、リアルタイムで確認。そのまま使える D3.js コードを書き出せます。</p>
