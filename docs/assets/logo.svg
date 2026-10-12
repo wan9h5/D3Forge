@@ -2,6 +2,6 @@
   <title id="title">D3Forge logo</title>
   <g>
     <path d="M10 10a12 12 0 0 1 0 24V10Z" fill="#356ae6"/>
-    <path d="m34 14-8 8 8 8" stroke="#17202d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="m34 14-8 8 8 8" stroke="#17202d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/logo.svg?v=3" width="168" height="168" alt="D3Forge Logo" />
+  <img src="docs/assets/logo.svg?v=4" width="168" height="168" alt="D3Forge Logo" />
   <h1>D3Forge</h1>
   <p><strong>调好图表，带走原生 D3 源码</strong></p>
   <p>通过可视化配置构建图表，实时预览并导出可独立运行的 D3.js 代码</p>
