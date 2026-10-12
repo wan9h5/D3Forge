@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/logo.svg?v=2" width="112" height="112" alt="D3Forge Logo" />
+  <img src="docs/assets/logo.svg?v=3" width="168" height="168" alt="D3Forge Logo" />
   <h1>D3Forge</h1>
   <p><strong>Build your chart. Take the native D3 code.</strong></p>
   <p>Configure charts visually, preview changes live, and export standalone D3.js code.</p>
