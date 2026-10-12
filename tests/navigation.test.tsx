@@ -91,15 +91,34 @@ describe('product home and guide', () => {
     window.history.replaceState(null, '', '#/guide');
     await render();
     expect(document.querySelector('.guide-main')).not.toBeNull();
-    expect(document.getElementById('usage-notes')?.textContent).toBe('数据与使用须知');
-    expect(document.querySelector('.guide-notes')?.textContent).toContain('不上传文件');
-    expect(document.querySelector('.guide-notes')?.textContent).toContain('不会跨刷新保存');
-    expect(document.querySelector('.guide-steps')?.textContent).toContain('复制完整代码');
+    expect(document.getElementById('faq-heading')?.textContent).toBe('常见问题');
+    const privacy=document.getElementById('faq-question-privacy')!;
+    act(()=>privacy.click());
+    expect(privacy.getAttribute('aria-expanded')).toBe('true');
+    expect(document.getElementById('faq-answer-privacy')?.textContent).toContain('不会把导入文件上传到服务器');
+    const save=document.getElementById('faq-question-save')!;
+    act(()=>save.click());
+    expect(privacy.getAttribute('aria-expanded')).toBe('false');
+    expect(document.getElementById('faq-answer-save')?.textContent).toContain('不会跨页面刷新保存');
+    expect(document.getElementById('faq-answer-export')?.textContent).toContain('复制或下载');
     await navigate('#/charts/scatter');
     expect(document.querySelector('.builder')).not.toBeNull();
     expect(useBuilder.getState().config.color).toBe('#197f8a');
     await navigate('#/');
     expect(document.getElementById('home-title')).not.toBeNull();
+  });
+});
+
+describe('gallery-only search',()=>{
+  it('shows search in the library and hides it on home, guide, and chart details',async()=>{
+    await render();
+    expect(document.querySelector('.chart-search')).not.toBeNull();
+    for(const hash of ['#/','#/guide','#/charts/scatter']){
+      await navigate(hash);
+      expect(document.querySelector('.chart-search')).toBeNull();
+    }
+    await navigate('#/gallery');
+    expect(document.querySelector('.chart-search')).not.toBeNull();
   });
 });
 

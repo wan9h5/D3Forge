@@ -64,7 +64,7 @@ function CodeEditor({ source, visible, label }: { source: string; visible: boole
           highlightedLines,
           EditorView.theme({
             '&': { height: '100%', fontSize: '13px', backgroundColor: '#fbfcfe', color: '#304457' },
-            '.cm-scroller': { overflow: 'auto', fontFamily: '"SFMono-Regular", Consolas, monospace', lineHeight: '1.75' },
+            '.cm-scroller': { overflow: 'auto', fontFamily: 'var(--font-code)', lineHeight: '1.75' },
             '.cm-gutters': { background: '#f2f5f9', color: '#98a7b5', border: 'none', borderRight: '1px solid #e5ebf1' },
             '.cm-content': { padding: '16px 0' },
             '.cm-line': { padding: '0 16px' },

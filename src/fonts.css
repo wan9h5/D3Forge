@@ -1,0 +1,15 @@
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/noto-sans-sc';
+@import '@fontsource-variable/noto-sans-jp';
+@import '@fontsource-variable/jetbrains-mono/wght.css';
+
+/* Unicode ranges keep CJK font requests limited to the text being displayed. */
+:root {
+  --font-ui: 'Manrope Variable', 'Noto Sans SC Variable', 'Noto Sans JP Variable';
+  --font-code: 'JetBrains Mono Variable', 'Noto Sans SC Variable', 'Noto Sans JP Variable';
+}
+:root:lang(ja) {
+  --font-ui: 'Manrope Variable', 'Noto Sans JP Variable', 'Noto Sans SC Variable';
+  --font-code: 'JetBrains Mono Variable', 'Noto Sans JP Variable', 'Noto Sans SC Variable';
+}
+code, pre, kbd, samp { font-family: var(--font-code); }
