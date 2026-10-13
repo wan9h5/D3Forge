@@ -6,6 +6,7 @@ import { categories, entryCategory, searchCharts, type Category } from './chartL
 import { ChartThumbnail } from './ChartThumbnail';
 import { SiteFooter } from './SiteFooter';
 import { ChartCategoryIcon } from './ChartCategoryIcon';
+import { Select } from './Select';
 
 function CardHoverGrid({children}:{children:ReactNode}) {
   const gridRef=useRef<HTMLDivElement>(null);
@@ -75,6 +76,13 @@ export function Gallery({query='',onClearSearch=()=>{}}:{query?:string;onClearSe
 
   return <div className="gallery-layout">
     <aside className="gallery-sidebar">
+      <div className="mobile-category-filter">
+        <span className="category-icon" aria-hidden="true"><ChartCategoryIcon category={category}/></span>
+        <Select aria-label={t('图形分类')} value={category} onChange={event=>setCategory(event.target.value as Category)}>
+          {categories.map(item=><option key={item.id} value={item.id}>{`${t(item.label)} · ${counts[item.id]??0}`}</option>)}
+        </Select>
+        <span className="mobile-category-caption">{({zh:'切换分类',en:'Categories',ja:'カテゴリ'})[locale]}</span>
+      </div>
       <nav className="category-menu" aria-label={t("图形分类")}>
         {categories.map(item => <button key={item.id} aria-current={category === item.id ? 'page' : undefined} onClick={() => setCategory(item.id)}>
           <span className="category-icon" aria-hidden="true"><ChartCategoryIcon category={item.id}/></span><span>{t(item.label)}</span>

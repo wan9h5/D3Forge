@@ -57,7 +57,7 @@ export function ChartSearch() {
   };
   return <>
     <button ref={trigger} className="chart-search" type="button" aria-label={t('搜索图形')} aria-haspopup="dialog" onClick={launch}>
-      <SearchIcon/><kbd>Ctrl K</kbd>
+      <SearchIcon/><span className="mobile-action-label">{t('搜索图形')}</span><kbd>Ctrl K</kbd>
     </button>
     {createPortal(<dialog ref={dialog} className="chart-search-dialog" aria-labelledby={headingId}
       onCancel={event=>{event.preventDefault();close();}}

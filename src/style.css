@@ -499,6 +499,39 @@ html[lang=en] .detail-chart-name,html[lang=en] .chart-english-name{display:none}
 .holographic-home>.site-footer{margin-top:0}
 @media(max-width:760px){.home-main.holographic-home{padding:0 24px}.holo-hero{padding:16px 0 54px;min-height:560px}.holo-intro{margin-bottom:26px}.holo-stage{width:min(330px,calc(100vw - 72px))}.holo-surface,.holo-card{border-radius:28px}.holo-face{padding:28px}.holo-code-face pre{font-size:9.5px}.holo-face h2{font-size:18px}.holo-face-eyebrow{top:26px;left:28px;right:28px}.holo-brand{font-size:42px}.holo-logo{width:80px}}
 @media(prefers-reduced-motion:reduce){.holo-surface{transform:none;transition:none}.holo-face{transition:none;transform:none;filter:none}.holo-foil,.holo-glare{display:none}}
+
+.mobile-menu-trigger,.mobile-action-label{display:none}
+.mobile-category-filter{display:none}
+@media(max-width:760px){
+  .gallery-layout>.gallery-sidebar{padding:12px 20px;margin-top:var(--header-height,64px);overflow:visible;background:#fff;border-bottom:1px solid #edf0f7}
+  .gallery-sidebar .category-menu{display:none}
+  .mobile-category-filter{display:flex;align-items:center;gap:10px;min-width:0;width:100%}
+  .mobile-category-filter>.category-icon{color:#356ae6}
+  .mobile-category-filter .custom-select{flex:1;min-width:0;max-width:260px}
+  .mobile-category-filter .select-trigger{min-height:44px;padding:10px 12px;border:1px solid #e1e7f2;border-radius:10px;background:#f8faff;color:#314568;font-size:14px;font-weight:500;box-shadow:none}
+  .mobile-category-filter .select-trigger:hover{background:#f0f5ff;border-color:#c4d4f4}
+  .mobile-category-caption{margin-left:auto;white-space:nowrap;font-size:12px;color:#8b98ae}
+  .app>.header{height:64px;min-height:64px;flex-wrap:nowrap;gap:12px;padding:0 20px}
+  .header .brand{flex-shrink:0}
+  .mobile-menu-trigger{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;width:40px;height:40px;padding:8px;border:0;border-radius:10px;background:transparent;color:#52627e}
+  .mobile-menu-trigger:hover,.mobile-menu-trigger[aria-expanded=true]{background:#f3f6fc}
+  .mobile-menu-trigger svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .header .header-nav{display:none;position:absolute;top:calc(100% + 8px);right:16px;width:min(280px,calc(100vw - 32px));max-height:calc(100dvh - 88px);overflow-y:auto;overscroll-behavior:contain;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:4px;margin:0;padding:8px;border:1px solid #e5eaf2;border-radius:14px;background:#fff;box-shadow:0 12px 32px #2039651a,0 3px 8px #20396508;animation:language-menu-in .15s ease-out}
+  .header .header-nav.mobile-open{display:flex}
+  .header .header-nav>a{display:flex;align-items:center;gap:12px;min-height:44px;padding:11px 12px;font-size:14px;border-radius:8px}
+  .header .header-nav>a:hover{background:#f3f6fc}
+  .header .header-nav>a[aria-current=page]{color:#356ae6;background:#edf3ff}
+  .header .header-nav .chart-search{display:flex;justify-content:flex-start;gap:12px;width:100%;height:44px;margin:2px 0 0;padding:11px 12px;border:0;border-radius:8px;box-shadow:none;font-size:14px;color:#68748c}
+  .header .header-nav .chart-search:hover{background:#f3f6fc}
+  .header .header-nav .chart-search kbd{margin-left:auto}
+  .header .header-nav .mobile-action-label{display:inline}
+  .header .header-nav .language-switch{width:100%}
+  .header .header-nav .language-trigger{width:100%;min-height:44px;justify-content:flex-start;gap:12px;padding:11px 12px;font-size:14px;border-radius:8px}
+  .header .header-nav .language-chevron{margin-left:auto}
+  .header .header-nav .language-menu{position:static;width:100%;min-width:0;margin:4px 0;border:0;background:#f8faff;box-shadow:none}
+  .header .header-nav .github-link svg{width:20px;height:20px}
+}
+@media(prefers-reduced-motion:reduce){.header .header-nav.mobile-open{animation:none}}
 .loading-mark{width:18px;height:18px;border:2px solid #e4eaff;border-top-color:var(--accent);border-radius:50%;animation:page-spin .8s linear infinite}
 @keyframes page-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.loading-mark{animation:none}}
