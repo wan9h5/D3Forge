@@ -1,0 +1,1540 @@
+{
+  "source": "https://doi.org/10.24432/C5PC7J",
+  "license": "CC BY 4.0",
+  "method": "Column centering, sample SD (ddof=1), SVD; scores=ZV; loadings=V sqrt(lambda)",
+  "variance": [
+    36.198848099926366,
+    19.20749025700893,
+    11.123630536249982
+  ],
+  "rows": [
+    {
+      "sample": "Wine-001",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.3074209743,
+      "PC2": 1.4394022532,
+      "PC3": -0.1652728298
+    },
+    {
+      "sample": "Wine-002",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.2032498134,
+      "PC2": -0.3324550712,
+      "PC3": -2.0207570605
+    },
+    {
+      "sample": "Wine-003",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.5096606948,
+      "PC2": 1.0282507243,
+      "PC3": 0.9800540553
+    },
+    {
+      "sample": "Wine-004",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.7464971905,
+      "PC2": 2.7486183909,
+      "PC3": -0.1756962242
+    },
+    {
+      "sample": "Wine-005",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.0060704896,
+      "PC2": 0.8673840351,
+      "PC3": 2.0209872566
+    },
+    {
+      "sample": "Wine-006",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.0416737256,
+      "PC2": 2.1164309168,
+      "PC3": -0.6276253711
+    },
+    {
+      "sample": "Wine-007",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.4422005148,
+      "PC2": 1.1715453427,
+      "PC3": -0.9743463764
+    },
+    {
+      "sample": "Wine-008",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.0536437886,
+      "PC2": 1.6044371436,
+      "PC3": 0.1458704002
+    },
+    {
+      "sample": "Wine-009",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.5038113459,
+      "PC2": 0.9154884741,
+      "PC3": -1.7659873886
+    },
+    {
+      "sample": "Wine-010",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.7458823827,
+      "PC2": 0.787217029,
+      "PC3": -0.9814788554
+    },
+    {
+      "sample": "Wine-011",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.4699483745,
+      "PC2": 1.2986698452,
+      "PC3": -0.4215460856
+    },
+    {
+      "sample": "Wine-012",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.7498168777,
+      "PC2": 0.6102557704,
+      "PC3": -1.1875284443
+    },
+    {
+      "sample": "Wine-013",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.1075172868,
+      "PC2": 0.6738056143,
+      "PC3": -0.862652985
+    },
+    {
+      "sample": "Wine-014",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.4484292141,
+      "PC2": 1.1274494764,
+      "PC3": -1.2008887893
+    },
+    {
+      "sample": "Wine-015",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 4.3006522824,
+      "PC2": 2.0900797111,
+      "PC3": -1.2603574352
+    },
+    {
+      "sample": "Wine-016",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.298703833,
+      "PC2": 1.6578750633,
+      "PC3": 0.2172896675
+    },
+    {
+      "sample": "Wine-017",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.1658456828,
+      "PC2": 2.3207587541,
+      "PC3": 0.8293902555
+    },
+    {
+      "sample": "Wine-018",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.8936294749,
+      "PC2": 1.6267799276,
+      "PC3": 0.7926777435
+    },
+    {
+      "sample": "Wine-019",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.5320216724,
+      "PC2": 2.5112597068,
+      "PC3": -0.4840929395
+    },
+    {
+      "sample": "Wine-020",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.0786585582,
+      "PC2": 1.0581530707,
+      "PC3": -0.1642832551
+    },
+    {
+      "sample": "Wine-021",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.1156137624,
+      "PC2": 0.7846836073,
+      "PC3": -0.3638606757
+    },
+    {
+      "sample": "Wine-022",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.0835136064,
+      "PC2": 0.24106354,
+      "PC3": 0.9343259781
+    },
+    {
+      "sample": "Wine-023",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.5280926338,
+      "PC2": -0.0915822781,
+      "PC3": -0.3110552099
+    },
+    {
+      "sample": "Wine-024",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.6403610794,
+      "PC2": -0.5148266658,
+      "PC3": 0.1434803538
+    },
+    {
+      "sample": "Wine-025",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.7566206561,
+      "PC2": -0.3162568102,
+      "PC3": 0.8877813228
+    },
+    {
+      "sample": "Wine-026",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 0.9872940635,
+      "PC2": 0.9380212926,
+      "PC3": 3.8101600038
+    },
+    {
+      "sample": "Wine-027",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.7702838696,
+      "PC2": 0.6842449613,
+      "PC3": -0.086456523
+    },
+    {
+      "sample": "Wine-028",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.2319487845,
+      "PC2": -0.0895544191,
+      "PC3": -1.3829952811
+    },
+    {
+      "sample": "Wine-029",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.1822504676,
+      "PC2": 0.6876298992,
+      "PC3": 1.3906440408
+    },
+    {
+      "sample": "Wine-030",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.2497626706,
+      "PC2": 0.190923365,
+      "PC3": -1.0895836726
+    },
+    {
+      "sample": "Wine-031",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.4931870441,
+      "PC2": 1.2373434374,
+      "PC3": 1.3821190626
+    },
+    {
+      "sample": "Wine-032",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.6698796372,
+      "PC2": 1.4677333464,
+      "PC3": -0.3313270944
+    },
+    {
+      "sample": "Wine-033",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.6239980128,
+      "PC2": 0.0525561958,
+      "PC3": -0.1666585824
+    },
+    {
+      "sample": "Wine-034",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.8973386973,
+      "PC2": 1.6284667254,
+      "PC3": 1.1687851165
+    },
+    {
+      "sample": "Wine-035",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.4064211811,
+      "PC2": 0.6959710737,
+      "PC3": 0.4783935344
+    },
+    {
+      "sample": "Wine-036",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.8984708735,
+      "PC2": 0.1762138729,
+      "PC3": 0.4495668658
+    },
+    {
+      "sample": "Wine-037",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.380966689,
+      "PC2": 0.6567871359,
+      "PC3": 0.4571490183
+    },
+    {
+      "sample": "Wine-038",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.1190507026,
+      "PC2": 0.1137887758,
+      "PC3": -0.0389972701
+    },
+    {
+      "sample": "Wine-039",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.49796891,
+      "PC2": -0.7672676364,
+      "PC3": -1.4221655873
+    },
+    {
+      "sample": "Wine-040",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.5226849008,
+      "PC2": 1.7979302305,
+      "PC3": -0.3421871202
+    },
+    {
+      "sample": "Wine-041",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.5808152555,
+      "PC2": 0.7774232863,
+      "PC3": -0.1181441955
+    },
+    {
+      "sample": "Wine-042",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 0.6666015906,
+      "PC2": 0.1694828498,
+      "PC3": -0.7811589922
+    },
+    {
+      "sample": "Wine-043",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.062168979,
+      "PC2": 1.1526674201,
+      "PC3": -0.3118783126
+    },
+    {
+      "sample": "Wine-044",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 0.4609089686,
+      "PC2": 0.3298117727,
+      "PC3": -0.2009097539
+    },
+    {
+      "sample": "Wine-045",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.0954409429,
+      "PC2": -0.0708091768,
+      "PC3": -0.6540045466
+    },
+    {
+      "sample": "Wine-046",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 1.1329702045,
+      "PC2": 1.7721084875,
+      "PC3": 0.0286249881
+    },
+    {
+      "sample": "Wine-047",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.7189311848,
+      "PC2": 1.1879835329,
+      "PC3": -0.5382549086
+    },
+    {
+      "sample": "Wine-048",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.8134030017,
+      "PC2": 0.6444407092,
+      "PC3": -1.1523019052
+    },
+    {
+      "sample": "Wine-049",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.0041972508,
+      "PC2": 1.2435216353,
+      "PC3": -0.0571328231
+    },
+    {
+      "sample": "Wine-050",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.6998752799,
+      "PC2": 1.7470392191,
+      "PC3": -0.6413045687
+    },
+    {
+      "sample": "Wine-051",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.2058740884,
+      "PC2": 0.1665222557,
+      "PC3": -1.9680201311
+    },
+    {
+      "sample": "Wine-052",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.8509177297,
+      "PC2": 0.7431823756,
+      "PC3": 0.0047062265
+    },
+    {
+      "sample": "Wine-053",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.4957432833,
+      "PC2": 1.6081973242,
+      "PC3": -0.5193096199
+    },
+    {
+      "sample": "Wine-054",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.2185331645,
+      "PC2": 1.8698932549,
+      "PC3": 0.3385947153
+    },
+    {
+      "sample": "Wine-055",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.1409484647,
+      "PC2": 1.0138914715,
+      "PC3": -0.9550686279
+    },
+    {
+      "sample": "Wine-056",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.4623833955,
+      "PC2": 1.3252698832,
+      "PC3": 0.5119931817
+    },
+    {
+      "sample": "Wine-057",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.7338061749,
+      "PC2": 1.4325078507,
+      "PC3": -0.6107505417
+    },
+    {
+      "sample": "Wine-058",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 2.1676263071,
+      "PC2": 1.2087899891,
+      "PC3": 0.2610432211
+    },
+    {
+      "sample": "Wine-059",
+      "group": "Class 1",
+      "kind": "sample",
+      "PC1": 3.1305492478,
+      "PC2": 1.726708279,
+      "PC3": -0.2848578627
+    },
+    {
+      "sample": "Wine-060",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.9259699188,
+      "PC2": -3.0648406154,
+      "PC3": -4.5721664738
+    },
+    {
+      "sample": "Wine-061",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.538141226,
+      "PC2": -1.3775575834,
+      "PC3": -0.8722226769
+    },
+    {
+      "sample": "Wine-062",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.8310844937,
+      "PC2": -0.8276494233,
+      "PC3": -1.6011854342
+    },
+    {
+      "sample": "Wine-063",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.0305207387,
+      "PC2": -1.2592339961,
+      "PC3": -1.7793885687
+    },
+    {
+      "sample": "Wine-064",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 2.0444943342,
+      "PC2": -1.9196175936,
+      "PC3": -0.0073480494
+    },
+    {
+      "sample": "Wine-065",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.6079658285,
+      "PC2": -1.9026915404,
+      "PC3": 0.6774469414
+    },
+    {
+      "sample": "Wine-066",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.8976955472,
+      "PC2": -0.7617626326,
+      "PC3": 0.5717484682
+    },
+    {
+      "sample": "Wine-067",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 2.2421822635,
+      "PC2": -1.8792912294,
+      "PC3": -2.026124738
+    },
+    {
+      "sample": "Wine-068",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.1828681775,
+      "PC2": -2.4203186859,
+      "PC3": -1.0667364247
+    },
+    {
+      "sample": "Wine-069",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.8105186514,
+      "PC2": -0.2198936932,
+      "PC3": -0.7050166284
+    },
+    {
+      "sample": "Wine-070",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.9700631868,
+      "PC2": -1.3993358666,
+      "PC3": -1.2347930167
+    },
+    {
+      "sample": "Wine-071",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.5677936617,
+      "PC2": -0.8824937279,
+      "PC3": -0.6272286135
+    },
+    {
+      "sample": "Wine-072",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.6530188409,
+      "PC2": -0.9540210186,
+      "PC3": 1.9470917044
+    },
+    {
+      "sample": "Wine-073",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.7233319553,
+      "PC2": -1.0606534246,
+      "PC3": 0.0801062585
+    },
+    {
+      "sample": "Wine-074",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 2.5550197688,
+      "PC2": 0.2594666264,
+      "PC3": 3.3649019773
+    },
+    {
+      "sample": "Wine-075",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.8274126581,
+      "PC2": -1.2842554672,
+      "PC3": 0.4569909108
+    },
+    {
+      "sample": "Wine-076",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.8655512868,
+      "PC2": -2.4372260631,
+      "PC3": -1.5589356086
+    },
+    {
+      "sample": "Wine-077",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.3689735741,
+      "PC2": -2.1478481531,
+      "PC3": -2.442496359
+    },
+    {
+      "sample": "Wine-078",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.4532775233,
+      "PC2": -1.3794604765,
+      "PC3": -0.2266675005
+    },
+    {
+      "sample": "Wine-079",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.2593782946,
+      "PC2": -0.7686811726,
+      "PC3": -1.1808933588
+    },
+    {
+      "sample": "Wine-080",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.3750922816,
+      "PC2": -1.0241543867,
+      "PC3": 1.7894185594
+    },
+    {
+      "sample": "Wine-081",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.7599202602,
+      "PC2": -3.3655599689,
+      "PC3": -0.3564645119
+    },
+    {
+      "sample": "Wine-082",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.0316677561,
+      "PC2": -1.4466289714,
+      "PC3": -0.361990641
+    },
+    {
+      "sample": "Wine-083",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.4934846945,
+      "PC2": -2.3745452195,
+      "PC3": 1.3319858041
+    },
+    {
+      "sample": "Wine-084",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -2.5318350812,
+      "PC2": -0.0871973839,
+      "PC3": 0.4729173496
+    },
+    {
+      "sample": "Wine-085",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.8329704357,
+      "PC2": -1.4695251971,
+      "PC3": 0.608377416
+    },
+    {
+      "sample": "Wine-086",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.7856882826,
+      "PC2": -2.0209257333,
+      "PC3": -0.254006881
+    },
+    {
+      "sample": "Wine-087",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.8045625814,
+      "PC2": -2.2275467486,
+      "PC3": 0.7706817963
+    },
+    {
+      "sample": "Wine-088",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.5564728816,
+      "PC2": -2.3663103511,
+      "PC3": 2.3011202198
+    },
+    {
+      "sample": "Wine-089",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.1119742958,
+      "PC2": -1.7971775693,
+      "PC3": 0.9565549808
+    },
+    {
+      "sample": "Wine-090",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.5541596121,
+      "PC2": -2.6500645212,
+      "PC3": 0.8467383504
+    },
+    {
+      "sample": "Wine-091",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.345489817,
+      "PC2": -2.1120436479,
+      "PC3": -0.0475182775
+    },
+    {
+      "sample": "Wine-092",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.560081802,
+      "PC2": -1.847004344,
+      "PC3": 0.7788699323
+    },
+    {
+      "sample": "Wine-093",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.9271194378,
+      "PC2": -1.5551086818,
+      "PC3": -0.0890235513
+    },
+    {
+      "sample": "Wine-094",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.7445656117,
+      "PC2": -2.3064255593,
+      "PC3": 0.1143571809
+    },
+    {
+      "sample": "Wine-095",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.9547620944,
+      "PC2": -2.2172737713,
+      "PC3": 0.1420440844
+    },
+    {
+      "sample": "Wine-096",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 2.5367094311,
+      "PC2": 0.1687978643,
+      "PC3": 0.7864784294
+    },
+    {
+      "sample": "Wine-097",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.54242248,
+      "PC2": -0.3678887758,
+      "PC3": 1.3052140795
+    },
+    {
+      "sample": "Wine-098",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.0281494641,
+      "PC2": -2.558352543,
+      "PC3": -1.0833342179
+    },
+    {
+      "sample": "Wine-099",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 2.2455749246,
+      "PC2": -1.4287111575,
+      "PC3": -0.2295606806
+    },
+    {
+      "sample": "Wine-100",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.4062491551,
+      "PC2": -2.1600983909,
+      "PC3": 0.7467898063
+    },
+    {
+      "sample": "Wine-101",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.7954758507,
+      "PC2": -2.3702625766,
+      "PC3": -1.5637015168
+    },
+    {
+      "sample": "Wine-102",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.5479859241,
+      "PC2": -2.2866781983,
+      "PC3": -1.4947189004
+    },
+    {
+      "sample": "Wine-103",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.1607203671,
+      "PC2": -1.1612076939,
+      "PC3": 1.000889713
+    },
+    {
+      "sample": "Wine-104",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.6579389747,
+      "PC2": -2.6724226023,
+      "PC3": -0.7627691881
+    },
+    {
+      "sample": "Wine-105",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.3912507368,
+      "PC2": -2.0928280917,
+      "PC3": -0.4705227194
+    },
+    {
+      "sample": "Wine-106",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.7675131354,
+      "PC2": -1.7124578312,
+      "PC3": 0.9443692221
+    },
+    {
+      "sample": "Wine-107",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.3652370674,
+      "PC2": -2.1632510261,
+      "PC3": -0.4799702961
+    },
+    {
+      "sample": "Wine-108",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.6161137098,
+      "PC2": -1.3517702064,
+      "PC3": 0.2863512382
+    },
+    {
+      "sample": "Wine-109",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.0823036149,
+      "PC2": -2.2997472765,
+      "PC3": -0.4622709784
+    },
+    {
+      "sample": "Wine-110",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.5738354698,
+      "PC2": -1.457921668,
+      "PC3": 1.7746399084
+    },
+    {
+      "sample": "Wine-111",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.4165732645,
+      "PC2": -1.4142173002,
+      "PC3": 0.1388840542
+    },
+    {
+      "sample": "Wine-112",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.2779187781,
+      "PC2": -1.9251375066,
+      "PC3": 0.0784492571
+    },
+    {
+      "sample": "Wine-113",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.299479291,
+      "PC2": -0.7610255518,
+      "PC3": 1.9939717553
+    },
+    {
+      "sample": "Wine-114",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.4557861476,
+      "PC2": -2.2630318661,
+      "PC3": 1.0583534794
+    },
+    {
+      "sample": "Wine-115",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.4927957294,
+      "PC2": -1.9335906222,
+      "PC3": 1.3202139073
+    },
+    {
+      "sample": "Wine-116",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.4807183609,
+      "PC2": -3.860892733,
+      "PC3": 1.3404898623
+    },
+    {
+      "sample": "Wine-117",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.2521775151,
+      "PC2": -2.8135556716,
+      "PC3": -0.3017884754
+    },
+    {
+      "sample": "Wine-118",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.1069260123,
+      "PC2": -1.9234960908,
+      "PC3": 0.6882068934
+    },
+    {
+      "sample": "Wine-119",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -2.4261686717,
+      "PC2": -1.2536047718,
+      "PC3": -1.8976742928
+    },
+    {
+      "sample": "Wine-120",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.5495393546,
+      "PC2": -2.2159107323,
+      "PC3": -0.3552267781
+    },
+    {
+      "sample": "Wine-121",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.7375414127,
+      "PC2": -1.4049933496,
+      "PC3": 1.1221799569
+    },
+    {
+      "sample": "Wine-122",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 1.3325627338,
+      "PC2": 0.2526243083,
+      "PC3": 5.3303518957
+    },
+    {
+      "sample": "Wine-123",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.1737759152,
+      "PC2": -0.6620991375,
+      "PC3": 3.0017542991
+    },
+    {
+      "sample": "Wine-124",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.461034485,
+      "PC2": -0.6165489688,
+      "PC3": 0.4820824695
+    },
+    {
+      "sample": "Wine-125",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.9757216855,
+      "PC2": -1.4415041885,
+      "PC3": 1.4770703367
+    },
+    {
+      "sample": "Wine-126",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.0965374059,
+      "PC2": -2.1040626846,
+      "PC3": 0.4336029736
+    },
+    {
+      "sample": "Wine-127",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": 0.0383788837,
+      "PC2": -1.2631987769,
+      "PC3": 0.685643794
+    },
+    {
+      "sample": "Wine-128",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.592665782,
+      "PC2": -1.2047451326,
+      "PC3": 3.3517207531
+    },
+    {
+      "sample": "Wine-129",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -0.4782159263,
+      "PC2": -1.9333868081,
+      "PC3": 1.2928605144
+    },
+    {
+      "sample": "Wine-130",
+      "group": "Class 2",
+      "kind": "sample",
+      "PC1": -1.7877903309,
+      "PC2": -1.1470524072,
+      "PC3": 0.7805981993
+    },
+    {
+      "sample": "Wine-131",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -1.323368592,
+      "PC2": 0.1699099365,
+      "PC3": -1.1766940425
+    },
+    {
+      "sample": "Wine-132",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.3777933648,
+      "PC2": 0.3735289252,
+      "PC3": -0.7217865216
+    },
+    {
+      "sample": "Wine-133",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.9286786509,
+      "PC2": 0.2631196012,
+      "PC3": -0.1671682544
+    },
+    {
+      "sample": "Wine-134",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.140772272,
+      "PC2": 0.3672190709,
+      "PC3": -0.4520261898
+    },
+    {
+      "sample": "Wine-135",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.3632031756,
+      "PC2": -0.4583418817,
+      "PC3": -1.0983016115
+    },
+    {
+      "sample": "Wine-136",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.0552231506,
+      "PC2": 0.3524187046,
+      "PC3": -1.0960323284
+    },
+    {
+      "sample": "Wine-137",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.9047389833,
+      "PC2": 0.1541476873,
+      "PC3": 0.2212038104
+    },
+    {
+      "sample": "Wine-138",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.9253903353,
+      "PC2": 0.6578315694,
+      "PC3": 1.7073990513
+    },
+    {
+      "sample": "Wine-139",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.0855720889,
+      "PC2": 0.3478614837,
+      "PC3": -1.023942993
+    },
+    {
+      "sample": "Wine-140",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.3677923697,
+      "PC2": 0.2911590269,
+      "PC3": 1.238420896
+    },
+    {
+      "sample": "Wine-141",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.7709962994,
+      "PC2": 0.2859981065,
+      "PC3": 0.6079551554
+    },
+    {
+      "sample": "Wine-142",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.2801293134,
+      "PC2": 0.3714600006,
+      "PC3": -0.9689098539
+    },
+    {
+      "sample": "Wine-143",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.9772350644,
+      "PC2": 0.4878417652,
+      "PC3": 0.9442892052
+    },
+    {
+      "sample": "Wine-144",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.368513406,
+      "PC2": 0.480976939,
+      "PC3": -0.2521726453
+    },
+    {
+      "sample": "Wine-145",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.2036492952,
+      "PC2": 1.1567893402,
+      "PC3": -1.241622757
+    },
+    {
+      "sample": "Wine-146",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.618235277,
+      "PC2": 0.5615766239,
+      "PC3": -0.8535533103
+    },
+    {
+      "sample": "Wine-147",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -4.2685975769,
+      "PC2": 0.6478434753,
+      "PC3": -1.4540951336
+    },
+    {
+      "sample": "Wine-148",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.5725635985,
+      "PC2": 1.2691227068,
+      "PC3": -0.1104724082
+    },
+    {
+      "sample": "Wine-149",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.799167604,
+      "PC2": 1.5661159617,
+      "PC3": -0.4711987394
+    },
+    {
+      "sample": "Wine-150",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.8915027505,
+      "PC2": 2.0353156266,
+      "PC3": -0.4945647025
+    },
+    {
+      "sample": "Wine-151",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.3142088709,
+      "PC2": 2.3497377472,
+      "PC3": 0.4364505689
+    },
+    {
+      "sample": "Wine-152",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.5426584128,
+      "PC2": 2.039529822,
+      "PC3": -0.3113896059
+    },
+    {
+      "sample": "Wine-153",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -1.8074427057,
+      "PC2": 1.5233487621,
+      "PC3": 1.3587568913
+    },
+    {
+      "sample": "Wine-154",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.7523805066,
+      "PC2": 2.1329156484,
+      "PC3": -0.9619152407
+    },
+    {
+      "sample": "Wine-155",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.7294510466,
+      "PC2": 0.4087332833,
+      "PC3": -1.187056141
+    },
+    {
+      "sample": "Wine-156",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.59472857,
+      "PC2": 1.7973142097,
+      "PC3": -0.0937723408
+    },
+    {
+      "sample": "Wine-157",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.881697075,
+      "PC2": 1.9198030789,
+      "PC3": -0.7801219251
+    },
+    {
+      "sample": "Wine-158",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.382614128,
+      "PC2": 1.3081861522,
+      "PC3": 1.5975195578
+    },
+    {
+      "sample": "Wine-159",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -1.0452334187,
+      "PC2": 3.5052019369,
+      "PC3": 1.1567754411
+    },
+    {
+      "sample": "Wine-160",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -1.605383688,
+      "PC2": 2.3998684186,
+      "PC3": 0.5470166289
+    },
+    {
+      "sample": "Wine-161",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.1342895119,
+      "PC2": 0.7360846377,
+      "PC3": -0.0907427495
+    },
+    {
+      "sample": "Wine-162",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.2338554579,
+      "PC2": 1.1721587688,
+      "PC3": -0.1010917648
+    },
+    {
+      "sample": "Wine-163",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.8396634261,
+      "PC2": 0.5544798447,
+      "PC3": 0.8019530048
+    },
+    {
+      "sample": "Wine-164",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.59019044,
+      "PC2": 0.6960021985,
+      "PC3": -0.8824502348
+    },
+    {
+      "sample": "Wine-165",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.9410031559,
+      "PC2": 1.5509339656,
+      "PC3": -0.980634475
+    },
+    {
+      "sample": "Wine-166",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.5201024794,
+      "PC2": 0.8800442968,
+      "PC3": -0.4647182134
+    },
+    {
+      "sample": "Wine-167",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.3993422836,
+      "PC2": 2.5850640195,
+      "PC3": 0.427021634
+    },
+    {
+      "sample": "Wine-168",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.9208453725,
+      "PC2": 1.2708619986,
+      "PC3": -1.2099451613
+    },
+    {
+      "sample": "Wine-169",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.1752765844,
+      "PC2": 2.0716933143,
+      "PC3": 0.7616340732
+    },
+    {
+      "sample": "Wine-170",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.374230368,
+      "PC2": 2.5813856531,
+      "PC3": 1.4140551495
+    },
+    {
+      "sample": "Wine-171",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.2025831122,
+      "PC2": -0.2505423545,
+      "PC3": -0.8447462243
+    },
+    {
+      "sample": "Wine-172",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.6675729376,
+      "PC2": 0.845363176,
+      "PC3": -1.3356525155
+    },
+    {
+      "sample": "Wine-173",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.458620325,
+      "PC2": 2.1876272695,
+      "PC3": -0.91619648
+    },
+    {
+      "sample": "Wine-174",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.3610430461,
+      "PC2": 2.2100548402,
+      "PC3": -0.3416058832
+    },
+    {
+      "sample": "Wine-175",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.5946366923,
+      "PC2": 1.7522863613,
+      "PC3": 0.20699744
+    },
+    {
+      "sample": "Wine-176",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.6703068455,
+      "PC2": 2.753132874,
+      "PC3": -0.9382950588
+    },
+    {
+      "sample": "Wine-177",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -2.3803025433,
+      "PC2": 2.2908843696,
+      "PC3": -0.5491471188
+    },
+    {
+      "sample": "Wine-178",
+      "group": "Class 3",
+      "kind": "sample",
+      "PC1": -3.1997321037,
+      "PC2": 2.7611307473,
+      "PC3": 1.0110615806
+    },
+    {
+      "sample": "Alcohol",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.3130933504,
+      "PC2": 0.7642572529,
+      "PC3": -0.2493832724
+    },
+    {
+      "sample": "MalicAcid",
+      "group": null,
+      "kind": "loading",
+      "PC1": -0.5318847263,
+      "PC2": 0.3554317131,
+      "PC3": 0.1070404274
+    },
+    {
+      "sample": "Ash",
+      "group": null,
+      "kind": "loading",
+      "PC1": -0.0044493618,
+      "PC2": 0.4994461087,
+      "PC3": 0.753051353
+    },
+    {
+      "sample": "AlcalinityOfAsh",
+      "group": null,
+      "kind": "loading",
+      "PC1": -0.5191570806,
+      "PC2": -0.0167349163,
+      "PC3": 0.7360433465
+    },
+    {
+      "sample": "Magnesium",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.3080229361,
+      "PC2": 0.4734761239,
+      "PC3": 0.1572387872
+    },
+    {
+      "sample": "TotalPhenols",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.8561366581,
+      "PC2": 0.1027742366,
+      "PC3": 0.1757841981
+    },
+    {
+      "sample": "Flavanoids",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.917470177,
+      "PC2": -0.0053091131,
+      "PC3": 0.1811991022
+    },
+    {
+      "sample": "NonflavanoidPhenols",
+      "group": null,
+      "kind": "loading",
+      "PC1": -0.6476070182,
+      "PC2": 0.0454768162,
+      "PC3": 0.2048723707
+    },
+    {
+      "sample": "Proanthocyanins",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.679921705,
+      "PC2": 0.0621038565,
+      "PC3": 0.1797228911
+    },
+    {
+      "sample": "ColorIntensity",
+      "group": null,
+      "kind": "loading",
+      "PC1": -0.1922359676,
+      "PC2": 0.837489383,
+      "PC3": -0.1651144725
+    },
+    {
+      "sample": "Hue",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.6436620659,
+      "PC2": -0.4412422291,
+      "PC3": 0.1024816906
+    },
+    {
+      "sample": "OD280_OD315",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.8160189031,
+      "PC2": -0.2599338491,
+      "PC3": 0.1996250534
+    },
+    {
+      "sample": "Proline",
+      "group": null,
+      "kind": "loading",
+      "PC1": 0.622050797,
+      "PC2": 0.5766127226,
+      "PC3": -0.1524154291
+    }
+  ]
+}

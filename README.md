@@ -74,6 +74,26 @@ The line-chart example is intentionally simple: change a data mapping or a visua
 | Bar of pie | Inspect one parent's composition | Parent pie, selectable category, child bars, guide links |
 | Bar with pies | Compare totals and composition together | Sample total bars, per-sample category pies, independent proportions |
 
+### Research result plots
+
+The **Research statistics** category includes seven plots for scientific results:
+
+| Chart | Required input | Controls |
+| --- | --- | --- |
+| Forest plot | Study label, estimate, lower and upper interval limits | Linear/log effect scale, reference, row order, interval/value display, groups |
+| ROC curve | False-positive rate and true-positive rate in [0,1] | Model groups, random-classifier diagonal, points, line style |
+| Precision–recall curve | Recall and precision in [0,1] | Model groups, points, line style |
+| Funnel plot | Effect estimate and positive standard error | Effect scale, reference, study labels, groups; smaller SE at the top |
+| GWAS Q–Q plot | P values in (0,1], optional cohort and SNP labels | Uniform-null plotting positions (i−0.5)/n, −log10 axes, groups and diagonal |
+| Regional association | Chromosome, position and P value; optional precomputed r² | Chromosome/region selection, LD colors, P-value reference and SNP labels |
+| Species accumulation | Positive integer sample counts, supplied richness summaries, optional lower/upper limits | Grouped curves, supplied interval bands, points, colors and axes; no resampling or richness estimation |
+
+These plots do not fit models, pool studies, infer confidence levels, or calculate AUC/AP or bias tests. Forest intervals must satisfy lower ≤ estimate ≤ upper; log scales require positive values. Curves connect supplied coordinates without creating endpoints. Data panels provide downloadable example CSVs, required-field checks and current row-filter counts. All exports remain standalone D3 v7 code with the input data included.
+
+### Genomic Circos tracks
+
+The Circos category also includes **Genomic Two-track Circos Bars**, which positions two nonnegative tracks by supplied chromosome lengths and 0-based half-open intervals. Track scales can be shared or independent. This is distinct from the categorical two-track circular bar example; reference lengths must agree, and intervals are not automatically aggregated or binned.
+
 ### Scatter extensions and 3D
 
 Examples cover joint analysis, grouped regression, fold change, equations and R², marginal distributions, bubble matrices, ranked points, density, motif results, paired observations, continuous color, GSEA NES/FDR, correlation, and categorical/gradient 3D scatter. Each has dedicated field mappings and controls. Confidence bands, size mapping, and point borders can be enabled as needed.
@@ -297,3 +317,11 @@ Include reproduction steps, expected/actual behavior, browser version, and a min
 ## License
 
 Released under the [MIT License](LICENSE).
+
+## PCA examples
+
+Four dedicated entries cover grouped PCA scores, score/loading biplots, group convex hulls (including triplicates), and rotatable 3D PCA. Import precomputed scores through local CSV and supply explained variance manually. Biplots distinguish `sample` and `loading` rows using a configurable record-type column, with a common display multiplier for both loading components. Scores and loadings must use compatible upstream scaling. Ellipses show sample-covariance dispersion, not confidence regions; hulls show observed sample boundaries. Each entry includes a downloadable deterministic CSV example, and preview and export use the same native D3 source.
+
+The biplot uses actual PCA results for the [UCI Wine dataset](https://doi.org/10.24432/C5PC7J): 178 samples and 13 chemical variables. Features are centered and scaled by sample SD (n−1), scores are ZV, and correlation loadings are V√λ. The first two components explain 36.1988481% and 19.2074903%. Original class IDs are preserved. See [example data and attribution](public/examples/README.md) and the reproducible NumPy preparation script at `scripts/prepare-pca-wine.py`. Source and derived data are CC BY 4.0; app code remains MIT. The other PCA examples remain deterministic synthetic examples.
+
+Importing a PCA CSV disables existing explained-variance labels, so percentages from the previous dataset cannot silently carry over. Enter the new PCA percentages before re-enabling the labels. Two-dimensional PCA uses equal coordinate units by default; three-dimensional PCA uses one shared scale across components.

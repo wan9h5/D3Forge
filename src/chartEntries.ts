@@ -7,7 +7,8 @@ import { volcanoMock } from './volcanoModel';
 import { barEntries } from './barEntries';
 import { barMock } from './barModel';
 import { scatterEntries } from './scatterEntries';
-import { scatterMock } from './scatterModel';
+import { pcaEntries } from './pcaEntries';
+import { scatterMock, pcaMock } from './scatterModel';
 import { chartDescriptions } from './chartDescriptions';
 import { charts, defaults, type ChartType, type Config } from './model';
 
@@ -19,6 +20,7 @@ const entries: ChartEntry[] = [
     ...(chart.id === 'nested-pie' ? { name: 'Nested Donut', zh: '双层环图' } : {}),
   })),
   ...scatterEntries,
+  ...pcaEntries,
   ...volcanoEntries,
   ...heatmapEntries,
   ...bioEntries,
@@ -49,6 +51,7 @@ export function entryConfig(type: ChartType, entryId: string): Config {
 
 export function entryData(type:ChartType,id:string) {
  const entry=entryById(id);
+ if(entry?.patch.pcaAxes&&entry.patch.scatterVariant==='3d')return pcaMock('3d');
  if(entry?.patch.bioVariant)return bioMock(entry.patch.bioVariant);
  if(type==='heatmap'&&entry?.patch.heatmapVariant)return heatmapMock(entry.patch.heatmapVariant);
  if(type==='volcano'&&entry?.patch.volcanoVariant)return volcanoMock(entry.patch.volcanoVariant);

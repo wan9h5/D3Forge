@@ -6,6 +6,7 @@ import { volcanoControlText } from './volcanoText';
 import { barExtensionText } from './barExtensionEntries';
 import { barText } from './barText';
 import { scatterText } from './scatterText';
+import { pcaText } from './pcaEntries';
 import { chartDescriptionTranslations } from './chartDescriptions';
 import { useSyncExternalStore } from 'react';
 import { translations } from './translations';
@@ -42,7 +43,7 @@ export function useLocale() {
   return useSyncExternalStore(subscribeLocale, getLocale, () => 'zh' as const);
 }
 export function t(key: string, values: Record<string, string | number> = {}, language: Locale = locale): string {
-  const entry = ({'加载中…':['Loading…','読み込み中…']} as Record<string,[string,string]>)[key] ?? translations[key] ?? bioText[key] ?? chartDescriptionTranslations[key] ?? scatterText[key] ?? barText[key] ?? barExtensionText[key] ?? volcanoText[key] ?? volcanoControlText[key] ?? heatmapText[key] ?? heatmapControlText[key];
+  const entry = ({'加载中…':['Loading…','読み込み中…']} as Record<string,[string,string]>)[key] ?? translations[key] ?? bioText[key] ?? chartDescriptionTranslations[key] ?? pcaText[key] ?? scatterText[key] ?? barText[key] ?? barExtensionText[key] ?? volcanoText[key] ?? volcanoControlText[key] ?? heatmapText[key] ?? heatmapControlText[key];
   const text = language === 'zh' ? key : entry?.[language === 'en' ? 0 : 1] ?? key;
   return text.replace(/\{(\w+)\}/g, (match, name: string) => String(values[name] ?? match));
 }

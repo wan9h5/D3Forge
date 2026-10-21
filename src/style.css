@@ -541,6 +541,12 @@ html[lang=en] .detail-chart-name,html[lang=en] .chart-english-name{display:none}
 .contributors-content h1{max-width:760px;font-size:clamp(24px,3vw,34px);line-height:1.65;font-weight:600;letter-spacing:-.8px;color:#172033;text-wrap:balance}
 .contributors-avatars{display:flex;align-items:center;justify-content:center;gap:0}
 .contributors-participation{position:relative;top:24px;display:flex;flex-direction:column;align-items:center;gap:32px}
+.bio-data-notes .help{margin:10px 0;overflow-wrap:anywhere}
+.bio-sample-download{width:100%;margin:8px 0;font-size:13px}
+.bio-data-requirements{margin-top:16px;font-size:13px;color:#647087}
+.bio-data-requirements summary{cursor:pointer;line-height:1.6}
+.bio-data-requirements summary:focus-visible{outline:2px solid #91b0f3;outline-offset:4px;border-radius:3px}
+.bio-filter-notice{margin:0;padding:12px 20px;background:#f8faff;color:#718097;font-size:12px;line-height:1.7;border-top:1px solid #edf1f7}
 .contributors-actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:28px}
 .contribute-link,.contribute-idea-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:4px 0;color:#68748c;text-decoration:none;font-size:13px;font-weight:400;transition:color .2s}
 .contribute-link>span[aria-hidden],.contribute-idea-link>span[aria-hidden]{color:#9aa6b9;font-size:12px}

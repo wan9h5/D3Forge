@@ -2,7 +2,10 @@ import { categoricalColors } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
 import type { CodeParts } from './generate';
-import { isSurvival } from './bioModel';
+import { isSurvival, isResearchPlot, isAssociationPlot } from './bioModel';
+import { researchSource } from './generateResearch';
+import { associationSource } from './generateAssociation';
+import { bioExtrasSource } from './generateBioExtras';
 import { survivalMathSource } from './survivalMath';
 import { codeComment } from './codeComments';
 const js=(v:unknown)=>JSON.stringify(v);
@@ -86,7 +89,7 @@ function renderChart(container, data) {
       tip(g,()=>String(name));
     });`:''}
   }
-${isSurvival(c.bioVariant)?survivalSource(c,tr):genomicSource(c,tr)}
+${isSurvival(c.bioVariant)?survivalSource(c,tr):isResearchPlot(c.bioVariant)?researchSource(c,tr):isAssociationPlot(c.bioVariant)?associationSource(c,tr):['accumulation','circos-tracks'].includes(c.bioVariant)?bioExtrasSource(c,tr):genomicSource(c,tr)}
   return svg.node();
 }
 const container = document.querySelector("#chart") || d3.select("body")

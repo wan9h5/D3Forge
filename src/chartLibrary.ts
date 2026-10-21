@@ -5,6 +5,7 @@ import type { ChartType } from './model';
 export const categories = [
   { id:'all',label:'全部图形' },
   { id:'scatter',label:'散点图' },
+  { id:'pca',label:'PCA 图' },
   { id:'line',label:'折线图' },
   { id:'bar',label:'柱状图' },
   { id:'box',label:'箱线图' },
@@ -18,6 +19,7 @@ export const categories = [
   { id:'survival',label:'生存曲线' },
   { id:'circos',label:'Circos 图' },
   { id:'chromosome',label:'染色体图' },
+  { id:'research',label:'科研统计图' },
 ] as const;
 export type Category = typeof categories[number]['id'];
 const chartCategories: Record<ChartType, Exclude<Category,'all'>> = {
@@ -25,12 +27,26 @@ const chartCategories: Record<ChartType, Exclude<Category,'all'>> = {
   'pie-matrix':'pie','nested-pie':'pie','pie-bar':'pie','bar-pie':'bar',
   waffle:'waffle',histogram:'histogram',heatmap:'heatmap',volcano:'volcano',manhattan:'manhattan',
 };
-export const entryCategory = (chart:typeof chartEntries[number]) => chart.patch.bioVariant ? (['km','cutoff'].includes(chart.patch.bioVariant)?'survival':['circos-gene','fusion','ligand'].includes(chart.patch.bioVariant)?'circos':chart.patch.bioVariant==='ld'?'heatmap':'chromosome') : chart.patch.scatterVariant==='gsea' ? 'bar' : chart.patch.violinGeometry==='box' ? 'box' : chartCategories[chart.type];
+export const entryCategory = (chart:typeof chartEntries[number]) => chart.patch.pcaAxes ? 'pca' : chart.patch.bioVariant ? (['forest','roc','pr','funnel','qq','regional','accumulation'].includes(chart.patch.bioVariant)?'research':['km','cutoff'].includes(chart.patch.bioVariant)?'survival':['circos-gene','fusion','ligand','circos-tracks'].includes(chart.patch.bioVariant)?'circos':chart.patch.bioVariant==='ld'?'heatmap':'chromosome') : chart.patch.scatterVariant==='gsea' ? 'bar' : chart.patch.violinGeometry==='box' ? 'box' : chartCategories[chart.type];
 
 const normalizeSearch = (value:string) => value.normalize('NFKC').toLocaleLowerCase().replace(/[\s\p{P}\p{S}]+/gu,'');
+const searchAliases:Record<string,string[]>={
+ 'pca':['主成分分析','principal components analysis'],
+ 'pca-biplot':['PCA因子图','PCA factor','biplot'],
+ 'pca-hull':['PCA分析三重复','PCA convex hull'],
+ 'pca-3d':['三维PCA','3d pca'],
+ 'bio-chromosome':['染色体分布图','SNP 染色体分布','chromosome locus map'],
+ 'bio-ideogram':['峰染色体分布图','染色体分布峰值','chromosome peak distribution'],
+ 'bio-segments':['片段染色体分布','chromosome segment distribution'],
+ 'bio-centromere':['分裂染色体分布图','着丝粒染色体分布','centromere chromosome distribution'],
+ 'bio-accumulation':['物种累积曲线','species accumulation','SAC'],
+ 'bio-circos-tracks':['双通道circos柱状图','基因组双轨道','genomic circular histogram'],
+ 'bio-qq':['QQ 图','GWAS QQ plot','quantile quantile'],
+ 'bio-regional':['局部关联图','区域关联分析图','regional GWAS','locus association'],
+};
 const searchIndex=chartEntries.map(chart=>{
  const family=categories.find(item=>item.id===entryCategory(chart))!.label;
- return {chart,names:[chart.id,chart.name,...(['zh','en','ja'] as const).flatMap(locale=>[t(chart.zh,{},locale),t(family,{},locale)])].map(normalizeSearch)};
+ return {chart,names:[chart.id,chart.name,...(searchAliases[chart.id]??[]),...(['zh','en','ja'] as const).flatMap(locale=>[t(chart.zh,{},locale),t(family,{},locale)])].map(normalizeSearch)};
 });
 export function searchCharts(query:string){
  const terms=query.trim().split(/\s+/).filter(Boolean).map(normalizeSearch);

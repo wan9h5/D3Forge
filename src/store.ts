@@ -27,6 +27,10 @@ export const useBuilder = create<State>((set,get)=>({
     if(c.bioVariant!=='none'){
       const map=(old:string,pattern:RegExp,fallback='')=>fields.includes(old)?old:fields.find(f=>pattern.test(f))||fallback;
       const mapped:Partial<Config>={
+       bioTrackOneField:map(c.bioTrackOneField,/^(track.?1|value.?1|count.?1|signal.?1|outer)$/i),
+       bioTrackTwoField:map(c.bioTrackTwoField,/^(track.?2|value.?2|count.?2|signal.?2|inner)$/i),
+       bioLowerField:map(c.bioLowerField,/^(lower|ci.?lower|lower.?ci|lcl|conf.?low)$/i),
+       bioUpperField:map(c.bioUpperField,/^(upper|ci.?upper|upper.?ci|ucl|conf.?high)$/i),
        bioTimeField:map(c.bioTimeField,/^(time|duration|followup|survival.?time|时间)$/i),
        bioEventField:map(c.bioEventField,/^(event|status|death|事件)$/i),
        bioSubjectField:map(c.bioSubjectField,/^(subject|patient|id|sample.?id|对象)$/i),
@@ -50,8 +54,36 @@ export const useBuilder = create<State>((set,get)=>({
        bioSnpAField:map(c.bioSnpAField,/^(snp.?a|snp1|variant1)$/i),
        bioSnpBField:map(c.bioSnpBField,/^(snp.?b|snp2|variant2)$/i),
        bioLDField:map(c.bioLDField,/^(r2|rsquared|dprime|ld)$/i),bioLDChromosome:'',
+
+       ...( ['forest','roc','pr','funnel'].includes(c.bioVariant)?{
+         xField:map(c.xField,c.bioVariant==='roc'?/^(fpr|false.?positive.?rate|1.?specificity)$/i:c.bioVariant==='pr'?/^(recall|sensitivity|tpr)$/i:/^(estimate|effect|hr|or|rr|log.?or|log.?hr|beta|mean.?difference)$/i),
+         yField:map(c.yField,c.bioVariant==='roc'?/^(tpr|sensitivity|true.?positive.?rate)$/i:c.bioVariant==='pr'?/^(precision|ppv)$/i:/^(se|stderr|std.?err|standard.?error)$/i),
+         labelField:map(c.labelField,/^(study|cohort|subgroup|variable|label|name|研究)$/i),
+         groupField:map(c.groupField,/^(model|group|category|分组)$/i),
+       }:{}),
+
+       ...(['qq','regional'].includes(c.bioVariant)?{
+         yField:map(c.yField,/^(p|pvalue|p_value|pval|p\.value|p_value_meta)$/i),
+         labelField:map(c.labelField,/^(snp|rsid|variant|marker|markername|id)$/i),
+         groupField:map(c.groupField,/^(group|cohort|trait|分组)$/i),
+         bioRegionChromosome:'',
+       }:{}),
+       ...(c.bioVariant==='accumulation'?{
+         xField:map(c.xField,/^(samples|sites|n|sample.?count|sample.?size)$/i),
+         yField:map(c.yField,/^(richness|species|mean|sobs|species.?richness)$/i),
+         groupField:map(c.groupField,/^(group|habitat|site.?type|condition|分组)$/i),
+       }:{}),
       };
       set({data,dataName,config:{...c,...mapped},revision:current.revision+1});return;
+    }
+    if(c.pcaAxes){
+      const map=(old:string,pattern:RegExp,fallback='')=>fields.includes(old)?old:fields.find(f=>pattern.test(f))||fallback;
+      const xField=map(c.xField,/^pc[._ ]?1$/i,numbers[0]||'');
+      const yField=map(c.yField,/^pc[._ ]?2$/i,numbers.find(f=>f!==xField)||'');
+      const zField=map(c.zField,/^pc[._ ]?3$/i,numbers.find(f=>f!==xField&&f!==yField)||'');
+      const groupField=c.groupField===''?'':map(c.groupField,/^(group|condition|cohort|class|分组)$/i);
+      const labelField=c.labelField===''?'':map(c.labelField,/^(sample|sample.?id|name|variable|feature|id)$/i);
+      set({data,dataName,config:{...c,xField,yField,zField,groupField,labelField,pcaShowVariance:false,pcaRowTypeField:map(c.pcaRowTypeField,/^(kind|type|record.?type)$/i),tooltipFields:[labelField,groupField,xField,yField,...(c.scatterVariant==='3d'?[zField]:[])].filter(Boolean)},revision:current.revision+1});return;
     }
     const heatmap = current.type === 'heatmap';
     const histogram = current.type === 'histogram';

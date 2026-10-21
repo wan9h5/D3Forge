@@ -5,12 +5,14 @@ import { t, useLocale } from './i18n';
 import { Select } from './Select';
 import { ColorPicker } from './ColorPicker';
 import type { ReactNode } from 'react';
+import { PcaControls, PcaFields, PcaAxisControls } from './PcaControls';
 
 export function ScatterFields(){
  useLocale();
  const {data,config:c,setConfig}=useBuilder(),fields=Object.keys(data[0]??{});
  const mode=c.scatterVariant;
  const field=(key:keyof Config,label:string,optional=false)=><label className="field"><span>{t(label)}</span><Select value={String(c[key])} onChange={e=>setConfig({[key]:e.target.value})}>{optional&&<option value="">{t('单一颜色')}</option>}{fields.map(f=><option key={f}>{f}</option>)}</Select></label>;
+ if(c.pcaAxes)return <PcaFields/>;
  return <>{field('xField',mode==='bubble'?'列分类字段':mode==='paired'?'条件字段':mode==='gsea'?'通路字段':'X 字段')}{field('yField',mode==='bubble'?'行分类字段':mode==='gsea'?'NES 字段':'Y 字段')}{mode==='3d'&&field('zField','Z 字段')}{mode==='paired'&&field('pairField','配对对象 ID')}{mode!=='bubble'&&mode!=='gsea'&&field('groupField','颜色分组',true)}{(c.continuousColor||mode==='bubble'||mode==='gsea')&&field('colorField',mode==='gsea'?'FDR 字段':'颜色数值字段')}{(c.scatterSizeEnabled||mode==='bubble')&&field('sizeField','大小数值字段')}{field('labelField','标签字段')}<p className="help">{t('下载代码包含示例数据与绘图逻辑，替换数组并保留映射字段即可使用。')}</p></>;
 }
 export function ScatterControls(){
@@ -24,6 +26,7 @@ export function ScatterControls(){
  const field=(key:keyof Config,label:string)=>select(key,label,Object.keys(data[0]??{}).map(f=>[f,f]));
  const color=(key:keyof Config,label:string)=><div className="field"><span>{t(label)}</span><ColorPicker label={t(label)} value={String(c[key])} onChange={value=>set(key,value)}/></div>;
  const optional=(label:string,children:ReactNode)=><details className="advanced-group"><summary><span>{t(label)}</span><small>{t('按需开启')}</small></summary><div className="advanced-group-body">{children}</div></details>;
+ if(c.pcaAxes&&!three)return <PcaControls/>;
  return <><section><h3>{t('点样式')}</h3>{slider('radius','点半径',1,24,.5)}{slider('opacity','透明度',.1,1,.05)}{!c.continuousColor&&color('color','主色')}{!c.continuousColor&&color('secondaryColor','第二颜色')}{!three&&mode!=='gsea'&&select('pointShape','点形状',[['circle','圆形'],['square','方形'],['triangle','三角形'],['diamond','菱形'],['star','星形'],['cross','十字']])}{mode==='density'&&toggle('showPoints','显示观测点')}{mode==='color'||three?<>{toggle('continuousColor','连续颜色映射')}{c.continuousColor&&field('colorField','颜色数值字段')}</>:null}</section>
  {['joint','regression','fit','correlation','color'].includes(mode)&&<section><h3>{t('拟合与相关性')}</h3>{mode==='correlation'&&select('correlationMethod','相关方法',[['pearson','Pearson'],['spearman','Spearman']])}{toggle('fitEnabled','显示拟合曲线')}{c.fitEnabled&&<>{select('fitModel','拟合模型',[['linear','线性回归'],['quadratic','二次回归']])}{toggle('fitByGroup','按组拟合')}{slider('lineWidth','线宽',1,6,.5)}{optional('置信带',<>{toggle('confidenceBand','显示 95% 置信带')}<p className="help">{t('固定种子的 200 次配对重采样估计平均曲线的逐点置信带，不是预测区间。')}</p></>)}</>}</section>}
  {mode==='fold'&&<section><h3>{t('倍数变化')}</h3>{slider('foldRatio','倍数阈值',1.1,8,.1)}{toggle('foldLog','输入已取 log2')}{color('upColor','升高颜色')}{color('downColor','降低颜色')}{color('neutralColor','稳定颜色')}</section>}
@@ -31,6 +34,7 @@ export function ScatterControls(){
  {mode==='marginal'&&<section><h3>{t('边缘分布')}</h3>{select('marginalType','分布类型',[['histogram','直方图'],['density','密度曲线'],['box','箱线图']])}{c.marginalType==='histogram'?slider('binCount','分箱数量',3,30):c.marginalType==='density'?slider('densityBandwidth','平滑带宽',5,60):null}</section>}
  {mode==='density'&&<section><h3>{t('密度估计')}</h3>{slider('densityBandwidth','平滑带宽',5,60)}{slider('densityLevels','密度层级',3,25)}</section>}
  {mode==='gsea'&&<section><h3>{t('FDR 标注')}</h3>{toggle('showThreshold','显示 FDR 阈值')}{slider('pThreshold','FDR 阈值',.001,.2,.001)}{color('significantColor','FDR 点颜色')}</section>}
+ {c.pcaAxes&&three&&<PcaAxisControls/>}
  {three&&<section><h3>{t('三维视角')}</h3>{slider('rotationX','俯仰角',-80,80)}{slider('rotationY','旋转角',-180,180)}{slider('perspective','透视距离',2,8,.1)}{toggle('rotationEnabled','允许拖动旋转')}<p className="help">{t('拖动旋转，开启缩放后滚轮缩放，双击恢复配置视角。')}</p></section>}
  <section><h3>{t('坐标与辅助线')}</h3>{toggle('xAxis','X 轴')}{toggle('yAxis','Y 轴')}{three&&toggle('zAxis','Z 轴')}{toggle('grid','网格')}{mode!=='gsea'&&toggle('legend','图例')}{!cat&&!three&&<>{select('xScale','X 比例尺',[['linear','Linear · 线性'],['log','Log · 对数']])}{select('yScale','Y 比例尺',[['linear','Linear · 线性'],['log','Log · 对数']])}</>}</section>
  <section><h3>{t('信息与交互')}</h3>{toggle('tooltip','Tooltip · 悬浮提示')}{c.tooltip&&<fieldset className="tooltip-fields"><legend>{t('提示字段')}</legend>{Object.keys(data[0]??{}).map(f=><label key={f}><input type="checkbox" checked={c.tooltipFields.includes(f)} onChange={e=>set('tooltipFields',e.target.checked?[...c.tooltipFields,f]:c.tooltipFields.filter(k=>k!==f))}/>{f}</label>)}</fieldset>}{mode!=='gsea'&&toggle('labels','数据标签')}{c.labels&&slider('labelLimit','最多标注数量',1,36)}{!cat&&toggle('zoom',three?'缩放':'缩放与平移')}</section>

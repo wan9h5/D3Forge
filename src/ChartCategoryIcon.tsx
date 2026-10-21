@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 
-export type ChartCategory = 'survival' | 'circos' | 'chromosome' | 'all' | 'scatter' | 'line' | 'bar' | 'box' | 'violin' | 'pie' | 'waffle' | 'histogram' | 'heatmap' | 'volcano' | 'manhattan';
+export type ChartCategory = 'pca' | 'research' | 'survival' | 'circos' | 'chromosome' | 'all' | 'scatter' | 'line' | 'bar' | 'box' | 'violin' | 'pie' | 'waffle' | 'histogram' | 'heatmap' | 'volcano' | 'manhattan';
 
 const icons: Record<ChartCategory, ReactNode> = {
+  pca: <><path d="M3 3v18h18M5 16l4-5 5 3 6-9"/><circle cx="9" cy="11" r="2"/><circle cx="14" cy="14" r="2"/></>,
+  research: <><path d="M3 3v18h18M5 7h10M8 13h12M4 18h10"/><circle cx="10" cy="7" r="2" fill="currentColor"/><circle cx="14" cy="13" r="2" fill="currentColor"/><circle cx="8" cy="18" r="2" fill="currentColor"/></>,
   survival: <><path d="M3 3v18h18M4 5h5v4h4v5h4v4h4"/></>,
   circos: <><circle cx="12" cy="12" r="9"/><path d="M5 7q15 1 9 13M6 18Q8 2 20 10"/></>,
   chromosome: <><path d="M6 3q-3 0-1 5l4 8q2 5 4 5M18 3q3 0 1 5l-4 8q-2 5-4 5M5 4l14 16M19 4L5 20"/></>,

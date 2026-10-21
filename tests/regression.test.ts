@@ -446,7 +446,7 @@ describe('composition charts: independent arithmetic and optional configurations
 describe('gallery examples and extended distribution layouts',()=>{
   for(const entry of chartEntries.filter(item=>item.id!==item.type))it(`${entry.id}: exports standalone source and renders its selected layout`,()=>{
     const {svg,parts}=run(entry.type,entryData(entry.type,entry.id),entry.patch);
-    expect(svg.querySelectorAll('.violin,.summary,.segment,.unit,.annotation,.point,.nes,.bar').length).toBeGreaterThan(0);
+    expect(svg.querySelectorAll('.violin,.summary,.segment,.unit,.annotation,.point,.nes,.bar,.result-row,.performance-curve,.study-point,.variant-point,.accumulation-line,.genomic-track-bar').length).toBeGreaterThan(0);
     expect(parts.source).toBe(parts.logic.replace('import * as d3 from "d3";', 'import * as d3 from "d3";\n\n' + parts.data));
     expect(parts.logic).not.toMatch(/\)\.(attr|style|data|join|nice|range|padding|remove)\(/);
     expect(new Function(parts.data+'\nreturn data;')()).toEqual(entryData(entry.type,entry.id)??mockData(entry.type));

@@ -4,8 +4,11 @@ import type { Locale } from './i18n';
 import type { CodeParts } from './generate';
 import { codeComment } from './codeComments';
 import { scatterStatistics } from './scatterStatistics';
+import { isPca2D, pcaAxisTitle } from './scatterModel';
+import { generatePcaCode } from './generatePca';
 const js=(v:unknown)=>JSON.stringify(v);
 export function generateScatterCode(data:Row[],c:Config,locale:Locale):CodeParts {
+ if(isPca2D(c.scatterVariant))return generatePcaCode(data,c,locale);
  const mode=c.scatterVariant,three=mode==='3d',bubble=mode==='bubble',paired=mode==='paired',gsea=mode==='gsea';
  const categorical=bubble||paired||gsea,margin=mode==='marginal';
  const comment=(en:string,zh:string,ja:string)=>locale==='zh'?zh:locale==='ja'?ja:en;
@@ -483,7 +486,10 @@ function threeSource(c:Config,locale:Locale){const ct=(en:string,zh:string,ja:st
   const z = d3.scaleLinear()
       .domain(domain(processedData.map(d => d._z)))
       .range([-1, 1]);
-  let rotationX = ${c.rotationX} * Math.PI / 180, rotationY = ${c.rotationY} * Math.PI / 180, zoom = 1;
+${c.pcaAxes?`  // Preserve relative component distances with one shared scale for all three axes.
+  const extent3D = Math.max(1e-12, d3.max(processedData, d => Math.max(Math.abs(d._x), Math.abs(d._y), Math.abs(d._z))) || 0);
+  for (const scale of [x, y, z]) scale.domain([-extent3D, extent3D]);
+`:''}  let rotationX = ${c.rotationX} * Math.PI / 180, rotationY = ${c.rotationY} * Math.PI / 180, zoom = 1;
   const projection = point => {
     const [a, b, h] = point;
     const xx = a * Math.cos(rotationY) + h * Math.sin(rotationY);
@@ -538,7 +544,7 @@ ${c.grid?`    for (const tick of [-.5, 0, .5]) {
       .attr("x", pixel.x)
       .attr("y", pixel.y)
       .attr("fill", "#52637d")
-      .text([${js(c.xField)},${js(c.yField)},${js(c.zField)}][axis]);
+      .text([${js(c.pcaAxes?pcaAxisTitle(c.xField,c.pcaVariance1,c.pcaShowVariance):c.xField)},${js(c.pcaAxes?pcaAxisTitle(c.yField,c.pcaVariance2,c.pcaShowVariance):c.yField)},${js(c.pcaAxes?pcaAxisTitle(c.zField,c.pcaVariance3,c.pcaShowVariance):c.zField)}][axis]);
     });
     const projected = processedData.map(d => ({...d, pixel: projection([x(d._x), y(d._y), z(d._z)])})).sort((a, b) => b.pixel.depth - a.pixel.depth);
     marks.selectAll("circle.point")
