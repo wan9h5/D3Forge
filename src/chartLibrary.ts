@@ -19,7 +19,13 @@ export const categories = [
   { id:'survival',label:'生存曲线' },
   { id:'circos',label:'Circos 图' },
   { id:'chromosome',label:'染色体图' },
-  { id:'research',label:'科研统计图' },
+  { id:'forest',label:'森林图' },
+  { id:'roc',label:'ROC 曲线' },
+  { id:'pr',label:'PR 曲线' },
+  { id:'funnel',label:'漏斗图' },
+  { id:'qq',label:'QQ 图' },
+  { id:'regional',label:'区域关联图' },
+  { id:'accumulation',label:'物种累积曲线' },
 ] as const;
 export type Category = typeof categories[number]['id'];
 const chartCategories: Record<ChartType, Exclude<Category,'all'>> = {
@@ -27,7 +33,17 @@ const chartCategories: Record<ChartType, Exclude<Category,'all'>> = {
   'pie-matrix':'pie','nested-pie':'pie','pie-bar':'pie','bar-pie':'bar',
   waffle:'waffle',histogram:'histogram',heatmap:'heatmap',volcano:'volcano',manhattan:'manhattan',
 };
-export const entryCategory = (chart:typeof chartEntries[number]) => chart.patch.pcaAxes ? 'pca' : chart.patch.bioVariant ? (['forest','roc','pr','funnel','qq','regional','accumulation'].includes(chart.patch.bioVariant)?'research':['km','cutoff'].includes(chart.patch.bioVariant)?'survival':['circos-gene','fusion','ligand','circos-tracks'].includes(chart.patch.bioVariant)?'circos':chart.patch.bioVariant==='ld'?'heatmap':'chromosome') : chart.patch.scatterVariant==='gsea' ? 'bar' : chart.patch.violinGeometry==='box' ? 'box' : chartCategories[chart.type];
+const bioCategories:Record<string,Exclude<Category,'all'>>={
+ forest:'forest',roc:'roc',pr:'pr',funnel:'funnel',qq:'qq',regional:'regional',accumulation:'accumulation',
+ km:'survival',cutoff:'survival','circos-gene':'circos',fusion:'circos',ligand:'circos','circos-tracks':'circos',ld:'heatmap',
+};
+export const entryCategory = (chart:typeof chartEntries[number]):Exclude<Category,'all'> => {
+ if(chart.patch.pcaAxes)return 'pca';
+ if(chart.patch.bioVariant)return bioCategories[chart.patch.bioVariant]??'chromosome';
+ if(chart.patch.scatterVariant==='gsea')return 'bar';
+ if(chart.patch.violinGeometry==='box')return 'box';
+ return chartCategories[chart.type];
+};
 
 const normalizeSearch = (value:string) => value.normalize('NFKC').toLocaleLowerCase().replace(/[\s\p{P}\p{S}]+/gu,'');
 const searchAliases:Record<string,string[]>={

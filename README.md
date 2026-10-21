@@ -277,7 +277,7 @@ See [AGENTS.md](AGENTS.md) for development rules and [Architecture](docs/archite
 
 ## Data and current limitations
 
-- CSV files are processed locally, up to **10 MB / 10,000 rows**. Larger SVG datasets can affect interaction speed.
+- CSV files are processed locally, up to **2 MiB / 10,000 rows**, with lower per-chart limits for expensive layouts. Larger SVG datasets can affect interaction speed.
 - Blank/invalid numbers are skipped. Log scales require positive values; volcano charts require `0 < p ≤ 1`.
 - Configuration does not persist across reloads. Switching charts restores that chart's default data and controls.
 - Configuration changes regenerate the preview and reset its zoom position.
@@ -287,7 +287,7 @@ See [AGENTS.md](AGENTS.md) for development rules and [Architecture](docs/archite
 - Manhattan positions must be nonnegative and P values satisfy `0 < p ≤ 1`. Chromosome spans come from maximum positions in current data, not full reference-genome lengths.
 - The default Manhattan threshold of `5e-8` is adjustable. Significant-point labels prioritize the smallest P values and can be limited in number.
 - Basic legends use one row; advanced legends support wrapping, vertical layout, position, font size, and visible-item limits. All data remains included.
-- Source is read-only. Bidirectional editing, image export, and component code generation are not currently available.
+- D3 logic is read-only; the data tab supports validated JSON editing. Bidirectional logic editing, image export, and component code generation are not currently available.
 
 Previews use bundled D3 in a restricted iframe without an external CDN. Imported strings are rendered as text nodes, and script end tags are escaped in embedded source. Gallery thumbnails use the same generated source, run at most two nearby previews at once, then serialize the SVG into a bounded cache and release the iframe. Before sharing an export, check that its included data is suitable for disclosure.
 
@@ -325,3 +325,43 @@ Four dedicated entries cover grouped PCA scores, score/loading biplots, group co
 The biplot uses actual PCA results for the [UCI Wine dataset](https://doi.org/10.24432/C5PC7J): 178 samples and 13 chemical variables. Features are centered and scaled by sample SD (n−1), scores are ZV, and correlation loadings are V√λ. The first two components explain 36.1988481% and 19.2074903%. Original class IDs are preserved. See [example data and attribution](public/examples/README.md) and the reproducible NumPy preparation script at `scripts/prepare-pca-wine.py`. Source and derived data are CC BY 4.0; app code remains MIT. The other PCA examples remain deterministic synthetic examples.
 
 Importing a PCA CSV disables existing explained-variance labels, so percentages from the previous dataset cannot silently carry over. Enter the new PCA percentages before re-enabling the labels. Two-dimensional PCA uses equal coordinate units by default; three-dimensional PCA uses one shared scale across components.
+
+## Editable example data
+
+The source panel's data tab accepts a JSON array of flat objects. D3 logic remains
+read-only. Valid edits apply after 350 ms and feed the same data used for preview,
+copy and download. Invalid or incomplete drafts remain in the editor while the
+previous valid chart and export are retained. Undo, redo and restoring the chart's
+example data are available. Restoring data preserves visual controls. Switching
+charts, resetting or importing CSV starts a fresh editing session and cancels any
+pending edit. Drafts are local and are discarded when leaving the page.
+
+Keep current field names and mappings. Cells accept strings, finite numbers and
+null, without nested values or executable JavaScript. Numerical magnitude is
+limited to 10^15, strings to 4,000 characters and field names to 200 characters.
+P values, survival status, score/loading row types, genomic coordinates and other
+intrinsic chart constraints use the chart's existing validation. Display filters
+are kept separate; valid filtered records remain in the exported data. An empty
+array intentionally clears a chart. Editing PCA data hides prior variance labels;
+PCA is not recomputed.
+
+| Limit | Value |
+| --- | --- |
+| JSON text / CSV file | 2 MiB |
+| General records | 10,000 |
+| Distinct fields / stored cells | 100 / 100,000 |
+| Heatmap expanded cells | 10,000 |
+| Extended heatmap matrix (clustering trees) | 80 rows × 80 columns |
+| Automatic survival cutoff scan | 500 records |
+| Fusion / ligand–receptor / gene Circos | 2,000 records |
+| LD | 150 distinct SNPs |
+| Ligand–receptor | 80 distinct cell nodes |
+| PCA | 50 groups; 100 loading arrows |
+| SNP density | 10,000 expanded windows |
+| Pie matrix / bar–pie | 100 panels |
+
+These are conservative browser limits, not statistical sample-size requirements.
+The editor shows the applicable rules and rejects oversized edits without silently
+truncating records. CSV uploads share the structural limits and retain the
+existing field-remapping workflow. Configuration changes that exceed a chart's
+computational budget show a message in place of executing that preview.

@@ -2,8 +2,11 @@ import { entryConfig, entryData } from './chartEntries';
 import { isComposition } from './compositionModel';
 import { create } from 'zustand';
 import { defaults, mockData, type ChartType, type Config, type Row } from './model';
-interface State { type: ChartType; entryId: string; config: Config; data: Row[]; dataName: string; revision: number; setConfig: (patch: Partial<Config>)=>void; selectChart:(type:ChartType,entryId?:string)=>void; loadData:(rows:Row[],name:string)=>void; reset:()=>void; }
+interface State { dataEpoch:number; updateData:(rows:Row[])=>void; restoreData:()=>void; type: ChartType; entryId: string; config: Config; data: Row[]; dataName: string; revision: number; setConfig: (patch: Partial<Config>)=>void; selectChart:(type:ChartType,entryId?:string)=>void; loadData:(rows:Row[],name:string)=>void; reset:()=>void; }
 export const useBuilder = create<State>((set,get)=>({
+  dataEpoch:0,
+  updateData:data=>set(s=>({data,revision:s.revision+1,config:s.config.pcaAxes?{...s.config,pcaShowVariance:false}:s.config})),
+  restoreData:()=>{const s=get();s.loadData(entryData(s.type,s.entryId)??mockData(s.type),'Mock data');},
   type:'scatter',entryId:'scatter',config:defaults('scatter'),data:mockData('scatter'),dataName:'Mock data',revision:0,
   setConfig:patch=>set(s=>{
     const config={...s.config,...patch};
@@ -17,7 +20,7 @@ export const useBuilder = create<State>((set,get)=>({
     }
     return {config,revision:s.revision+1};
   }),
-  selectChart:(type,entryId=type)=>set(s=>({type,entryId,config:entryConfig(type,entryId),data:entryData(type,entryId)??mockData(type),dataName:'Mock data',revision:s.revision+1})),
+  selectChart:(type,entryId=type)=>set(s=>({dataEpoch:s.dataEpoch+1,type,entryId,config:entryConfig(type,entryId),data:entryData(type,entryId)??mockData(type),dataName:'Mock data',revision:s.revision+1})),
   loadData:(data,dataName)=> {
     const fields=Object.keys(data[0]??{});
     const numbers=fields.filter(k=>data.some(d=>d[k]!==null && String(d[k]).trim()!=='' && Number.isFinite(Number(d[k]))));
@@ -74,7 +77,7 @@ export const useBuilder = create<State>((set,get)=>({
          groupField:map(c.groupField,/^(group|habitat|site.?type|condition|分组)$/i),
        }:{}),
       };
-      set({data,dataName,config:{...c,...mapped},revision:current.revision+1});return;
+      set({dataEpoch:current.dataEpoch+1,data,dataName,config:{...c,...mapped},revision:current.revision+1});return;
     }
     if(c.pcaAxes){
       const map=(old:string,pattern:RegExp,fallback='')=>fields.includes(old)?old:fields.find(f=>pattern.test(f))||fallback;
@@ -83,7 +86,7 @@ export const useBuilder = create<State>((set,get)=>({
       const zField=map(c.zField,/^pc[._ ]?3$/i,numbers.find(f=>f!==xField&&f!==yField)||'');
       const groupField=c.groupField===''?'':map(c.groupField,/^(group|condition|cohort|class|分组)$/i);
       const labelField=c.labelField===''?'':map(c.labelField,/^(sample|sample.?id|name|variable|feature|id)$/i);
-      set({data,dataName,config:{...c,xField,yField,zField,groupField,labelField,pcaShowVariance:false,pcaRowTypeField:map(c.pcaRowTypeField,/^(kind|type|record.?type)$/i),tooltipFields:[labelField,groupField,xField,yField,...(c.scatterVariant==='3d'?[zField]:[])].filter(Boolean)},revision:current.revision+1});return;
+      set({dataEpoch:current.dataEpoch+1,data,dataName,config:{...c,xField,yField,zField,groupField,labelField,pcaShowVariance:false,pcaRowTypeField:map(c.pcaRowTypeField,/^(kind|type|record.?type)$/i),tooltipFields:[labelField,groupField,xField,yField,...(c.scatterVariant==='3d'?[zField]:[])].filter(Boolean)},revision:current.revision+1});return;
     }
     const heatmap = current.type === 'heatmap';
     const histogram = current.type === 'histogram';
@@ -118,10 +121,10 @@ export const useBuilder = create<State>((set,get)=>({
       const matrixRowField=mapField(c.matrixRowField,/^(condition|row|group|行|条件)$/i,categories.find(field=>field!==categoryField&&field!==sampleField)||fields[0]);
       const matrixColumnField=mapField(c.matrixColumnField,/^(column|sample|列|样本)$/i,sampleField);
       const valueField=mapField(c.valueField,/^(value|count|abundance|数值|丰度)$/i,numbers[0]||fields[0]);
-      set({data,dataName,config:{...c,categoryField,parentField,sampleField,matrixRowField,matrixColumnField,valueField,splitCategory:data.some(row=>String(row[parentField])===c.splitCategory)?c.splitCategory:''},revision:current.revision+1});
+      set({dataEpoch:current.dataEpoch+1,data,dataName,config:{...c,categoryField,parentField,sampleField,matrixRowField,matrixColumnField,valueField,splitCategory:data.some(row=>String(row[parentField])===c.splitCategory)?c.splitCategory:''},revision:current.revision+1});
       return;
     }
-    set({ data, dataName, config: {
+    set({ dataEpoch:current.dataEpoch+1,data, dataName, config: {
       ...c, xField, yField, groupField, chromosomeField,
       volcanoPanelField:fields.includes(c.volcanoPanelField)?c.volcanoPanelField:categories.find(k=>/cluster|contrast|comparison|簇|比较/i.test(k))||categories.find(k=>k!==c.labelField)||categories[0]||'',
       volcanoCategoryField:fields.includes(c.volcanoCategoryField)?c.volcanoCategoryField:categories.find(k=>/category|pathway|class|类别/i.test(k))||categories.find(k=>k!==c.labelField)||'',
@@ -157,5 +160,5 @@ export const useBuilder = create<State>((set,get)=>({
       tooltipFields: current.type === 'bar' ? [...new Set([xField, yField, groupField].filter(Boolean))] : fields.slice(0, 4),
     }, revision: current.revision + 1 });
   },
-  reset:()=>{const s=get();set({data:entryData(s.type,s.entryId)??mockData(s.type),config:entryConfig(s.type,s.entryId),dataName:'Mock data',revision:s.revision+1});}
+  reset:()=>{const s=get();set({dataEpoch:s.dataEpoch+1,data:entryData(s.type,s.entryId)??mockData(s.type),config:entryConfig(s.type,s.entryId),dataName:'Mock data',revision:s.revision+1});}
 }));

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // @vitest-environment-options {"pretendToBeVisual":true}
-import { act } from 'react';
+import { act, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { EditorSelection } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
@@ -9,6 +9,10 @@ import { changedCodeLines } from '../src/editorTools';
 import { CodePanel } from '../src/CodePanel';
 import { generateCodeParts } from '../src/generate';
 import { defaults, mockData } from '../src/model';
+import { EditorState, Transaction } from '@codemirror/state';
+import { executableSource } from '../src/generate';
+import * as d3 from 'd3';
+import type { Row } from '../src/model';
 
 let root: Root;
 const code = (radius = 4) => generateCodeParts('scatter', mockData('scatter'), { ...defaults('scatter'), radius });
@@ -25,10 +29,89 @@ beforeEach(() => {
     getClientRects: { configurable: true, value: () => [] },
     getBoundingClientRect: { configurable: true, value: () => new DOMRect() },
   });
+  Object.defineProperty(SVGElement.prototype,'getComputedTextLength',{configurable:true,value:function(){return (this.textContent?.length||0)*7;}});
   document.body.innerHTML = '<div id="root"></div>';
   root = createRoot(document.getElementById('root')!);
 });
 afterEach(() => { act(() => root.unmount()); vi.restoreAllMocks(); vi.useRealTimers(); });
+
+const editableConfig=defaults('scatter');
+function EditableHarness(){
+ const [rows,setRows]=useState(mockData('scatter')),[epoch,setEpoch]=useState(0);
+ return <CodePanel code={generateCodeParts('scatter',rows,editableConfig)} dataName="Mock data" editableData={{rows,type:'scatter',config:editableConfig,resetKey:epoch,onApply:setRows,onRestore:()=>{setRows(mockData('scatter'));setEpoch(e=>e+1);}}}/>;
+}
+function edit(text:string){
+ const data=view('data');
+ act(()=>data.dispatch({changes:{from:0,to:data.state.doc.length,insert:text},annotations:Transaction.userEvent.of('input')}));
+}
+function settle(){act(()=>vi.advanceTimersByTime(400));}
+describe('editable JSON data',()=>{
+ it('keeps logic read-only, applies valid data, and copies the data used to render the chart',async()=>{
+  vi.useFakeTimers();const writeText=vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText}});
+  act(()=>root.render(<EditableHarness/>));
+  expect(view('logic').state.facet(EditorState.readOnly)).toBe(true);
+  expect(view('data').state.facet(EditorState.readOnly)).toBe(false);
+  const rows:Row[]=[{expressionA:42,expressionB:13,group:'Edited',sample:'New'}];
+  act(()=>document.getElementById('source-tab-data')!.click());
+  edit(JSON.stringify(rows,null,2));settle();
+  expect(document.querySelector('[role=alert]')).toBeNull();
+  expect(document.getElementById('source-panel-data')?.hidden).toBe(false);
+  await act(async()=>{[...document.querySelectorAll('button')].find(b=>b.textContent==='复制完整代码')!.click();});
+  const source=writeText.mock.calls[0][0] as string;
+  expect(source).toContain('"expressionA": 42');
+  const target=document.createElement('div');target.id='chart';document.body.append(target);
+  new Function('d3','document',executableSource(source))(d3,document);
+  expect(target.querySelectorAll('g[clip-path] > circle')).toHaveLength(1);
+  expect(view('data').state.doc.toString()).toBe(JSON.stringify(rows,null,2));
+ });
+ it('retains invalid drafts and the last valid export, then supports undo and redo',async()=>{
+  vi.useFakeTimers();const writeText=vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText}});
+  act(()=>root.render(<EditableHarness/>));
+  const original=view('data').state.doc.toString();
+  edit('[{"expressionA":1,');settle();
+  expect(document.querySelector('[role=alert]')?.textContent).toContain('JSON');
+  expect(view('data').state.doc.toString()).toBe('[{"expressionA":1,');
+  await act(async()=>{[...document.querySelectorAll('button')].find(b=>b.textContent==='复制完整代码')!.click();});
+  expect(writeText.mock.calls[0][0]).toBe(generateCodeParts('scatter',mockData('scatter'),editableConfig).source);
+  act(()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='撤销')!.click());settle();
+  expect(view('data').state.doc.toString()).toBe(original);
+  act(()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='重做')!.click());settle();
+  expect(document.querySelector('[role=alert]')?.textContent).toContain('JSON');
+ });
+ it('restores example data and cancels a pending draft when the dataset changes',()=>{
+  vi.useFakeTimers();act(()=>root.render(<EditableHarness/>));
+  edit('[]');
+  act(()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='恢复示例数据')!.click());settle();
+  expect(JSON.parse(view('data').state.doc.toString())).toEqual(mockData('scatter'));
+  expect(document.querySelector('[role=alert]')).toBeNull();
+ });
+ it('never resets selection or moves page focus when valid edits update exports',()=>{
+  vi.useFakeTimers();act(()=>root.render(<EditableHarness/>));
+  act(()=>document.getElementById('source-tab-data')!.click());
+  const editor=view('data'),pageScroll=vi.spyOn(window,'scrollTo').mockImplementation(()=>{});
+  act(()=>editor.focus());edit('[]');
+  const selection=editor.state.selection.main.head;
+  settle();
+  expect(document.activeElement).toBe(editor.contentDOM);
+  expect(editor.state.selection.main.head).toBe(selection);
+  expect(pageScroll).not.toHaveBeenCalled();
+ });
+ it('downloads the latest valid edited data while an invalid draft is retained',async()=>{
+  vi.useFakeTimers();let blob:Blob|undefined;
+  Object.defineProperty(URL,'createObjectURL',{configurable:true,value:vi.fn((value:Blob)=>{blob=value;return 'blob:edited';})});
+  Object.defineProperty(URL,'revokeObjectURL',{configurable:true,value:vi.fn()});
+  vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(()=>{});
+  act(()=>root.render(<EditableHarness/>));
+  const rows=[{expressionA:19,expressionB:24,group:'A',sample:'Exported'}];
+  edit(JSON.stringify(rows));settle();edit('[invalid]');settle();
+  act(()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='下载 .js')!.click());
+  vi.useRealTimers();
+  const source=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=reject;reader.readAsText(blob!);});
+  expect(source).toBe(generateCodeParts('scatter',rows,editableConfig).source);
+ });
+});
 
 describe('source and data tabs', () => {
   it('defaults to logic and switches data tabs with mouse and keyboard', () => {

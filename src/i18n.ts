@@ -43,7 +43,7 @@ export function useLocale() {
   return useSyncExternalStore(subscribeLocale, getLocale, () => 'zh' as const);
 }
 export function t(key: string, values: Record<string, string | number> = {}, language: Locale = locale): string {
-  const entry = ({'加载中…':['Loading…','読み込み中…']} as Record<string,[string,string]>)[key] ?? translations[key] ?? bioText[key] ?? chartDescriptionTranslations[key] ?? pcaText[key] ?? scatterText[key] ?? barText[key] ?? barExtensionText[key] ?? volcanoText[key] ?? volcanoControlText[key] ?? heatmapText[key] ?? heatmapControlText[key];
+  const entry = ({'加载中…':['Loading…','読み込み中…'],'请导入 2 MB 以内的 CSV。':['Import a CSV no larger than 2 MB.','2 MB以内のCSVを入力してください。'],'可编辑':['Editable','編集可能'],'编辑 JSON 数组 · 无需 const data =':['Edit a JSON array · no const data = needed','JSON配列を編集 · const data = は不要'],'有效数据自动更新图形':['Valid data updates the chart automatically','有効なデータで図を自動更新']} as Record<string,[string,string]>)[key] ?? translations[key] ?? bioText[key] ?? chartDescriptionTranslations[key] ?? pcaText[key] ?? scatterText[key] ?? barText[key] ?? barExtensionText[key] ?? volcanoText[key] ?? volcanoControlText[key] ?? heatmapText[key] ?? heatmapControlText[key];
   const text = language === 'zh' ? key : entry?.[language === 'en' ? 0 : 1] ?? key;
   return text.replace(/\{(\w+)\}/g, (match, name: string) => String(values[name] ?? match));
 }

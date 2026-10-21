@@ -10,6 +10,7 @@
     "preview": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.1",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/language": "^6.13.1",
     "@codemirror/search": "^6.7.2",
