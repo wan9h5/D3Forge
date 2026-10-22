@@ -1,3 +1,4 @@
+import { interpolatorNames } from './chartColors';
 import { categoricalColors } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
@@ -83,9 +84,9 @@ ${mode==='rank'?`  processedData.sort((a, b) => ${c.rankDescending?'b._y - a._y'
     return [lo, hi];
   };
   const groups = Array.from(new Set(processedData.map(d => d._group)));
-  const color = ${numericColor?`d3.scaleSequential(d3.${({viridis:'interpolateViridis',turbo:'interpolateTurbo',blues:'interpolateBlues'})[c.scatterPalette]})`:'d3.scaleOrdinal()'}
+  const color = ${numericColor?`d3.scaleSequential(d3.${(interpolatorNames[c.chartScheme]||({viridis:'interpolateViridis',turbo:'interpolateTurbo',blues:'interpolateBlues'})[c.scatterPalette])})`:'d3.scaleOrdinal()'}
     .domain(${numericColor?(c.colorDomainEnabled?`[${c.colorMin}, ${c.colorMax}]`:'domain(processedData.map(d => d._value))'):'groups'})${numericColor?'':`
-    .range(${js(categoricalColors(c.color,c.secondaryColor))})`};
+    .range(${js(categoricalColors(c.color,c.secondaryColor,c.chartScheme))})`};
   const pointColor = d => ${mode==='fold'?`{
     const delta = ${c.foldLog?'d._y - d._x':'d._x > 0 && d._y > 0 ? Math.log2(d._y / d._x) : 0'};
     return delta > Math.log2(${c.foldRatio}) ? ${js(c.upColor)} : delta < -Math.log2(${c.foldRatio}) ? ${js(c.downColor)} : ${js(c.neutralColor)};
@@ -339,7 +340,7 @@ function densitySource(c:Config) {return `    const contours = d3.contourDensity
       .size([Math.ceil(innerW), Math.ceil(innerH)])
       .bandwidth(${c.densityBandwidth})
       .thresholds(${c.densityLevels})(processedData);
-    const densityColor = d3.scaleSequential(d3.interpolateBlues)
+    const densityColor = d3.scaleSequential(d3.${interpolatorNames[c.chartScheme]||'interpolateBlues'})
       .domain([0, d3.max(contours, d => d.value) || 1]);
     marks.selectAll("path.density")
       .data(contours)

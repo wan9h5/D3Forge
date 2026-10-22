@@ -1,3 +1,4 @@
+import { continuousConstructor, continuousRange } from './chartColors';
 import type { Config } from './model';
 import type { BioTranslate } from './generateBio';
 const js=(value:unknown)=>JSON.stringify(value);
@@ -50,9 +51,9 @@ export function associationSource(c:Config,tr:BioTranslate):string {
     .domain([0,Math.max(1,d3.max(records,d=>d.observed)${c.showThreshold?`,-Math.log10(${c.pThreshold})`:''})*1.08])
     .range([innerH,0])
     .nice();
-  const ldColor=d3.scaleLinear()
+  const ldColor=${continuousConstructor(c.chartScheme)}
     .domain([0,1])
-    .range([${js(c.secondaryColor)},${js(c.color)}])
+    ${continuousRange(c.chartScheme,[c.secondaryColor,c.color])}
     .clamp(true);`}
   ${c.grid?`g.append("g")
     .call(d3.axisLeft(y).ticks(6).tickSize(-innerW).tickFormat(""))

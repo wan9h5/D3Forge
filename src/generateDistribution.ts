@@ -1,3 +1,4 @@
+import { continuousConstructor, continuousRange } from './chartColors';
 import { marginSource, axisOptions, scaleOverrides, appearanceSource } from './generatePresentation';
 import { codeComment } from './codeComments';
 import { t, type Locale } from './i18n';
@@ -83,12 +84,12 @@ ${c.heatmapPalette === 'diverging' ? `  // ${codeComment('A diverging palette us
 ${c.heatmapPalette === 'diverging' ? `  const limit = Math.max(Math.abs(minimum), Math.abs(maximum));
   minimum = -limit;
   maximum = limit;
-  const color = d3.scaleLinear()
+  const color = ${continuousConstructor(c.chartScheme,c.heatmapPalette==='diverging')}
     .domain([minimum, 0, maximum])
-    .range([${js(c.secondaryColor)}, "#f7f9fc", ${js(c.color)}])
-    .clamp(true);` : `  const color = d3.scaleLinear()
+    ${continuousRange(c.chartScheme,[c.secondaryColor,"#f7f9fc",c.color])}
+    .clamp(true);` : `  const color = ${continuousConstructor(c.chartScheme,false)}
     .domain([minimum, maximum])
-    .range([${js(c.secondaryColor)}, ${js(c.color)}])
+    ${continuousRange(c.chartScheme,[c.secondaryColor,c.color])}
     .clamp(true);`}
   const gap = Math.min(${c.cellGap}, x.bandwidth() * 0.8, y.bandwidth() * 0.8);
   const marks = g.append("g")

@@ -10,6 +10,7 @@ export const useBuilder = create<State>((set,get)=>({
   type:'scatter',entryId:'scatter',config:defaults('scatter'),data:mockData('scatter'),dataName:'Mock data',revision:0,
   setConfig:patch=>set(s=>{
     const config={...s.config,...patch};
+    if(patch.chartScheme===undefined&&['color','secondaryColor','pcaThirdColor','upColor','downColor','neutralColor','scatterPalette','volcanoPalette','heatmapPalette','compositionPalette'].some(key=>key in patch))config.chartScheme='custom';
     if(patch.heatmapBar===true){config.heatmapTrend=false;config.heatmapTerms=false;}
     if(patch.heatmapTrend===true)config.heatmapBar=false;
     for(const axis of ['x','y'] as const) {

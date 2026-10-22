@@ -1,3 +1,4 @@
+import { continuousConstructor, continuousRange } from './chartColors';
 import type { Config } from './model';
 import type { BioTranslate } from './generateBio';
 import { chromosomeSource } from './generateChromosomes';
@@ -184,9 +185,9 @@ function ldSource(c:Config,tr:BioTranslate){return `
   const physical = d3.scaleLinear()
     .domain(d3.extent(snps,id=>Array.from(positions.get(id))[0]))
     .range([step/2,matrixW-step/2]);
-  const fill = d3.scaleLinear()
+  const fill = ${continuousConstructor(c.chartScheme)}
     .domain(${c.colorDomainEnabled?js([c.colorMin,c.colorMax]):'[0,1]'})
-    .range([${js(c.secondaryColor)},${js(c.color)}])
+    ${continuousRange(c.chartScheme,[c.secondaryColor,c.color])}
     .clamp(true);
   const g=svg.append("g")
     .attr("transform","translate("+left+","+top+")");

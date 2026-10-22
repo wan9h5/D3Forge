@@ -63,7 +63,7 @@ function renderChart(container, data) {
   const colorNames = ${grouped?'series':'groups'};
   const color = d3.scaleOrdinal()
     .domain(colorNames)
-    .range(${js(categoricalColors(c.color))});
+    .range(${js(categoricalColors(c.color,undefined,c.chartScheme))});
   const colorOf = d => color(${grouped?'d.series':'d.group'});
   const summaries = [];
   // ${codeComment("Robust normal-reference bandwidth; fall back for singleton/constant groups.",locale)}

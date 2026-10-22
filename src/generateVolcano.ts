@@ -1,3 +1,5 @@
+import { categoricalSchemes } from './chartColors';
+import { interpolatorNames } from './chartColors';
 import { vividPalette } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
@@ -61,14 +63,14 @@ function renderChart(container, data) {
     return svg.node();
   }
   const categories = Array.from(new Set(processedData.map(d => d.category)));
-  const categoryColor = d3.scaleOrdinal(${js(vividPalette)})
+  const categoryColor = d3.scaleOrdinal(${js(categoricalSchemes[c.chartScheme]??vividPalette)})
     .domain(categories);
   const statusColor = d3.scaleOrdinal()
     .domain(["up", "down", "pOnly", "ns"])
     .range([${js(c.upColor)}, ${js(c.downColor)}, ${js(c.volcanoFourthColor)}, ${js(c.neutralColor)}]);
   const colorExtent = d3.extent(processedData, d => d.value);
   if (colorExtent[0] === colorExtent[1]) { colorExtent[0] -= 1; colorExtent[1] += 1; }
-  const continuousColor = d3.scaleSequential(d3.${({viridis:'interpolateViridis',turbo:'interpolateTurbo',blues:'interpolateBlues'})[c.volcanoPalette]})
+  const continuousColor = d3.scaleSequential(d3.${(interpolatorNames[c.chartScheme]||({viridis:'interpolateViridis',turbo:'interpolateTurbo',blues:'interpolateBlues'})[c.volcanoPalette])})
     .domain(colorExtent)
     .clamp(true);
   const pointColor = d => ${gradient?'continuousColor(d.value)':c.volcanoColor==='category'?'["up", "down"].includes(d.status) ? categoryColor(d.category) : statusColor("ns")':c.volcanoColor==='direction'?'statusColor(d.x >= 0 ? "up" : "down")':c.volcanoColor==='four'?'statusColor(d.status)':'statusColor(d.status === "pOnly" ? "ns" : d.status)'};

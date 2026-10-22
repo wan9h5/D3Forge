@@ -1,3 +1,4 @@
+import { categoricalSchemes } from './chartColors';
 import type { Config, Row } from './model';
 import type { CompositionType } from './compositionModel';
 import type { Locale } from './i18n';
@@ -18,8 +19,8 @@ export function generateCompositionCode(type:CompositionType,data:Row[],c:Config
   const sweep=c.arcStyle?c.sweepAngle:c.pieMode==='fan'?180:360;
   const labelSize=c.labelStyle?c.labelFontSize:12;
   const scheme=c.compositionPalette==='category10'?'schemeCategory10':c.compositionPalette==='paired'?'schemePaired':'schemeTableau10';
-  const paletteSource=c.compositionPalette==='vivid'?js(vividPalette):c.compositionPalette==='soft'?js(softCompositionPalette):`d3.${scheme}`;
-  const paletteLength=c.compositionPalette==='vivid'?vividPalette.length:c.compositionPalette==='paired'?12:10;
+  const paletteSource=categoricalSchemes[c.chartScheme]?js(categoricalSchemes[c.chartScheme]):c.compositionPalette==='vivid'?js(vividPalette):c.compositionPalette==='soft'?js(softCompositionPalette):`d3.${scheme}`;
+  const paletteLength=categoricalSchemes[c.chartScheme]?.length??(c.compositionPalette==='vivid'?vividPalette.length:c.compositionPalette==='paired'?12:10);
   const colors=c.categoryColorsEnabled?`names.map((name, index) => customColors.has(name) ? customColors.get(name) : ${paletteSource}[index % ${paletteLength}])`:paletteSource;
   const logic=`${importLine}
 

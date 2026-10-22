@@ -57,7 +57,7 @@ ${['dual-line','dual-bar','go'].includes(mode)?`    && numeric(d[${js(c.barSecon
     return svg.node();
   }
   const color = d3.scaleOrdinal()
-    .range(${js(categoricalColors(c.color,c.secondaryColor))});
+    .range(${js(categoricalColors(c.color,c.secondaryColor,c.chartScheme))});
   const tooltip = ${c.tooltip?`root.append("div")
     .style("position", "absolute")
     .style("display", "none")

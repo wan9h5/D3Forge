@@ -1,7 +1,8 @@
+import { ChartPalette } from './ChartPalette';
 import { t, useLocale } from './i18n';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-export function ColorPicker({ value, onChange, label }: { value: string; onChange: (color: string) => void; label?: string }) {
+export function ColorPicker({ value, onChange, label, showPalette=false }: { value: string; onChange: (color: string) => void; label?: string; showPalette?:boolean }) {
   useLocale();
   const input = useRef<HTMLInputElement>(null);
   const opened = useRef(false);
@@ -44,11 +45,11 @@ export function ColorPicker({ value, onChange, label }: { value: string; onChang
       window.removeEventListener('blur', iframeFocus);
     };
   }, [dismiss]);
-  return <div className="color-row">
+  return <><div className="color-row">
     <input key={instance} ref={input} type="color" aria-label={label ?? t("主色")} value={value}
       onClick={() => { opened.current = true; }}
       onBlur={() => dismiss()}
       onChange={event => onChange(event.target.value)}/>
     <code>{value}</code>
-  </div>;
+  </div>{showPalette&&<ChartPalette/>}</>;
 }

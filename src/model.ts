@@ -8,6 +8,7 @@ import { advancedDefaults, type AdvancedConfig } from './advancedModel';
 export type ChartType = CompositionType | 'scatter' | 'volcano' | 'box' | 'bar' | 'line' | 'violin' | 'manhattan' | 'heatmap' | 'histogram';
 export type Row = Record<string, string | number | null>;
 export interface Config extends BioConfig, AdvancedConfig, CompositionConfig, ScatterConfig, BarConfig, VolcanoConfig, HeatmapConfig {
+  chartScheme:string;
   xField: string; yField: string; groupField: string; labelField: string;
   radius: number; opacity: number; color: string; width: number; height: number;
   xAxis: boolean; yAxis: boolean; grid: boolean; tooltip: boolean; legend: boolean;
@@ -162,7 +163,7 @@ export function defaults(type: ChartType): Config {
     groupField: 'series', labelField: type === 'bar' ? 'category' : 'time', color: '#3B6FF5', opacity: 1,
     tooltipFields: [type === 'bar' ? 'category' : 'time', 'value', 'series'],
   };
-  return {...advancedDefaults,...compositionDefaults,...scatterDefaults,...barDefaults,...volcanoDefaults,...heatmapDefaults,...bioDefaults,
+  return {chartScheme:'custom',...advancedDefaults,...compositionDefaults,...scatterDefaults,...barDefaults,...volcanoDefaults,...heatmapDefaults,...bioDefaults,
     comparisonsEnabled:false,comparisons:[],violinLayout:'full',violinGroupField:'',facetField:'',facetScale:'shared',violinGeometry:'violin',annotationsEnabled:false,annotationField:'letter',valueField:'value',heatmapAggregate:'mean',heatmapPalette:'sequential',cellGap:2,cellRadius:2,binCount:14,histogramMode:'count',bandwidthFactor:1,violinScale:'width',violinInner:'box',chromosomeField:'chromosome',chromosomeGap:.04,secondaryColor:'#06B6D4',significantColor:'#F59E0B',showThreshold:true,showSuggestive:false,suggestiveThreshold:1e-5,labelLimit:12,barLayout:'grouped',horizontal:false,barPadding:.22,lineWidth:2.5,smooth:false,area:false,showPoints:true,xField:type==='volcano'?'log2FC':type==='box'?'group':'expressionA', yField:type==='volcano'?'pvalue':type==='box'?'expression':'expressionB',groupField:type==='volcano'?'':'group',labelField:type==='volcano'?'gene':'sample',radius:4,opacity:.95,color:'#3B6FF5',width:800,height:440,xAxis:true,yAxis:true,grid:true,tooltip:true,legend:true,zoom:false,labels:false,xScale:'linear',yScale:'linear',pThreshold:.05,fcThreshold:1,tooltipFields:type==='volcano'?['gene','log2FC','pvalue']:type==='box'?['group','expression']:['sample','expressionA','expressionB','group']};
 }
 export function validNumber(value: unknown): boolean {

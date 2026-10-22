@@ -365,3 +365,7 @@ The editor shows the applicable rules and rejects oversized edits without silent
 truncating records. CSV uploads share the structural limits and retain the
 existing field-remapping workflow. Configuration changes that exceed a chart's
 computational budget show a message in place of executing that preview.
+
+## Chart color schemes
+
+Primary color controls include a color-scheme selector and a swatch preview. Grouped plots offer Tableau 10, Set2, Dark2, Paired and Category 10; continuous value plots offer Viridis, Cividis, Blues and Magma; diverging heatmaps and volcano status colors offer RdBu, BrBG and PiYG. Native D3 scales or embedded scheme arrays are included in exports and drive the preview. Manual color edits restore Custom mode; existing examples retain their confirmed colors until a scheme is selected. Volcano significance colors and per-category composition overrides retain their semantic roles.

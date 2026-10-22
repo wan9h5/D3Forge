@@ -17,7 +17,7 @@ function useControls(){
  const text=(key:keyof Config,l:Label)=><label className="field"><span>{label(l)}</span><input type="text" value={String(c[key])} onChange={e=>set(key,e.target.value)}/></label>;
  const range=(key:keyof Config,l:Label,min:number,max:number,step=1)=><label className="field"><span>{label(l)}</span><div className="range-row"><input aria-label={label(l)} type="range" min={min} max={max} step={step} value={Number(c[key])} onChange={e=>set(key,+e.target.value)}/><output>{String(c[key])}</output></div></label>;
  const number=(key:keyof Config,l:Label,min:number,max:number,step:number)=><label className="field"><span>{label(l)}</span><input type="number" min={min} max={max} step={step} value={Number(c[key])} onChange={e=>{const v=+e.target.value;if(e.target.value!==''&&Number.isFinite(v)&&v>=min&&v<=max)set(key,v);}}/></label>;
- const color=(key:keyof Config,l:Label)=><div className="field"><span>{label(l)}</span><ColorPicker label={label(l)} value={String(c[key])} onChange={v=>set(key,v)}/></div>;
+ const color=(key:keyof Config,l:Label)=><div className="field"><span>{label(l)}</span><ColorPicker showPalette={key==='color'} label={label(l)} value={String(c[key])} onChange={v=>set(key,v)}/></div>;
  const group=(l:Label,enabled:boolean,children:ReactNode)=><details className="advanced-group"><summary><span>{label(l)}</span><small className={enabled?'is-enabled':''}>{t(enabled?'已启用':'按需开启')}</small></summary><div className="advanced-group-body">{children}</div></details>;
  const help=(l:Label)=><p className="help">{label(l)}</p>;
  const title=(l:Label)=><h3>{label(l)}</h3>;

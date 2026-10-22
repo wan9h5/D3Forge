@@ -1,3 +1,5 @@
+import { ChartPalette } from './ChartPalette';
+import { categoricalSchemes } from './chartColors';
 import { schemeTableau10, schemeCategory10, schemePaired } from 'd3';
 import { softCompositionPalette } from './compositionModel';
 import { vividPalette } from './chartColors';
@@ -33,7 +35,7 @@ export function CompositionControls(){
   function select(key:keyof Config,label:string,options:[string,string][],raw=false){return field(label,<Select value={String(c[key])} onChange={e=>set(key,e.target.value)}>{options.map(([value,label])=><option key={value} value={value}>{raw?label:t(label)}</option>)}</Select>);}
   function color(key:keyof Config,label:string){return <div className="field"><span>{t(label)}</span><ColorPicker label={t(label)} value={String(c[key])} onChange={value=>set(key,value)}/></div>;}
   function advanced(label:string,flag:keyof Config,children:ReactNode,hint?:string){return <details className="advanced-group"><summary><span>{t(label)}</span><small className={c[flag]?'is-enabled':''}>{t(c[flag]?'已启用':'按需开启')}</small></summary><div className="advanced-group-body">{toggle(flag,t('启用{feature}',{feature:t(label)}))}{hint&&<p className="help">{t(hint)}</p>}{Boolean(c[flag])&&children}</div></details>;}
-  const palette=c.compositionPalette==='vivid'?vividPalette:c.compositionPalette==='soft'?softCompositionPalette:c.compositionPalette==='category10'?schemeCategory10:c.compositionPalette==='paired'?schemePaired:schemeTableau10;
+  const palette=categoricalSchemes[c.chartScheme]??(c.compositionPalette==='vivid'?vividPalette:c.compositionPalette==='soft'?softCompositionPalette:c.compositionPalette==='category10'?schemeCategory10:c.compositionPalette==='paired'?schemePaired:schemeTableau10);
   const colorField=type==='nested-pie'||type==='pie-bar'?c.parentField:c.categoryField;
   const colorNames=[...new Set(data.map(row=>String(row[colorField]??'')).filter(Boolean))];
   const parents=[...new Set(data.map(row=>String(row[c.parentField]??'')).filter(Boolean))];
@@ -41,7 +43,7 @@ export function CompositionControls(){
     <section><h3>{t('组成样式')}</h3>
       {radial&&<>{select('pieMode','图形形式',[['pie','饼图'],['donut','环图'],['fan','扇形图']])}{c.pieMode!=='pie'&&number('holeRatio','内孔比例',.1,.7,.05)}</>}
       {type==='waffle'&&<>{select('waffleShape','单元形状',[['square','方格'],['circle','圆点'],['person','人物图标']])}{number('waffleRows','单元行数',2,20)}{number('waffleColumns','单元列数',2,20)}{number('waffleGap','单元间距',0,8,.5)}</>}
-      {select('compositionPalette','分类配色',[['vivid','鲜明色板'],['soft','柔和色板'],['tableau','Tableau'],['category10','Category 10'],['paired','Paired']])}{select('compositionOrder','分类数值排序',[['input','数据顺序'],['ascending','升序'],['descending','降序']])}
+      <ChartPalette/>{c.chartScheme==='custom'&&select('compositionPalette','分类配色',[['vivid','鲜明色板'],['soft','柔和色板'],['tableau','Tableau'],['category10','Category 10'],['paired','Paired']])}{select('compositionOrder','分类数值排序',[['input','数据顺序'],['ascending','升序'],['descending','降序']])}
       {number('opacity','透明度',.1,1,.05)}
       {type==='pie-matrix'&&number('matrixGap','格内留白',12,50)}
       {type==='nested-pie'&&number('ringGap','两层间距',0,10,.5)}

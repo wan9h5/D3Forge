@@ -116,7 +116,7 @@ ${violin ? `  // ${codeComment("Robust normal-reference bandwidth; fall back for
     .range([innerH, 0]);
   const color = d3.scaleOrdinal()
     .domain(groups)
-    .range(${js(categoricalColors(c.color))});
+    .range(${js(categoricalColors(c.color,undefined,c.chartScheme))});
   // ${codeComment("Epanechnikov KDE: mean(0.75 * (1 - u\u00b2) / bandwidth), for |u| <= 1.", locale)}
   for (const summary of summaries) {
     // ${codeComment("Sample each group's own support so narrow groups cannot disappear.", locale)}
@@ -168,12 +168,12 @@ ${violin ? `  // ${codeComment("Robust normal-reference bandwidth; fall back for
     .nice()
     .range([innerH, 0]);
   const color = d => d._p <= significance ? ${js(c.significantColor)}
-    : layout.get(d._chromosome).index % 2 === 0 ? ${js(c.color)} : ${js(c.secondaryColor)};
-  const legendItems = [
+    : ${c.chartScheme!=='custom'?`${js(categoricalColors(c.color,c.secondaryColor,c.chartScheme))}[layout.get(d._chromosome).index % ${categoricalColors(c.color,c.secondaryColor,c.chartScheme).length}]`:`layout.get(d._chromosome).index % 2 === 0 ? ${js(c.color)} : ${js(c.secondaryColor)}`};
+  const legendItems = ${c.chartScheme!=='custom'?`chromosomes.map(d => ({name:d.name,color:${js(categoricalColors(c.color,c.secondaryColor,c.chartScheme))}[d.index % ${categoricalColors(c.color,c.secondaryColor,c.chartScheme).length}]})).concat([{name:"Significant",color:${js(c.significantColor)}}])`:`[
     { name: "Chromosome group A", color: ${js(c.color)} },
     { name: "Chromosome group B", color: ${js(c.secondaryColor)} },
     { name: "Significant", color: ${js(c.significantColor)} }
-  ];
+  ]`};
 `}
 ${scaleOverrides(type,c,locale)}${c.grid ? `  g.append("g")
     .attr("class", "grid")

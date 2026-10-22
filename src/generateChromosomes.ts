@@ -1,3 +1,4 @@
+import { continuousConstructor, continuousRange } from './chartColors';
 import type { Config } from './model';
 import type { BioTranslate } from './generateBio';
 const js=JSON.stringify;
@@ -53,8 +54,8 @@ const bins=chromosomes.flatMap(chr=>d3.range(Math.ceil(chr.length/windowSize)).m
 const binLookup=d3.group(bins,d=>d.chr);
 for(const row of records){const items=binLookup.get(row.chr);items[Math.min(items.length-1,Math.floor(row.start/windowSize))].count++;}
 for(const bin of bins)bin.value=${c.bioDensityUnit==='count'?'bin.count':'bin.count/((bin.end-bin.start)/1e6)'};
-const fill=d3.scaleLinear().domain(${c.colorDomainEnabled?`[${c.colorMin},${c.colorMax}]`:'[0,d3.max(bins,d=>d.value)||1]'})
-    .range([${js(c.secondaryColor)},${js(c.color)}]).clamp(true);
+const fill=${continuousConstructor(c.chartScheme)}.domain(${c.colorDomainEnabled?`[${c.colorMin},${c.colorMax}]`:'[0,d3.max(bins,d=>d.value)||1]'})
+    ${continuousRange(c.chartScheme,[c.secondaryColor,c.color])}.clamp(true);
 rows.each(function(chr,i){d3.select(this).append("g")
   .attr("clip-path","url(#chromosome-clip-"+i+")")
   .selectAll(".segment")

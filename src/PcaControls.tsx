@@ -14,7 +14,7 @@ function usePcaControls(){
  const number=(key:keyof Config,label:string,min:number,max:number,step:number)=><label className="field"><span>{label}</span><input type="number" min={min} max={max} step={step} value={Number(c[key])} onChange={event=>{const value=+event.target.value;if(event.target.value!==''&&Number.isFinite(value)&&value>=min&&value<=max)set(key,value);}}/></label>;
  const toggle=(key:keyof Config,label:string)=><label className="toggle"><span>{label}</span><input type="checkbox" checked={Boolean(c[key])} onChange={event=>set(key,event.target.checked)}/><span className="switch" aria-hidden="true"/></label>;
  const slider=(key:keyof Config,label:string,min:number,max:number,step:number)=><label className="field"><span>{label}</span><div className="range-row"><input aria-label={label} type="range" min={min} max={max} step={step} value={Number(c[key])} onChange={event=>set(key,+event.target.value)}/><output>{String(c[key])}</output></div></label>;
- const color=(key:keyof Config,label:string)=><div className="field"><span>{label}</span><ColorPicker label={label} value={String(c[key])} onChange={value=>set(key,value)}/></div>;
+ const color=(key:keyof Config,label:string)=><div className="field"><span>{label}</span><ColorPicker showPalette={key==='color'} label={label} value={String(c[key])} onChange={value=>set(key,value)}/></div>;
  return {c,data,text,set,number,toggle,slider,color};
 }
 

@@ -38,7 +38,7 @@ function renderChart(container, data) {
     .style("background", ${js(c.canvasStyle?c.background:'white')});
   const numeric = v => v != null && String(v).trim() !== "" && Number.isFinite(Number(v));
   const named = v => v != null && String(v).trim() !== "";
-  const palette = ${js(categoricalColors(c.color,c.secondaryColor))};
+  const palette = ${js(categoricalColors(c.color,c.secondaryColor,c.chartScheme))};
   const color = d3.scaleOrdinal(palette);
   function message(text) {svg.append("text")
     .attr("x", width / 2)

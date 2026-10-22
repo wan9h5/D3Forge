@@ -577,3 +577,5 @@ html[lang=en] .detail-chart-name,html[lang=en] .chart-english-name{display:none}
 .data-edit-guide p{line-height:1.7;margin:8px 0 0}
 .data-edit-state{padding:8px 16px;line-height:1.6;color:#637d72;background:#f7faf9;font-size:12px;max-height:110px;overflow:auto;flex-shrink:0;overflow-wrap:anywhere}
 .data-edit-state.has-error{color:#a44d32;background:#fff7f3}
+
+.chart-palette{display:flex;flex-direction:column;gap:8px;margin-top:12px;width:100%;font-size:12px;color:#536779}.palette-swatch{display:flex;overflow:hidden;height:12px;border-radius:4px;border:1px solid #e5ebf1}.palette-swatch i{flex:1}

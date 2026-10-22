@@ -63,7 +63,7 @@ function renderChart(container, data) {
   const seriesNames = Array.from(new Set(processedData.map(d => d._series)));
   const color = d3.scaleOrdinal()
     .domain(seriesNames)
-    .range(${js(categoricalColors(c.color))});
+    .range(${js(categoricalColors(c.color,undefined,c.chartScheme))});
 ${bar ? `
   // ${codeComment("Sum repeated category/series pairs. Missing pairs contribute zero.", locale)}
   const categories = Array.from(new Set(processedData.map(d => d._x)));

@@ -1,3 +1,4 @@
+import { continuousConstructor, continuousRange } from './chartColors';
 import { vividPalette } from './chartColors';
 import type { Config, Row } from './model';
 import type { Locale } from './i18n';
@@ -74,9 +75,9 @@ function renderChart(container, data) {
     if (lo == null || hi == null) { lo = 0; hi = 1; }
     if (lo === hi) { const pad = Math.abs(lo) * .05 || 1; lo -= pad; hi += pad; }
     ${c.heatmapPalette==='diverging'?`const limit = Math.max(Math.abs(lo), Math.abs(hi)); lo = -limit; hi = limit;`:''}
-    return d3.scaleLinear()
+    return ${continuousConstructor(c.chartScheme,c.heatmapPalette==='diverging')}
       .domain(${c.heatmapPalette==='diverging'?'[lo, 0, hi]':'[lo, hi]'})
-      .range(${c.heatmapPalette==='diverging'?js([c.secondaryColor,'#f7f9fc',c.color]):js([c.secondaryColor,c.color])})
+      ${continuousRange(c.chartScheme,c.heatmapPalette==='diverging'?[c.secondaryColor,'#f7f9fc',c.color]:[c.secondaryColor,c.color])}
       .clamp(true);
   }
   function legend(color) {

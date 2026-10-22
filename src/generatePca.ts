@@ -31,7 +31,7 @@ function renderChart(container,data) {
   const groups=d3.groups(samples,d=>d.group).map(([name,rows])=>({name,rows}));
   const color=d3.scaleOrdinal()
     .domain(groups.map(d=>d.name))
-    .range(${js([c.color,c.secondaryColor,c.pcaThirdColor,...categoricalColors(c.color,c.secondaryColor).filter(color=>![c.color,c.secondaryColor,c.pcaThirdColor].some(value=>value.toLowerCase()===color.toLowerCase()))])});
+    .range(${js(c.chartScheme!=='custom'?categoricalColors(c.color,c.secondaryColor,c.chartScheme):[c.color,c.secondaryColor,c.pcaThirdColor,...categoricalColors(c.color,c.secondaryColor,c.chartScheme).filter(color=>![c.color,c.secondaryColor,c.pcaThirdColor].some(value=>value.toLowerCase()===color.toLowerCase()))])});
   const svg=root.append("svg")
     .attr("viewBox",[0,0,width,height])
     .attr("role","img")

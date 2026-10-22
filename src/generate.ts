@@ -37,7 +37,7 @@ export function generateCodeParts(type: ChartType, data: Row[], c: Config, local
   const shape = ({circle:'symbolCircle',square:'symbolSquare',triangle:'symbolTriangle',diamond:'symbolDiamond',star:'symbolStar',cross:'symbolCross'})[c.pointShape];
   const pointSize = type==='scatter' && c.scatterSizeEnabled ? 'pointRadius(d)' : String(c.radius);
   const point = type!=='box';
-  const colorRange = type==='volcano'?js([c.upColor,c.downColor,c.neutralColor]):js(categoricalColors(c.color));
+  const colorRange = type==='volcano'?js([c.upColor,c.downColor,c.neutralColor]):js(categoricalColors(c.color,undefined,c.chartScheme));
   const hasColor = type==='volcano' || type==='box' || !!c.groupField;
   const dataSource = `// ${codeComment("Replace this array with your own data. Keep the mapped field names.", locale)}\nconst data = ${JSON.stringify(data,null,2)};\n`;
   const logic = `${importLine}

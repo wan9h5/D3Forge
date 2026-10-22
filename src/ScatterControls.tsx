@@ -1,3 +1,4 @@
+import { ChartPalette } from './ChartPalette';
 import { Bounds } from './AdvancedControls';
 import { useBuilder } from './store';
 import type { Config } from './model';
@@ -24,10 +25,10 @@ export function ScatterControls(){
  const select=(key:keyof Config,label:string,options:[string,string][])=><label className="field"><span>{t(label)}</span><Select value={String(c[key])} onChange={e=>set(key,e.target.value)}>{options.map(([v,l])=><option key={v} value={v}>{t(l)}</option>)}</Select></label>;
  const text=(key:keyof Config,label:string)=><label className="field"><span>{t(label)}</span><input type="text" value={String(c[key])} onChange={e=>set(key,e.target.value)}/></label>;
  const field=(key:keyof Config,label:string)=>select(key,label,Object.keys(data[0]??{}).map(f=>[f,f]));
- const color=(key:keyof Config,label:string)=><div className="field"><span>{t(label)}</span><ColorPicker label={t(label)} value={String(c[key])} onChange={value=>set(key,value)}/></div>;
+ const color=(key:keyof Config,label:string)=><div className="field"><span>{t(label)}</span><ColorPicker showPalette={key==='color'} label={t(label)} value={String(c[key])} onChange={value=>set(key,value)}/></div>;
  const optional=(label:string,children:ReactNode)=><details className="advanced-group"><summary><span>{t(label)}</span><small>{t('按需开启')}</small></summary><div className="advanced-group-body">{children}</div></details>;
  if(c.pcaAxes&&!three)return <PcaControls/>;
- return <><section><h3>{t('点样式')}</h3>{slider('radius','点半径',1,24,.5)}{slider('opacity','透明度',.1,1,.05)}{!c.continuousColor&&color('color','主色')}{!c.continuousColor&&color('secondaryColor','第二颜色')}{!three&&mode!=='gsea'&&select('pointShape','点形状',[['circle','圆形'],['square','方形'],['triangle','三角形'],['diamond','菱形'],['star','星形'],['cross','十字']])}{mode==='density'&&toggle('showPoints','显示观测点')}{mode==='color'||three?<>{toggle('continuousColor','连续颜色映射')}{c.continuousColor&&field('colorField','颜色数值字段')}</>:null}</section>
+ return <><section><h3>{t('点样式')}</h3>{slider('radius','点半径',1,24,.5)}{slider('opacity','透明度',.1,1,.05)}{!c.continuousColor&&color('color','主色')}{c.continuousColor&&<ChartPalette/>}{!c.continuousColor&&color('secondaryColor','第二颜色')}{!three&&mode!=='gsea'&&select('pointShape','点形状',[['circle','圆形'],['square','方形'],['triangle','三角形'],['diamond','菱形'],['star','星形'],['cross','十字']])}{mode==='density'&&toggle('showPoints','显示观测点')}{mode==='color'||three?<>{toggle('continuousColor','连续颜色映射')}{c.continuousColor&&field('colorField','颜色数值字段')}</>:null}</section>
  {['joint','regression','fit','correlation','color'].includes(mode)&&<section><h3>{t('拟合与相关性')}</h3>{mode==='correlation'&&select('correlationMethod','相关方法',[['pearson','Pearson'],['spearman','Spearman']])}{toggle('fitEnabled','显示拟合曲线')}{c.fitEnabled&&<>{select('fitModel','拟合模型',[['linear','线性回归'],['quadratic','二次回归']])}{toggle('fitByGroup','按组拟合')}{slider('lineWidth','线宽',1,6,.5)}{optional('置信带',<>{toggle('confidenceBand','显示 95% 置信带')}<p className="help">{t('固定种子的 200 次配对重采样估计平均曲线的逐点置信带，不是预测区间。')}</p></>)}</>}</section>}
  {mode==='fold'&&<section><h3>{t('倍数变化')}</h3>{slider('foldRatio','倍数阈值',1.1,8,.1)}{toggle('foldLog','输入已取 log2')}{color('upColor','升高颜色')}{color('downColor','降低颜色')}{color('neutralColor','稳定颜色')}</section>}
  {mode==='rank'&&<section><h3>{t('排序')}</h3>{toggle('rankDescending','降序排列')}</section>}
