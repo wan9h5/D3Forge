@@ -1,3 +1,4 @@
+import { FieldEffectHint } from './FieldEffectHint';
 import { ChartPalette } from './ChartPalette';
 import type { ReactNode } from 'react';
 import type { Config } from './model';
@@ -12,7 +13,7 @@ export function VolcanoFields() {
  useLocale();
  const {config:c,data,setConfig}=useBuilder(),fields=Object.keys(data[0]??{});
  const field=(key:keyof Config,label:string)=><label className="field"><span>{t(label)}</span><Select value={String(c[key])} onChange={e=>setConfig({[key]:e.target.value})}><option value="">{t('选择字段')}</option>{fields.map(f=><option key={f}>{f}</option>)}</Select></label>;
- return <>{field('xField','log2FC 字段')}{field('yField','P-value 字段')}{field('labelField','基因名称字段')}{volcanoFaceted(c)&&field('volcanoPanelField','比较 / Cluster 字段')}{c.volcanoColor==='category'&&field('volcanoCategoryField','功能类别字段')}{c.volcanoVip&&field('volcanoVipField','VIP 字段')}{c.volcanoColor==='gradient'&&c.volcanoGradientBy==='field'&&field('volcanoColorField','颜色数值字段')}<p className="help">{t('输入已计算的 log2FC 与原始或校正后的 P 值；不运行差异分析。重复记录保留，空值及无效 P 值跳过。')}</p></>;
+ return <>{field('xField','log2FC 字段')}{field('yField','P-value 字段')}{field('labelField','基因名称字段')}<FieldEffectHint/>{volcanoFaceted(c)&&field('volcanoPanelField','比较 / Cluster 字段')}{c.volcanoColor==='category'&&field('volcanoCategoryField','功能类别字段')}{c.volcanoVip&&field('volcanoVipField','VIP 字段')}{c.volcanoColor==='gradient'&&c.volcanoGradientBy==='field'&&field('volcanoColorField','颜色数值字段')}<p className="help">{t('输入已计算的 log2FC 与原始或校正后的 P 值；不运行差异分析。重复记录保留，空值及无效 P 值跳过。')}</p></>;
 }
 
 export function VolcanoControls() {

@@ -11,6 +11,12 @@ export const useBuilder = create<State>((set,get)=>({
   setConfig:patch=>set(s=>{
     const config={...s.config,...patch};
     if(patch.chartScheme===undefined&&['color','secondaryColor','pcaThirdColor','upColor','downColor','neutralColor','scatterPalette','volcanoPalette','heatmapPalette','compositionPalette'].some(key=>key in patch))config.chartScheme='custom';
+    // Editing an enabled style must make its target visible; explicit off switches win.
+    if((patch.gridStyle===true||config.gridStyle&&['gridColor','gridWidth','gridOpacity'].some(key=>key in patch))&&patch.grid!==false)config.grid=true;
+    if((patch.labelStyle===true||(config.labelStyle||s.type==='bar'&&config.barVariant!=='basic')&&['labelColor','labelFontSize','labelOffsetX','labelOffsetY','valueFormat'].some(key=>key in patch))&&patch.labels!==false)config.labels=true;
+    if((patch.legendStyle===true||config.legendStyle&&['legendPosition','legendFontSize'].some(key=>key in patch))&&patch.legend!==false)config.legend=true;
+    if(patch.markBorder===true&&['line','violin','scatter'].includes(s.type)&&patch.showPoints!==false)config.showPoints=true;
+    for(const axis of ['x','y'] as const)if(config.axisStyle&&[`${axis}Title`,`${axis}TickCount`,`${axis}TickAngle`].some(key=>key in patch)&&patch[`${axis}Axis`]!==false)config[`${axis}Axis`]=true;
     if(patch.heatmapBar===true){config.heatmapTrend=false;config.heatmapTerms=false;}
     if(patch.heatmapTrend===true)config.heatmapBar=false;
     for(const axis of ['x','y'] as const) {

@@ -9,8 +9,9 @@ export function ChartPalette(){
  const status=type==='volcano'&&!['gradient','category'].includes(c.volcanoColor);
  const sequential=type==='heatmap'||['density','ld'].includes(c.bioVariant)||(c.bioVariant==='regional'&&c.bioLDColor)||c.scatterVariant==='density'||c.scatterVariant==='bubble'||c.continuousColor||type==='volcano'&&c.volcanoColor==='gradient';
  const diverging=status||type==='heatmap'&&c.bioVariant==='none'&&c.heatmapPalette==='diverging';
- const choices=diverging?[['rdBu','RdBu'],['brBG','BrBG'],['piYG','PiYG']]:sequential?[['viridis','Viridis'],['cividis','Cividis'],['blues','Blues'],['magma','Magma']]:[['tableau10','Tableau 10'],['set2','Set2'],['dark2','Dark2'],['paired','Paired'],['category10','Category 10']];
- const selected=choices.some(([id])=>id===c.chartScheme)?c.chartScheme:'custom';
+ const choices=diverging?[['rdBu','RdBu'],['brBG','BrBG'],['piYG','PiYG']]:sequential?[['viridis','Viridis'],['cividis','Cividis'],['blues','Blues'],['magma','Magma'],['turbo','Turbo']]:[['tableau10','Tableau 10'],['set2','Set2'],['dark2','Dark2'],['paired','Paired'],['category10','Category 10']];
+ const legacy=c.scatterVariant==='bubble'||c.continuousColor?c.scatterPalette:type==='volcano'&&c.volcanoColor==='gradient'?c.volcanoPalette:'custom';
+ const selected=choices.some(([id])=>id===c.chartScheme)?c.chartScheme:choices.some(([id])=>id===legacy)?legacy:'custom';
  const colors=selected==='custom'?[c.color,c.secondaryColor]:schemePreview(selected);
  function choose(id:string){
   if(id==='custom'){setConfig({chartScheme:id});return;}

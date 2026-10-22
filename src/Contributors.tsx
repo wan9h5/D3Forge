@@ -18,7 +18,7 @@ export function Contributors() {
   },[]);
   return <main className="contributors-main">
     <section className="contributors-content" aria-labelledby="contributors-heading">
-      <h1 id="contributors-heading">{text('如果你有更好的想法，欢迎加入贡献者队列','Have a better idea? Join our contributors','もっと良いアイデアがあれば、ぜひコントリビューターに加わってください')}</h1>
+      <h1 id="contributors-heading"><span>{text('你的贡献','Your contribution','あなたの貢献が')}</span><span>{text('让他人的探索“更进一步”','Takes others’ exploration further','誰かの探究を、さらに先へ')}</span></h1>
       <div className="contributors-participation">
       <div className="contributors-avatars">
         <div ref={root} className={`contributor-person${open?' is-open':''}`} style={{'--tooltip-offset':`${offset*16}px`,'--tooltip-rotation':`${offset*8}deg`} as CSSProperties}
@@ -31,7 +31,7 @@ export function Contributors() {
           }}>
           <div id={tooltipId} className="contributor-tooltip" role="tooltip" aria-hidden={!open}>
             <strong>Jack Wang</strong>
-            <span>SMBM</span>
+            <span>SynMetabiome</span>
             <b>Front-end Developer</b>
             <i className="contributor-tooltip-glow" aria-hidden="true"/>
           </div>

@@ -1,3 +1,4 @@
+import { FieldEffectHint } from './FieldEffectHint';
 import Papa from 'papaparse';
 import type { Config } from './model';
 import { useBuilder } from './store';
@@ -31,7 +32,7 @@ export function PcaFields(){
   {field('yField',text('纵轴主成分得分','Vertical component score','縦軸の主成分スコア'))}
   {c.scatterVariant==='3d'&&field('zField',text('第三主成分得分','Third component score','第3主成分スコア'))}
   {field('groupField',text('样本分组','Sample group','サンプル群'),true)}
-  {field('labelField',text('样本 / 变量名称','Sample / variable name','サンプル・変数名'),true)}
+  {field('labelField',text('样本 / 变量名称','Sample / variable name','サンプル・変数名'),true)}{c.scatterVariant!=='pca-biplot'&&<FieldEffectHint/>}
   {c.scatterVariant==='pca-biplot'&&<>
    {field('pcaRowTypeField',text('记录类型字段','Record-type field','レコード種類フィールド'))}
    {(['pcaSampleType','pcaLoadingType'] as const).map(key=><label className="field" key={key}><span>{key==='pcaSampleType'?text('样本行的类型值','Sample-row type value','サンプル行の種類値'):text('载荷行的类型值','Loading-row type value','負荷量行の種類値')}</span><input type="text" value={c[key]} onChange={event=>{if(event.target.value!==c[key==='pcaSampleType'?'pcaLoadingType':'pcaSampleType'])set(key,event.target.value);}}/></label>)}

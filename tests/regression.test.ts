@@ -28,6 +28,18 @@ function values<T>(svg: SVGSVGElement, selector: string): T[] {
   return [...svg.querySelectorAll(selector)].map(node => d3.select(node).datum() as T);
 }
 
+describe('line label field mapping',()=>{
+ const rows=[{time:1,value:12,series:'A',name:'First'},{time:2,value:24,series:'A',name:'Second'}];
+ it('uses the selected field when data labels are enabled',()=>{
+  expect([...run('line',rows,{labels:true,labelField:'value'}).svg.querySelectorAll('text.label')].map(node=>node.textContent)).toEqual(['12','24']);
+  document.body.innerHTML='<div id="chart"></div>';
+  expect([...run('line',rows,{labels:true,labelField:'name',showPoints:false}).svg.querySelectorAll('text.label')].map(node=>node.textContent)).toEqual(['First','Second']);
+ });
+ it('keeps labels hidden when the visibility switch is off',()=>{
+  expect(run('line',rows,{labels:false,labelField:'value'}).svg.querySelectorAll('text.label')).toHaveLength(0);
+ });
+});
+
 for (const { id: type } of charts) describe(`${type}: export and data boundaries`, () => {
   it('executes standalone and composes data with exactly the same logic', () => {
     const { parts } = run(type);

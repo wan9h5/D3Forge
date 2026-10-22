@@ -1,7 +1,7 @@
-import { schemeTableau10, schemeSet2, schemeDark2, schemePaired, schemeCategory10, interpolateViridis, interpolateCividis, interpolateBlues, interpolateMagma, interpolateRdBu, interpolateBrBG, interpolatePiYG } from 'd3';
+import { schemeTableau10, schemeSet2, schemeDark2, schemePaired, schemeCategory10, interpolateTurbo, interpolateViridis, interpolateCividis, interpolateBlues, interpolateMagma, interpolateRdBu, interpolateBrBG, interpolatePiYG } from 'd3';
 export const categoricalSchemes:Record<string,readonly string[]>={tableau10:schemeTableau10,set2:schemeSet2,dark2:schemeDark2,paired:schemePaired,category10:schemeCategory10};
-export const interpolators={viridis:interpolateViridis,cividis:interpolateCividis,blues:interpolateBlues,magma:interpolateMagma,rdBu:interpolateRdBu,brBG:interpolateBrBG,piYG:interpolatePiYG};
-export const interpolatorNames:Record<string,string>={viridis:'interpolateViridis',cividis:'interpolateCividis',blues:'interpolateBlues',magma:'interpolateMagma',rdBu:'interpolateRdBu',brBG:'interpolateBrBG',piYG:'interpolatePiYG'};
+export const interpolators={turbo:interpolateTurbo,viridis:interpolateViridis,cividis:interpolateCividis,blues:interpolateBlues,magma:interpolateMagma,rdBu:interpolateRdBu,brBG:interpolateBrBG,piYG:interpolatePiYG};
+export const interpolatorNames:Record<string,string>={turbo:'interpolateTurbo',viridis:'interpolateViridis',cividis:'interpolateCividis',blues:'interpolateBlues',magma:'interpolateMagma',rdBu:'interpolateRdBu',brBG:'interpolateBrBG',piYG:'interpolatePiYG'};
 export const isDivergingScheme=(scheme:string)=>['rdBu','brBG','piYG'].includes(scheme);
 export function schemePreview(scheme:string):readonly string[]{
  if(categoricalSchemes[scheme])return categoricalSchemes[scheme];
